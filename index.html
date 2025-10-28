@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
+    <title>Grammatik-Meister</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .level-display {
+            background: linear-gradient(135deg, #ffd89b 0%, #ff8c69 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .level-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .level-badge {
+            background: rgba(255,255,255,0.3);
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.8em;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255,255,255,0.5);
+        }
+
+        .level-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .xp-display {
+            text-align: right;
+        }
+
+        .xp-amount {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .xp-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .level-progress-container {
+            margin-top: 15px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 20px;
+            height: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .level-progress-bar {
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            transition: width 0.5s ease;
+        }
+
+        .level-progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .grade-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .grade-card {
+            padding: 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .grade-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .grade-card.active {
+            border-color: #333;
+            transform: scale(1.05);
+        }
+
+        .grade-card.grade6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .grade-card.grade7 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .grade-card.grade8 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+
+        .grade-name {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .grade-topics {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .topic-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .topic-card {
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .topic-card.active {
+            border-color: #333;
+            transform: scale(1.05);
+        }
+
+        .topic-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .topic-progress {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .topic-progress-bar {
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #333;
+            font-size: 0.8em;
+        }
+
+        .exercise-area {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            min-height: 400px;
+        }
+
+        .task-description {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 100px;
+            border: 2px dashed #ddd;
+        }
+
+        .word {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.2s;
+            user-select: none;
+            font-weight: 500;
+        }
+
+        .word:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .word.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .answer-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            min-height: 100px;
+            border: 3px solid #667eea;
+            align-items: center;
+        }
+
+        .answer-word {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .answer-word:hover {
+            transform: scale(1.05);
+        }
+
+        .answer-word.incorrect {
+            background: linear-gradient(135deg, #f5576c 0%, #d63447 100%);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .feedback {
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            background: #43e97b;
+            color: white;
+        }
+
+        .feedback.incorrect {
+            background: #f5576c;
+            color: white;
+        }
+
+        .correct-answer {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            color: #333;
+        }
+
+        .hint-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
+            color: #333;
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s;
+        }
+
+        .celebration-content {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            animation: scaleIn 0.5s;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+        }
+
+        .celebration-text {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .celebration-subtext {
+            font-size: 1.5em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .levelup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 200, 100, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            animation: fadeIn 0.3s;
+        }
+
+        .levelup-content {
+            text-align: center;
+            color: #333;
+            animation: scaleIn 0.5s;
+        }
+
+        .levelup-text {
+            font-size: 5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            animation: pulse 1s infinite;
+        }
+
+        .levelup-title {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .levelup-subtitle {
+            font-size: 1.5em;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .grade-selector, .topic-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .word, .answer-word {
+                font-size: 1em;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Shuffle function
+        const shuffleArray = (array) => {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        };
+
+        // Level system
+        const LEVEL_THRESHOLDS = [
+            { level: 1, xp: 0, title: "Anfänger" },
+            { level: 2, xp: 15, title: "Lernender" },
+            { level: 3, xp: 35, title: "Fortgeschrittener" },
+            { level: 4, xp: 60, title: "Kompetenter" },
+            { level: 5, xp: 90, title: "Experte" },
+            { level: 6, xp: 130, title: "Meister" },
+        ];
+
+        const getPlayerLevel = (xp) => {
+            for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+                if (xp >= LEVEL_THRESHOLDS[i].xp) {
+                    return LEVEL_THRESHOLDS[i];
+                }
+            }
+            return LEVEL_THRESHOLDS[0];
+        };
+
+        const getNextLevel = (currentLevel) => {
+            const nextIndex = LEVEL_THRESHOLDS.findIndex(l => l.level === currentLevel) + 1;
+            return nextIndex < LEVEL_THRESHOLDS.length ? LEVEL_THRESHOLDS[nextIndex] : null;
+        };
+
+        // Exercise data structure
+        const EXERCISES = {
+            grade6: {
+                zeitformen: {
+                    name: "Zeitformen",
+                    exercises: [
+                        { words: ["Gestern", "ging", "ich", "in", "die", "Schule"], correct: "Gestern ging ich in die Schule" },
+                        { words: ["Ich", "habe", "meine", "Hausaufgaben", "gemacht"], correct: "Ich habe meine Hausaufgaben gemacht" },
+                        { words: ["Heute", "gehe", "ich", "schwimmen"], correct: "Heute gehe ich schwimmen" },
+                        { words: ["Wir", "spielten", "gestern", "Fußball", "im", "Park"], correct: "Wir spielten gestern Fußball im Park" },
+                        { words: ["Sie", "hat", "ein", "Buch", "gelesen"], correct: "Sie hat ein Buch gelesen" },
+                        { words: ["Ich", "esse", "gerne", "Schokolade"], correct: "Ich esse gerne Schokolade" },
+                    ]
+                },
+                kausale_konnektoren: {
+                    name: "Kausale Konnektoren",
+                    exercises: [
+                        { words: ["Ich", "bleibe", "zu", "Hause,", "weil", "es", "regnet"], correct: "Ich bleibe zu Hause, weil es regnet" },
+                        { words: ["Er", "ist", "müde,", "denn", "er", "hat", "nicht", "geschlafen"], correct: "Er ist müde, denn er hat nicht geschlafen" },
+                        { words: ["Es", "regnet,", "darum", "nehme", "ich", "einen", "Regenschirm"], correct: "Es regnet, darum nehme ich einen Regenschirm" },
+                        { words: ["Ich", "lerne", "viel,", "deshalb", "bekomme", "ich", "gute", "Noten"], correct: "Ich lerne viel, deshalb bekomme ich gute Noten" },
+                        { words: ["Sie", "geht", "früh", "ins", "Bett,", "weil", "sie", "müde", "ist"], correct: "Sie geht früh ins Bett, weil sie müde ist" },
+                        { words: ["Wir", "fahren", "nicht,", "denn", "das", "Auto", "ist", "kaputt"], correct: "Wir fahren nicht, denn das Auto ist kaputt" },
+                    ]
+                },
+                temporale_konnektoren: {
+                    name: "Temporale Konnektoren",
+                    exercises: [
+                        { words: ["Zuerst", "frühstücke", "ich,", "dann", "gehe", "ich", "zur", "Schule"], correct: "Zuerst frühstücke ich, dann gehe ich zur Schule" },
+                        { words: ["Danach", "machen", "wir", "unsere", "Hausaufgaben"], correct: "Danach machen wir unsere Hausaufgaben" },
+                        { words: ["Schließlich", "gehen", "wir", "ins", "Bett"], correct: "Schließlich gehen wir ins Bett" },
+                        { words: ["Zuerst", "ziehe", "ich", "mich", "an,", "danach", "esse", "ich"], correct: "Zuerst ziehe ich mich an, danach esse ich" },
+                        { words: ["Dann", "fahren", "wir", "in", "die", "Stadt"], correct: "Dann fahren wir in die Stadt" },
+                        { words: ["Schließlich", "kehren", "wir", "nach", "Hause", "zurück"], correct: "Schließlich kehren wir nach Hause zurück" },
+                    ]
+                },
+                satzbau: {
+                    name: "Satzbau",
+                    exercises: [
+                        { words: ["Gestern", "besuchte", "ich", "meine", "Großeltern"], correct: "Gestern besuchte ich meine Großeltern" },
+                        { words: ["Am", "Wochenende", "fahren", "wir", "ans", "Meer"], correct: "Am Wochenende fahren wir ans Meer" },
+                        { words: ["Morgen", "schreiben", "wir", "einen", "Test"], correct: "Morgen schreiben wir einen Test" },
+                        { words: ["Heute", "Nachmittag", "spiele", "ich", "Tennis"], correct: "Heute Nachmittag spiele ich Tennis" },
+                        { words: ["Nächste", "Woche", "beginnen", "die", "Ferien"], correct: "Nächste Woche beginnen die Ferien" },
+                        { words: ["Im", "Sommer", "reisen", "wir", "nach", "Italien"], correct: "Im Sommer reisen wir nach Italien" },
+                    ]
+                }
+            },
+            grade7: {
+                kausalsaetze: {
+                    name: "Kausalsätze (weil/da)",
+                    exercises: [
+                        { words: ["Ich", "bleibe", "zu", "Hause,", "weil", "ich", "krank", "bin"], correct: "Ich bleibe zu Hause, weil ich krank bin" },
+                        { words: ["Da", "es", "regnet,", "nehme", "ich", "einen", "Schirm", "mit"], correct: "Da es regnet, nehme ich einen Schirm mit" },
+                        { words: ["Sie", "lernt", "viel,", "weil", "sie", "eine", "gute", "Note", "möchte"], correct: "Sie lernt viel, weil sie eine gute Note möchte" },
+                        { words: ["Da", "der", "Bus", "nicht", "kam,", "gingen", "wir", "zu", "Fuß"], correct: "Da der Bus nicht kam, gingen wir zu Fuß" },
+                        { words: ["Er", "ist", "glücklich,", "weil", "er", "die", "Prüfung", "bestanden", "hat"], correct: "Er ist glücklich, weil er die Prüfung bestanden hat" },
+                        { words: ["Da", "ich", "müde", "war,", "ging", "ich", "früh", "schlafen"], correct: "Da ich müde war, ging ich früh schlafen" },
+                    ]
+                },
+                folgesaetze: {
+                    name: "Folgesätze",
+                    exercises: [
+                        { words: ["Es", "regnet,", "darum", "bleibe", "ich", "drinnen"], correct: "Es regnet, darum bleibe ich drinnen" },
+                        { words: ["Ich", "bin", "müde,", "deshalb", "gehe", "ich", "schlafen"], correct: "Ich bin müde, deshalb gehe ich schlafen" },
+                        { words: ["Er", "hat", "kein", "Geld,", "deswegen", "kann", "er", "nichts", "kaufen"], correct: "Er hat kein Geld, deswegen kann er nichts kaufen" },
+                        { words: ["Sie", "lernt", "fleißig,", "darum", "bekommt", "sie", "gute", "Noten"], correct: "Sie lernt fleißig, darum bekommt sie gute Noten" },
+                        { words: ["Das", "Wetter", "ist", "schlecht,", "deshalb", "bleiben", "wir", "zu", "Hause"], correct: "Das Wetter ist schlecht, deshalb bleiben wir zu Hause" },
+                        { words: ["Ich", "hatte", "keine", "Zeit,", "deswegen", "kam", "ich", "zu", "spät"], correct: "Ich hatte keine Zeit, deswegen kam ich zu spät" },
+                    ]
+                },
+                trennbare_verben: {
+                    name: "Trennbare Verben",
+                    exercises: [
+                        { words: ["Ich", "stehe", "jeden", "Tag", "früh", "auf"], correct: "Ich stehe jeden Tag früh auf" },
+                        { words: ["Er", "räumt", "sein", "Zimmer", "auf"], correct: "Er räumt sein Zimmer auf" },
+                        { words: ["Wir", "sehen", "heute", "Abend", "fern"], correct: "Wir sehen heute Abend fern" },
+                        { words: ["Sie", "zieht", "ihre", "Jacke", "an"], correct: "Sie zieht ihre Jacke an" },
+                        { words: ["Ich", "rufe", "dich", "später", "an"], correct: "Ich rufe dich später an" },
+                        { words: ["Er", "denkt", "über", "das", "Problem", "nach"], correct: "Er denkt über das Problem nach" },
+                    ]
+                },
+                adjektivdeklination: {
+                    name: "Adjektivdeklination",
+                    exercises: [
+                        { words: ["Das", "ist", "ein", "fairer", "Freund"], correct: "Das ist ein fairer Freund" },
+                        { words: ["Sie", "hat", "eine", "gerechte", "Lösung", "gefunden"], correct: "Sie hat eine gerechte Lösung gefunden" },
+                        { words: ["Wir", "brauchen", "einen", "neuen", "Plan"], correct: "Wir brauchen einen neuen Plan" },
+                        { words: ["Das", "ist", "eine", "gute", "Idee"], correct: "Das ist eine gute Idee" },
+                        { words: ["Er", "hat", "einen", "interessanten", "Vorschlag"], correct: "Er hat einen interessanten Vorschlag" },
+                        { words: ["Das", "war", "eine", "schwierige", "Entscheidung"], correct: "Das war eine schwierige Entscheidung" },
+                    ]
+                }
+            },
+            grade8: {
+                komplexe_konnektoren: {
+                    name: "Komplexe Konnektoren",
+                    exercises: [
+                        { words: ["Obwohl", "es", "regnet,", "gehe", "ich", "spazieren"], correct: "Obwohl es regnet, gehe ich spazieren" },
+                        { words: ["Er", "lernt", "viel,", "dennoch", "bekommt", "er", "schlechte", "Noten"], correct: "Er lernt viel, dennoch bekommt er schlechte Noten" },
+                        { words: ["Ich", "bin", "müde,", "trotzdem", "arbeite", "ich", "weiter"], correct: "Ich bin müde, trotzdem arbeite ich weiter" },
+                        { words: ["Es", "ist", "kalt,", "daher", "ziehe", "ich", "eine", "Jacke", "an"], correct: "Es ist kalt, daher ziehe ich eine Jacke an" },
+                        { words: ["Obwohl", "sie", "krank", "war,", "kam", "sie", "zur", "Schule"], correct: "Obwohl sie krank war, kam sie zur Schule" },
+                        { words: ["Das", "Projekt", "ist", "schwierig,", "dennoch", "versuchen", "wir", "es"], correct: "Das Projekt ist schwierig, dennoch versuchen wir es" },
+                    ]
+                },
+                indirekte_rede: {
+                    name: "Indirekte Rede",
+                    exercises: [
+                        { words: ["Er", "sagt,", "dass", "er", "keine", "Zeit", "hat"], correct: "Er sagt, dass er keine Zeit hat" },
+                        { words: ["Sie", "meint,", "dass", "das", "Buch", "interessant", "ist"], correct: "Sie meint, dass das Buch interessant ist" },
+                        { words: ["Der", "Lehrer", "erklärt,", "dass", "die", "Prüfung", "schwer", "sei"], correct: "Der Lehrer erklärt, dass die Prüfung schwer sei" },
+                        { words: ["Er", "behauptet,", "dass", "er", "die", "Wahrheit", "sage"], correct: "Er behauptet, dass er die Wahrheit sage" },
+                        { words: ["Sie", "sagt,", "dass", "sie", "morgen", "komme"], correct: "Sie sagt, dass sie morgen komme" },
+                        { words: ["Der", "Autor", "meint,", "dass", "Sprache", "wichtig", "sei"], correct: "Der Autor meint, dass Sprache wichtig sei" },
+                    ]
+                },
+                modalverben: {
+                    name: "Modalverben",
+                    exercises: [
+                        { words: ["Man", "kann", "die", "Sprache", "beeinflussen"], correct: "Man kann die Sprache beeinflussen" },
+                        { words: ["Wir", "müssen", "aufmerksam", "sein"], correct: "Wir müssen aufmerksam sein" },
+                        { words: ["Sie", "soll", "den", "Text", "analysieren"], correct: "Sie soll den Text analysieren" },
+                        { words: ["Man", "darf", "nicht", "diskriminieren"], correct: "Man darf nicht diskriminieren" },
+                        { words: ["Ich", "will", "die", "Wahrheit", "wissen"], correct: "Ich will die Wahrheit wissen" },
+                        { words: ["Man", "sollte", "kritisch", "denken"], correct: "Man sollte kritisch denken" },
+                    ]
+                },
+                satzverknuepfung: {
+                    name: "Satzverknüpfung",
+                    exercises: [
+                        { words: ["Ich", "lese", "das", "Buch,", "weil", "es", "spannend", "ist"], correct: "Ich lese das Buch, weil es spannend ist" },
+                        { words: ["Obwohl", "ich", "müde", "bin,", "arbeite", "ich", "weiter"], correct: "Obwohl ich müde bin, arbeite ich weiter" },
+                        { words: ["Er", "kam", "zu", "spät,", "da", "der", "Zug", "Verspätung", "hatte"], correct: "Er kam zu spät, da der Zug Verspätung hatte" },
+                        { words: ["Sie", "lernt", "Deutsch,", "damit", "sie", "in", "Deutschland", "studieren", "kann"], correct: "Sie lernt Deutsch, damit sie in Deutschland studieren kann" },
+                        { words: ["Ich", "bleibe", "drinnen,", "weil", "es", "regnet"], correct: "Ich bleibe drinnen, weil es regnet" },
+                        { words: ["Obwohl", "das", "Wetter", "schlecht", "ist,", "gehen", "wir", "raus"], correct: "Obwohl das Wetter schlecht ist, gehen wir raus" },
+                    ]
+                }
+            }
+        };
+
+        function App() {
+            // Initialize completed exercises with empty Sets
+            const initializeCompletedExercises = () => {
+                return {
+                    grade6: {
+                        zeitformen: new Set(),
+                        kausale_konnektoren: new Set(),
+                        temporale_konnektoren: new Set(),
+                        satzbau: new Set()
+                    },
+                    grade7: {
+                        kausalsaetze: new Set(),
+                        folgesaetze: new Set(),
+                        trennbare_verben: new Set(),
+                        adjektivdeklination: new Set()
+                    },
+                    grade8: {
+                        komplexe_konnektoren: new Set(),
+                        indirekte_rede: new Set(),
+                        modalverben: new Set(),
+                        satzverknuepfung: new Set()
+                    }
+                };
+            };
+
+            // Load progress
+            const loadProgress = () => {
+                try {
+                    const saved = localStorage.getItem('grammatik-meister-progress');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        
+                        // Convert arrays back to Sets
+                        if (data.completedExercises) {
+                            const completed = initializeCompletedExercises();
+                            
+                            // Grade 6
+                            if (data.completedExercises.grade6) {
+                                if (data.completedExercises.grade6.zeitformen) {
+                                    completed.grade6.zeitformen = new Set(data.completedExercises.grade6.zeitformen);
+                                }
+                                if (data.completedExercises.grade6.kausale_konnektoren) {
+                                    completed.grade6.kausale_konnektoren = new Set(data.completedExercises.grade6.kausale_konnektoren);
+                                }
+                                if (data.completedExercises.grade6.temporale_konnektoren) {
+                                    completed.grade6.temporale_konnektoren = new Set(data.completedExercises.grade6.temporale_konnektoren);
+                                }
+                                if (data.completedExercises.grade6.satzbau) {
+                                    completed.grade6.satzbau = new Set(data.completedExercises.grade6.satzbau);
+                                }
+                            }
+                            
+                            // Grade 7
+                            if (data.completedExercises.grade7) {
+                                if (data.completedExercises.grade7.kausalsaetze) {
+                                    completed.grade7.kausalsaetze = new Set(data.completedExercises.grade7.kausalsaetze);
+                                }
+                                if (data.completedExercises.grade7.folgesaetze) {
+                                    completed.grade7.folgesaetze = new Set(data.completedExercises.grade7.folgesaetze);
+                                }
+                                if (data.completedExercises.grade7.trennbare_verben) {
+                                    completed.grade7.trennbare_verben = new Set(data.completedExercises.grade7.trennbare_verben);
+                                }
+                                if (data.completedExercises.grade7.adjektivdeklination) {
+                                    completed.grade7.adjektivdeklination = new Set(data.completedExercises.grade7.adjektivdeklination);
+                                }
+                            }
+                            
+                            // Grade 8
+                            if (data.completedExercises.grade8) {
+                                if (data.completedExercises.grade8.komplexe_konnektoren) {
+                                    completed.grade8.komplexe_konnektoren = new Set(data.completedExercises.grade8.komplexe_konnektoren);
+                                }
+                                if (data.completedExercises.grade8.indirekte_rede) {
+                                    completed.grade8.indirekte_rede = new Set(data.completedExercises.grade8.indirekte_rede);
+                                }
+                                if (data.completedExercises.grade8.modalverben) {
+                                    completed.grade8.modalverben = new Set(data.completedExercises.grade8.modalverben);
+                                }
+                                if (data.completedExercises.grade8.satzverknuepfung) {
+                                    completed.grade8.satzverknuepfung = new Set(data.completedExercises.grade8.satzverknuepfung);
+                                }
+                            }
+                            
+                            data.completedExercises = completed;
+                        }
+                        
+                        return data;
+                    }
+                } catch (e) {
+                    console.error('Error loading progress:', e);
+                }
+                return null;
+            };
+
+            const savedProgress = loadProgress();
+
+            const [selectedGrade, setSelectedGrade] = useState(savedProgress?.selectedGrade || null);
+            const [selectedTopic, setSelectedTopic] = useState(null);
+            const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+            const [userAnswer, setUserAnswer] = useState([]);
+            const [feedback, setFeedback] = useState(null);
+            const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+            const [showHint, setShowHint] = useState(false);
+            const [shuffledWords, setShuffledWords] = useState([]);
+            const [celebrating, setCelebrating] = useState(false);
+            const [totalXP, setTotalXP] = useState(savedProgress?.totalXP || 0);
+            const [playerLevel, setPlayerLevel] = useState(savedProgress?.playerLevel || 1);
+            const [showLevelUp, setShowLevelUp] = useState(false);
+            const [completedExercises, setCompletedExercises] = useState(
+                savedProgress?.completedExercises || initializeCompletedExercises()
+            );
+
+            const currentTopic = selectedGrade && selectedTopic ? EXERCISES[selectedGrade][selectedTopic] : null;
+            const currentExercise = currentTopic ? currentTopic.exercises[currentExerciseIndex] : null;
+
+            // Shuffle words when exercise changes
+            useEffect(() => {
+                if (currentExercise) {
+                    setShuffledWords(shuffleArray(currentExercise.words));
+                }
+            }, [currentExerciseIndex, selectedTopic, selectedGrade]);
+
+            // Auto-save
+            useEffect(() => {
+                const saveProgress = () => {
+                    try {
+                        const dataToSave = {
+                            selectedGrade,
+                            totalXP,
+                            playerLevel,
+                            completedExercises: {
+                                grade6: {
+                                    zeitformen: Array.from(completedExercises.grade6.zeitformen),
+                                    kausale_konnektoren: Array.from(completedExercises.grade6.kausale_konnektoren),
+                                    temporale_konnektoren: Array.from(completedExercises.grade6.temporale_konnektoren),
+                                    satzbau: Array.from(completedExercises.grade6.satzbau)
+                                },
+                                grade7: {
+                                    kausalsaetze: Array.from(completedExercises.grade7.kausalsaetze),
+                                    folgesaetze: Array.from(completedExercises.grade7.folgesaetze),
+                                    trennbare_verben: Array.from(completedExercises.grade7.trennbare_verben),
+                                    adjektivdeklination: Array.from(completedExercises.grade7.adjektivdeklination)
+                                },
+                                grade8: {
+                                    komplexe_konnektoren: Array.from(completedExercises.grade8.komplexe_konnektoren),
+                                    indirekte_rede: Array.from(completedExercises.grade8.indirekte_rede),
+                                    modalverben: Array.from(completedExercises.grade8.modalverben),
+                                    satzverknuepfung: Array.from(completedExercises.grade8.satzverknuepfung)
+                                }
+                            }
+                        };
+                        localStorage.setItem('grammatik-meister-progress', JSON.stringify(dataToSave));
+                    } catch (e) {
+                        console.error('Error saving progress:', e);
+                    }
+                };
+                saveProgress();
+            }, [totalXP, playerLevel, completedExercises, selectedGrade]);
+
+            const handleWordClick = (word, index) => {
+                if (feedback !== 'correct') {
+                    setUserAnswer([...userAnswer, { word, originalIndex: index }]);
+                }
+            };
+
+            const handleAnswerWordClick = (indexToRemove) => {
+                if (feedback !== 'correct') {
+                    setUserAnswer(userAnswer.filter((_, i) => i !== indexToRemove));
+                }
+            };
+
+            const checkAnswer = () => {
+                const userSentence = userAnswer.map(item => item.word).join(' ');
+                const isCorrect = userSentence === currentExercise.correct;
+                
+                setFeedback(isCorrect ? 'correct' : 'incorrect');
+                setShowCorrectAnswer(false);
+                setShowHint(false);
+
+                if (isCorrect) {
+                    const exerciseKey = `${selectedTopic}-${currentExerciseIndex}`;
+                    const alreadyCompleted = completedExercises[selectedGrade][selectedTopic].has(exerciseKey);
+                    
+                    if (!alreadyCompleted) {
+                        const xpGain = 2;
+                        const newTotalXP = totalXP + xpGain;
+                        const oldLevel = getPlayerLevel(totalXP);
+                        const newLevel = getPlayerLevel(newTotalXP);
+                        
+                        setTotalXP(newTotalXP);
+                        
+                        if (newLevel.level > oldLevel.level) {
+                            setPlayerLevel(newLevel.level);
+                            setShowLevelUp(true);
+                            setTimeout(() => setShowLevelUp(false), 4000);
+                        }
+                        
+                        setCompletedExercises(prev => {
+                            const newCompleted = { ...prev };
+                            newCompleted[selectedGrade][selectedTopic] = new Set(newCompleted[selectedGrade][selectedTopic]);
+                            newCompleted[selectedGrade][selectedTopic].add(exerciseKey);
+                            return newCompleted;
+                        });
+
+                        // Check for topic completion
+                        if (completedExercises[selectedGrade][selectedTopic].size + 1 === currentTopic.exercises.length) {
+                            setTimeout(() => {
+                                setCelebrating(true);
+                                setTimeout(() => setCelebrating(false), 5000);
+                            }, 500);
+                        }
+                    }
+                }
+            };
+
+            const tryAgain = () => {
+                setUserAnswer([]);
+                setFeedback(null);
+                setShowCorrectAnswer(false);
+                setShowHint(false);
+            };
+
+            const revealAnswer = () => {
+                setShowCorrectAnswer(true);
+            };
+
+            const showHintFunction = () => {
+                setShowHint(true);
+            };
+
+            const resetAnswer = () => {
+                setUserAnswer([]);
+                setFeedback(null);
+                setShowCorrectAnswer(false);
+                setShowHint(false);
+            };
+
+            const nextExercise = () => {
+                const maxIndex = currentTopic.exercises.length - 1;
+                if (currentExerciseIndex < maxIndex) {
+                    setCurrentExerciseIndex(currentExerciseIndex + 1);
+                } else {
+                    setCurrentExerciseIndex(0);
+                }
+                resetAnswer();
+            };
+
+            const selectGrade = (grade) => {
+                setSelectedGrade(grade);
+                setSelectedTopic(null);
+                setCurrentExerciseIndex(0);
+                resetAnswer();
+            };
+
+            const selectTopic = (topic) => {
+                setSelectedTopic(topic);
+                setCurrentExerciseIndex(0);
+                resetAnswer();
+            };
+
+            const backToGrades = () => {
+                setSelectedGrade(null);
+                setSelectedTopic(null);
+                resetAnswer();
+            };
+
+            const backToTopics = () => {
+                setSelectedTopic(null);
+                resetAnswer();
+            };
+
+            const calculateTopicProgress = (grade, topic) => {
+                const completed = completedExercises[grade][topic].size;
+                const total = EXERCISES[grade][topic].exercises.length;
+                return Math.round((completed / total) * 100);
+            };
+
+            const isWordCorrectAtPosition = (index) => {
+                if (!currentExercise || index >= userAnswer.length) return false;
+                
+                const correctWords = currentExercise.correct.split(' ');
+                const userWord = userAnswer[index].word;
+                
+                if (index >= correctWords.length) return false;
+                
+                return userWord === correctWords[index];
+            };
+
+            const usedIndices = userAnswer.map(item => item.originalIndex);
+
+            return (
+                <div className="container">
+                    <h1>🎓 Grammatik-Meister</h1>
+                    <p className="subtitle">Interaktives Grammatiktraining nach Klassenstufen</p>
+
+                    {selectedGrade && (
+                        <div className="level-display">
+                            <div className="level-header">
+                                <div className="level-info">
+                                    <div className="level-badge">Level {getPlayerLevel(totalXP).level}</div>
+                                    <div>
+                                        <div className="level-title">{getPlayerLevel(totalXP).title}</div>
+                                        <div style={{fontSize: '0.9em', opacity: 0.9}}>
+                                            {getNextLevel(getPlayerLevel(totalXP).level) ? 
+                                                `${totalXP} / ${getNextLevel(getPlayerLevel(totalXP).level).xp} XP` :
+                                                'Maximales Level erreicht!'
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="xp-display">
+                                    <div className="xp-amount">{totalXP} XP</div>
+                                    <div className="xp-label">Gesamterfahrung</div>
+                                </div>
+                            </div>
+                            {getNextLevel(getPlayerLevel(totalXP).level) && (
+                                <div className="level-progress-container">
+                                    <div 
+                                        className="level-progress-bar"
+                                        style={{ 
+                                            width: `${((totalXP - getPlayerLevel(totalXP).xp) / (getNextLevel(getPlayerLevel(totalXP).level).xp - getPlayerLevel(totalXP).xp)) * 100}%` 
+                                        }}
+                                    />
+                                    <div className="level-progress-text">
+                                        {Math.round(((totalXP - getPlayerLevel(totalXP).xp) / (getNextLevel(getPlayerLevel(totalXP).level).xp - getPlayerLevel(totalXP).xp)) * 100)}% zum nächsten Level
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {!selectedGrade && (
+                        <div className="grade-selector">
+                            <div className="grade-card grade6" onClick={() => selectGrade('grade6')}>
+                                <div className="grade-name">Klasse 6</div>
+                                <div className="grade-topics">
+                                    Zeitformen • Kausale Konnektoren • Temporale Konnektoren • Satzbau
+                                </div>
+                            </div>
+                            <div className="grade-card grade7" onClick={() => selectGrade('grade7')}>
+                                <div className="grade-name">Klasse 7</div>
+                                <div className="grade-topics">
+                                    Kausalsätze • Folgesätze • Trennbare Verben • Adjektivdeklination
+                                </div>
+                            </div>
+                            <div className="grade-card grade8" onClick={() => selectGrade('grade8')}>
+                                <div className="grade-name">Klasse 8</div>
+                                <div className="grade-topics">
+                                    Komplexe Konnektoren • Indirekte Rede • Modalverben • Satzverknüpfung
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {selectedGrade && !selectedTopic && (
+                        <>
+                            <div className="button-group">
+                                <button className="btn btn-back" onClick={backToGrades}>
+                                    ← Zurück zur Klassenwahl
+                                </button>
+                            </div>
+                            <div className="topic-selector">
+                                {Object.keys(EXERCISES[selectedGrade]).map(topicKey => {
+                                    const topic = EXERCISES[selectedGrade][topicKey];
+                                    const progress = calculateTopicProgress(selectedGrade, topicKey);
+                                    return (
+                                        <div
+                                            key={topicKey}
+                                            className="topic-card"
+                                            onClick={() => selectTopic(topicKey)}
+                                        >
+                                            <div className="topic-name">{topic.name}</div>
+                                            <div className="topic-progress">
+                                                <div 
+                                                    className="topic-progress-bar"
+                                                    style={{ width: `${progress}%` }}
+                                                >
+                                                    {progress > 0 && `${progress}%`}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
+
+                    {selectedGrade && selectedTopic && currentExercise && (
+                        <div className="exercise-area">
+                            <div className="task-description">
+                                <strong>Aufgabe:</strong> Setze die Wörter in die richtige Reihenfolge.
+                                <div style={{marginTop: '10px', fontSize: '0.9em', color: '#333', fontWeight: 'bold'}}>
+                                    {currentTopic.name} - Übung {currentExerciseIndex + 1} von {currentTopic.exercises.length}
+                                    {completedExercises[selectedGrade][selectedTopic].has(`${selectedTopic}-${currentExerciseIndex}`) && 
+                                        <span style={{color: '#43e97b', marginLeft: '10px'}}>✓ Bereits gemeistert!</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="word-bank">
+                                {shuffledWords.map((word, index) => (
+                                    <div
+                                        key={index}
+                                        className={`word ${usedIndices.includes(index) ? 'used' : ''}`}
+                                        onClick={() => !usedIndices.includes(index) && handleWordClick(word, index)}
+                                    >
+                                        {word}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="answer-area">
+                                {userAnswer.length === 0 && (
+                                    <div style={{ color: '#999', fontStyle: 'italic' }}>
+                                        Deine Antwort erscheint hier...
+                                    </div>
+                                )}
+                                {userAnswer.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className={`answer-word ${showHint && !isWordCorrectAtPosition(index) ? 'incorrect' : ''}`}
+                                        onClick={() => handleAnswerWordClick(index)}
+                                    >
+                                        {item.word}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="button-group">
+                                <button
+                                    className="btn btn-check"
+                                    onClick={checkAnswer}
+                                    disabled={userAnswer.length === 0 || feedback === 'correct'}
+                                >
+                                    ✓ Überprüfen
+                                </button>
+                                <button
+                                    className="btn btn-reset"
+                                    onClick={resetAnswer}
+                                >
+                                    ↺ Zurücksetzen
+                                </button>
+                                <button
+                                    className="btn btn-next"
+                                    onClick={nextExercise}
+                                >
+                                    → Nächste Übung
+                                </button>
+                                <button
+                                    className="btn btn-back"
+                                    onClick={backToTopics}
+                                >
+                                    ← Zurück zu Themen
+                                </button>
+                            </div>
+
+                            {feedback && (
+                                <div className={`feedback ${feedback}`}>
+                                    {feedback === 'correct' ? (
+                                        <>
+                                            🎉 Richtig! Hervorragend!
+                                            <div style={{marginTop: '10px', fontSize: '0.9em'}}>
+                                                +2 XP verdient
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            ❌ Leider falsch. Versuch es nochmal!
+                                            <div className="button-group" style={{marginTop: '15px'}}>
+                                                <button
+                                                    className="btn btn-check"
+                                                    onClick={tryAgain}
+                                                >
+                                                    🔄 Nochmal versuchen
+                                                </button>
+                                                <button
+                                                    className="btn btn-reset"
+                                                    onClick={showHintFunction}
+                                                    disabled={showHint}
+                                                >
+                                                    💡 Hinweis anzeigen
+                                                </button>
+                                                <button
+                                                    className="btn btn-reset"
+                                                    onClick={revealAnswer}
+                                                >
+                                                    👁️ Antwort zeigen
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                    {showHint && (
+                                        <div className="hint-box">
+                                            <strong>💡 Hinweis:</strong> Rote Wörter sind an der falschen Position. Klicke sie an, um sie zu entfernen, und setze sie neu.
+                                        </div>
+                                    )}
+                                    {showCorrectAnswer && (
+                                        <div className="correct-answer">
+                                            <strong>✓ Richtige Antwort:</strong> {currentExercise.correct}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {celebrating && (
+                        <div className="celebration-overlay" onClick={() => setCelebrating(false)}>
+                            <div className="celebration-content">
+                                <div className="celebration-text">
+                                    🎉 Gratulation! 🎉
+                                </div>
+                                <div className="celebration-subtext">
+                                    Du hast {currentTopic && currentTopic.name} gemeistert!
+                                </div>
+                                <div style={{marginTop: '30px', color: '#667eea', fontSize: '1.2em'}}>
+                                    Klicke irgendwo zum Fortfahren
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {showLevelUp && (
+                        <div className="levelup-overlay">
+                            <div className="levelup-content">
+                                <div className="levelup-text">⭐ LEVEL UP! ⭐</div>
+                                <div className="levelup-title">Level {getPlayerLevel(totalXP).level}</div>
+                                <div className="levelup-subtitle">{getPlayerLevel(totalXP).title}</div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
