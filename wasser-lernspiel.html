@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌊 Wasserwelt Abenteuer - Lernspiel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --water-light: #e0f7fa;
+            --water-medium: #4dd0e1;
+            --water-dark: #0097a7;
+            --water-deep: #006064;
+            --sunshine: #ffd54f;
+            --grass: #81c784;
+            --cloud: #eceff1;
+            --star-gold: #ffc107;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(180deg, #87ceeb 0%, #e0f7fa 50%, #c8e6c9 100%);
+            min-height: 100vh;
+        }
+        .bg-clouds {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .cloud {
+            position: absolute; background: white; border-radius: 50px;
+            opacity: 0.8; animation: float-cloud linear infinite;
+        }
+        .cloud::before, .cloud::after {
+            content: ''; position: absolute; background: white; border-radius: 50%;
+        }
+        .cloud-1 { width: 100px; height: 40px; top: 10%; animation-duration: 35s; }
+        .cloud-1::before { width: 50px; height: 50px; top: -25px; left: 15px; }
+        .cloud-1::after { width: 35px; height: 35px; top: -15px; left: 50px; }
+        .cloud-2 { width: 80px; height: 32px; top: 20%; animation-duration: 45s; animation-delay: -10s; }
+        .cloud-2::before { width: 40px; height: 40px; top: -20px; left: 12px; }
+        .cloud-2::after { width: 28px; height: 28px; top: -12px; left: 40px; }
+        @keyframes float-cloud {
+            from { transform: translateX(-200px); }
+            to { transform: translateX(calc(100vw + 200px)); }
+        }
+        .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .header {
+            text-align: center; padding: 25px 20px;
+            background: linear-gradient(135deg, var(--water-dark), var(--water-deep));
+            border-radius: 25px; margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0, 96, 100, 0.3);
+        }
+        .header h1 {
+            font-family: 'Fredoka One', cursive; font-size: 2.5em;
+            color: white; text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+        .header .subtitle { color: var(--water-light); font-size: 1.2em; font-weight: 600; margin-top: 5px; }
+        .mascot { font-size: 3.5em; animation: bounce 2s ease-in-out infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        .stats-bar {
+            display: flex; justify-content: space-around; flex-wrap: wrap; gap: 12px;
+            background: white; padding: 18px; border-radius: 18px; margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .stat-item {
+            text-align: center; padding: 12px 20px;
+            background: linear-gradient(135deg, var(--water-light), white);
+            border-radius: 12px; min-width: 100px;
+        }
+        .stat-icon { font-size: 1.8em; }
+        .stat-value { font-family: 'Fredoka One', cursive; font-size: 1.6em; color: var(--water-dark); }
+        .stat-label { font-size: 0.85em; color: #666; font-weight: 600; }
+        .level-progress {
+            background: white; padding: 18px; border-radius: 18px;
+            margin-bottom: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .level-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+        .level-title { font-family: 'Fredoka One', cursive; font-size: 1.3em; color: var(--water-dark); }
+        .xp-text { color: #666; font-weight: 600; }
+        .progress-bar { height: 22px; background: #e0e0e0; border-radius: 12px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--water-medium), var(--water-dark));
+            border-radius: 12px; transition: width 0.5s ease;
+        }
+        .nav-tabs { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 25px; }
+        .nav-tab {
+            padding: 14px 22px; background: white; border: none; border-radius: 14px;
+            font-family: 'Nunito', sans-serif; font-size: 1em; font-weight: 700;
+            color: var(--water-dark); cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .nav-tab:hover { transform: translateY(-3px); }
+        .nav-tab.active { background: linear-gradient(135deg, var(--water-medium), var(--water-dark)); color: white; }
+        .content-section { display: none; animation: fadeIn 0.5s ease; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+        .topic-card {
+            background: white; border-radius: 22px; padding: 22px; text-align: center;
+            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            position: relative; overflow: hidden;
+        }
+        .topic-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+            background: linear-gradient(90deg, var(--water-medium), var(--water-dark));
+        }
+        .topic-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 12px 35px rgba(0,0,0,0.15); }
+        .topic-card.completed::before { background: linear-gradient(90deg, var(--grass), #4caf50); }
+        .topic-card.completed::after { content: '✅'; position: absolute; top: 12px; right: 12px; font-size: 1.3em; }
+        .topic-icon { font-size: 3.5em; margin-bottom: 12px; display: block; }
+        .topic-title { font-family: 'Fredoka One', cursive; font-size: 1.2em; color: var(--water-dark); margin-bottom: 8px; }
+        .topic-description { color: #666; font-size: 0.9em; line-height: 1.4; }
+        .topic-stars { font-size: 1.1em; margin-top: 12px; }
+        .game-area {
+            background: white; border-radius: 22px; padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); min-height: 450px;
+        }
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+        .game-title { font-family: 'Fredoka One', cursive; font-size: 1.6em; color: var(--water-dark); }
+        .back-btn {
+            padding: 10px 22px; background: linear-gradient(135deg, #ff8a80, #ff5252);
+            border: none; border-radius: 10px; color: white;
+            font-family: 'Nunito', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+        }
+        .back-btn:hover { transform: scale(1.05); }
+        .quiz-container { max-width: 650px; margin: 0 auto; }
+        .quiz-progress { text-align: center; margin-bottom: 18px; color: #666; font-weight: 600; }
+        .quiz-question {
+            background: linear-gradient(135deg, var(--water-light), white);
+            padding: 25px; border-radius: 18px; margin-bottom: 20px; text-align: center;
+        }
+        .quiz-question h3 { font-family: 'Fredoka One', cursive; font-size: 1.35em; color: var(--water-deep); line-height: 1.4; }
+        .quiz-hint {
+            margin-top: 12px; padding: 12px; background: rgba(255, 213, 79, 0.3);
+            border-radius: 10px; color: #f57f17; font-weight: 600; display: none;
+        }
+        .quiz-hint.show { display: block; animation: fadeIn 0.3s ease; }
+        .answer-input {
+            width: 100%; padding: 18px; font-size: 1.15em; font-family: 'Nunito', sans-serif;
+            border: 3px solid #e0e0e0; border-radius: 14px; text-align: center;
+            margin-bottom: 18px; transition: all 0.3s ease;
+        }
+        .answer-input:focus { outline: none; border-color: var(--water-medium); box-shadow: 0 0 18px rgba(77, 208, 225, 0.3); }
+        .answer-input.correct { border-color: var(--grass); background: rgba(129, 199, 132, 0.1); }
+        .answer-input.incorrect { border-color: #ff5252; background: rgba(255, 82, 82, 0.1); }
+        .quiz-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .quiz-btn {
+            padding: 14px 30px; border: none; border-radius: 12px;
+            font-family: 'Nunito', sans-serif; font-size: 1.05em; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .quiz-btn.primary { background: linear-gradient(135deg, var(--water-medium), var(--water-dark)); color: white; }
+        .quiz-btn.secondary { background: linear-gradient(135deg, var(--sunshine), #ffb300); color: #5d4037; }
+        .quiz-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 18px rgba(0,0,0,0.2); }
+        .quiz-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .feedback {
+            text-align: center; padding: 18px; border-radius: 14px; margin-top: 18px;
+            font-weight: 700; font-size: 1.1em; display: none;
+        }
+        .feedback.show { display: block; animation: pop 0.3s ease; }
+        .feedback.correct { background: linear-gradient(135deg, rgba(129, 199, 132, 0.2), rgba(76, 175, 80, 0.2)); color: #2e7d32; }
+        .feedback.incorrect { background: linear-gradient(135deg, rgba(255, 138, 128, 0.2), rgba(255, 82, 82, 0.2)); color: #c62828; }
+        @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        .info-card {
+            background: linear-gradient(135deg, #e3f2fd, white);
+            border-left: 5px solid var(--water-dark); border-radius: 0 18px 18px 0;
+            padding: 22px; margin-bottom: 18px;
+        }
+        .info-card h4 { font-family: 'Fredoka One', cursive; color: var(--water-dark); margin-bottom: 12px; font-size: 1.25em; }
+        .info-card p { line-height: 1.7; color: #444; }
+        .info-card .highlight { background: linear-gradient(135deg, var(--sunshine), #ffecb3); padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+        .badges-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; }
+        .badge-card {
+            background: white; border-radius: 18px; padding: 22px; text-align: center;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease;
+        }
+        .badge-card:hover { transform: translateY(-4px); }
+        .badge-card.locked { filter: grayscale(100%); opacity: 0.6; }
+        .badge-card.locked::before {
+            content: '🔒'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 2.5em; z-index: 2;
+        }
+        .badge-icon { font-size: 3.5em; margin-bottom: 12px; display: block; }
+        .badge-name { font-family: 'Fredoka One', cursive; font-size: 1.1em; color: var(--water-dark); margin-bottom: 6px; }
+        .badge-description { color: #666; font-size: 0.85em; }
+        .badge-card.earned { background: linear-gradient(135deg, #fff9c4, #fff59d); border: 3px solid var(--star-gold); }
+        .badge-card.earned .badge-icon { animation: badge-shine 2s ease-in-out infinite; }
+        @keyframes badge-shine { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.3); } }
+        .writing-area {
+            background: linear-gradient(180deg, #fffde7, white);
+            border: 3px solid var(--sunshine); border-radius: 18px; padding: 22px; margin-bottom: 18px;
+        }
+        .writing-prompt { font-family: 'Fredoka One', cursive; font-size: 1.3em; color: var(--water-dark); margin-bottom: 18px; text-align: center; }
+        .writing-textarea {
+            width: 100%; min-height: 180px; padding: 18px; font-family: 'Nunito', sans-serif;
+            font-size: 1.05em; border: 2px dashed #e0e0e0; border-radius: 14px; resize: vertical; line-height: 1.7;
+        }
+        .writing-textarea:focus { outline: none; border-color: var(--water-medium); }
+        .word-count { text-align: right; margin-top: 8px; color: #666; font-weight: 600; }
+        .writing-tips { background: linear-gradient(135deg, var(--water-light), white); border-radius: 14px; padding: 18px; margin-top: 18px; }
+        .writing-tips h4 { color: var(--water-dark); margin-bottom: 10px; }
+        .writing-tips ul { list-style: none; padding: 0; }
+        .writing-tips li { padding: 6px 0; padding-left: 22px; position: relative; }
+        .writing-tips li::before { content: '💡'; position: absolute; left: 0; }
+        .experiment-container {
+            background: linear-gradient(135deg, #fff3e0, white);
+            border-radius: 18px; padding: 25px; border: 3px dashed #ff9800;
+        }
+        .experiment-title { font-family: 'Fredoka One', cursive; font-size: 1.5em; color: #e65100; text-align: center; margin-bottom: 22px; }
+        .experiment-steps { display: flex; flex-direction: column; gap: 18px; }
+        .experiment-step { display: flex; gap: 18px; align-items: flex-start; padding: 18px; background: white; border-radius: 14px; }
+        .step-number {
+            width: 45px; height: 45px; background: linear-gradient(135deg, #ff9800, #f57c00);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-family: 'Fredoka One', cursive; font-size: 1.4em; flex-shrink: 0;
+        }
+        .step-content h5 { font-family: 'Fredoka One', cursive; color: #e65100; margin-bottom: 6px; }
+        .step-content p { color: #666; line-height: 1.5; }
+        .materials-list { background: #fbe9e7; border-radius: 14px; padding: 18px; margin-bottom: 22px; }
+        .materials-list h4 { color: #bf360c; margin-bottom: 12px; }
+        .materials-list ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; }
+        .materials-list li { padding: 6px 12px; background: white; border-radius: 18px; font-weight: 600; font-size: 0.9em; }
+        .celebration-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); display: none; justify-content: center;
+            align-items: center; z-index: 1000;
+        }
+        .celebration-modal.show { display: flex; animation: fadeIn 0.3s ease; }
+        .celebration-content {
+            background: white; border-radius: 25px; padding: 35px; text-align: center;
+            max-width: 420px; margin: 20px; animation: celebration-pop 0.5s ease;
+        }
+        @keyframes celebration-pop { 0% { transform: scale(0) rotate(-10deg); } 50% { transform: scale(1.1) rotate(5deg); } 100% { transform: scale(1) rotate(0deg); } }
+        .celebration-icon { font-size: 4.5em; margin-bottom: 18px; animation: bounce 1s ease-in-out infinite; }
+        .celebration-title { font-family: 'Fredoka One', cursive; font-size: 1.8em; color: var(--water-dark); margin-bottom: 12px; }
+        .celebration-message { font-size: 1.1em; color: #666; margin-bottom: 22px; line-height: 1.5; }
+        .celebration-reward { display: flex; justify-content: center; gap: 18px; margin-bottom: 22px; flex-wrap: wrap; }
+        .reward-item { padding: 12px 22px; background: linear-gradient(135deg, var(--sunshine), #ffb300); border-radius: 12px; font-weight: 700; color: #5d4037; }
+        .celebration-btn {
+            padding: 14px 35px; background: linear-gradient(135deg, var(--water-medium), var(--water-dark));
+            border: none; border-radius: 14px; color: white; font-family: 'Nunito', sans-serif;
+            font-size: 1.15em; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+        }
+        .celebration-btn:hover { transform: scale(1.05); }
+        .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; overflow: hidden; }
+        .confetti-piece { position: absolute; width: 10px; height: 20px; top: -20px; animation: confetti-fall 3s linear forwards; }
+        @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        .name-entry {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #87ceeb, #e0f7fa);
+            display: flex; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .name-entry.hidden { display: none; }
+        .name-box {
+            background: white; padding: 45px; border-radius: 28px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-width: 480px; margin: 20px;
+        }
+        .name-box h2 { font-family: 'Fredoka One', cursive; font-size: 2.2em; color: var(--water-dark); margin-bottom: 18px; }
+        .name-box .welcome-icon { font-size: 4.5em; margin-bottom: 18px; display: block; }
+        .name-input {
+            width: 100%; padding: 18px; font-size: 1.2em; font-family: 'Nunito', sans-serif;
+            border: 3px solid var(--water-medium); border-radius: 14px; text-align: center; margin-bottom: 22px;
+        }
+        .name-input:focus { outline: none; border-color: var(--water-dark); }
+        .start-btn {
+            padding: 16px 45px; background: linear-gradient(135deg, var(--water-medium), var(--water-dark));
+            border: none; border-radius: 14px; color: white; font-family: 'Fredoka One', cursive;
+            font-size: 1.3em; cursor: pointer; transition: all 0.3s ease;
+        }
+        .start-btn:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0, 151, 167, 0.4); }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8em; }
+            .stats-bar { gap: 8px; }
+            .stat-item { min-width: 80px; padding: 10px 12px; }
+            .nav-tab { padding: 10px 16px; font-size: 0.9em; }
+            .game-area { padding: 18px; }
+            .quiz-question h3 { font-size: 1.15em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-clouds">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+    </div>
+
+    <div class="name-entry" id="nameEntry">
+        <div class="name-box">
+            <span class="welcome-icon">🌊</span>
+            <h2>Willkommen zur Wasserwelt!</h2>
+            <p style="color: #666; margin-bottom: 22px; font-size: 1.05em;">Wie heißt du, kleiner Wasserforscher?</p>
+            <input type="text" class="name-input" id="playerNameInput" placeholder="Dein Name..." maxlength="20">
+            <button class="start-btn" onclick="startGame()">🚀 Los geht's!</button>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent" style="display: none;">
+        <div class="header">
+            <span class="mascot">💧</span>
+            <h1>Wasserwelt Abenteuer</h1>
+            <p class="subtitle">Hallo <span id="playerNameDisplay">Wasserforscher</span>! Entdecke die Welt des Wassers!</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-icon">⭐</span>
+                <div class="stat-value" id="totalStars">0</div>
+                <div class="stat-label">Sterne</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">💎</span>
+                <div class="stat-value" id="totalXP">0</div>
+                <div class="stat-label">XP</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🏆</span>
+                <div class="stat-value" id="totalBadges">0</div>
+                <div class="stat-label">Abzeichen</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📚</span>
+                <div class="stat-value" id="completedTopics">0/8</div>
+                <div class="stat-label">Themen</div>
+            </div>
+        </div>
+
+        <div class="level-progress">
+            <div class="level-header">
+                <span class="level-title">🌟 Level <span id="currentLevel">1</span> - <span id="levelTitle">Wassertropfen</span></span>
+                <span class="xp-text"><span id="currentXP">0</span> / <span id="nextLevelXP">100</span> XP</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="levelProgressBar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('topics', this)">📖 Lernen</button>
+            <button class="nav-tab" onclick="showSection('badges', this)">🏅 Abzeichen</button>
+            <button class="nav-tab" onclick="showSection('practice', this)">✍️ Üben</button>
+        </div>
+
+        <div class="content-section active" id="topicsSection">
+            <div class="topics-grid">
+                <div class="topic-card" onclick="startTopic('aggregatzustaende')" id="topic-aggregatzustaende">
+                    <span class="topic-icon">🧊</span>
+                    <h3 class="topic-title">Aggregatzustände</h3>
+                    <p class="topic-description">Fest, flüssig, gasförmig - wie verändert sich Wasser?</p>
+                    <div class="topic-stars" id="stars-aggregatzustaende">☆☆☆</div>
+                </div>
+                <div class="topic-card" onclick="startTopic('wasserkreislauf')" id="topic-wasserkreislauf">
+                    <span class="topic-icon">🔄</span>
+                    <h3 class="topic-title">Der Wasserkreislauf</h3>
+                    <p class="topic-description">Die Reise des Wassers von den Wolken bis zum Meer!</p>
+                    <div class="topic-stars" id="stars-wasserkreislauf">☆☆☆</div>
+                </div>
+                <div class="topic-card" onclick="startTopic('wasser-leben')" id="topic-wasser-leben">
+                    <span class="topic-icon">🌱</span>
+                    <h3 class="topic-title">Wasser ist Leben</h3>
+                    <p class="topic-description">Warum brauchen alle Lebewesen Wasser?</p>
+                    <div class="topic-stars" id="stars-wasser-leben">☆☆☆</div>
+                </div>
+                <div class="topic-card" onclick="startTopic('wassergewinnung')" id="topic-wassergewinnung">
+                    <span class="topic-icon">🏭</span>
+                    <h3 class="topic-title">Wassergewinnung</h3>
+                    <p class="topic-description">Woher kommt unser Trinkwasser?</p>
+                    <div class="topic-stars" id="stars-wassergewinnung">☆☆☆</div>
+                </div>
+                <div class="topic-card" onclick="startTopic('experiment')" id="topic-experiment">
+                    <span class="topic-icon">🔬</span>
+                    <h3 class="topic-title">Experiment: Wasser reinigen</h3>
+                    <p class="topic-description">Werde Wissenschaftler und reinige Schmutzwasser!</p>
+                    <div class="topic-stars" id="stars-experiment">☆☆☆</div>
+                </div>
+                <div class="topic-card" onclick="startTopic('trinkwasser')" id="topic-trinkwasser">
+                    <span class="topic-icon">🚿</span>
+                    <h3 class="topic-title">Trinkwasser im Haushalt</h3>
+                    <p class="topic-description">Wofür benutzen wir Wasser zu Hause?</p>
+                    <div class="topic-stars" id="stars-trinkwasser">☆☆☆</div>
+                </div>
+                <div class="topic-card" onclick="startTopic('wasser-sparen')" id="topic-wasser-sparen">
+                    <span class="topic-icon">💚</span>
+                    <h3 class="topic-title">Wasser sparen</h3>
+                    <p class="topic-description">Tipps, wie du Wasser sparen kannst!</p>
+                    <div class="topic-stars" id="stars-wasser-sparen">☆☆☆</div>
+                </div>
+                <div class="topic-card" onclick="startTopic('grundwasser')" id="topic-grundwasser">
+                    <span class="topic-icon">⛰️</span>
+                    <h3 class="topic-title">Grundwasserbildung</h3>
+                    <p class="topic-description">Wie entsteht Grundwasser unter der Erde?</p>
+                    <div class="topic-stars" id="stars-grundwasser">☆☆☆</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="badgesSection">
+            <div class="badges-container" id="badgesContainer"></div>
+        </div>
+
+        <div class="content-section" id="practiceSection">
+            <div class="game-area">
+                <h2 style="font-family: 'Fredoka One', cursive; color: var(--water-dark); text-align: center; margin-bottom: 25px;">✍️ Übungsbereich für den Test</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 25px;">Hier kannst du das Schreiben üben - genau wie beim echten Test!</p>
+                <div class="writing-area">
+                    <div class="writing-prompt" id="practicePrompt">Erkläre den Wasserkreislauf mit deinen eigenen Worten.</div>
+                    <textarea class="writing-textarea" id="practiceTextarea" placeholder="Schreibe hier deine Antwort..."></textarea>
+                    <div class="word-count">Wörter: <span id="wordCount">0</span></div>
+                </div>
+                <div class="quiz-buttons" style="margin-bottom: 25px;">
+                    <button class="quiz-btn secondary" onclick="newPracticePrompt()">🔄 Neue Frage</button>
+                    <button class="quiz-btn primary" onclick="savePractice()">💾 Speichern</button>
+                </div>
+                <div class="writing-tips">
+                    <h4>💡 Tipps für gute Antworten:</h4>
+                    <ul>
+                        <li>Benutze Fachwörter wie "Verdunstung", "Kondensation", "Niederschlag"</li>
+                        <li>Erkläre Schritt für Schritt</li>
+                        <li>Schreibe in ganzen Sätzen</li>
+                        <li>Überprüfe deine Rechtschreibung</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="gameSection">
+            <div class="game-area">
+                <div class="game-header">
+                    <h2 class="game-title" id="gameTitle">Thema</h2>
+                    <button class="back-btn" onclick="backToTopics()">← Zurück</button>
+                </div>
+                <div id="gameContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration-modal" id="celebrationModal">
+        <div class="celebration-content">
+            <span class="celebration-icon" id="celebrationIcon">🎉</span>
+            <h2 class="celebration-title" id="celebrationTitle">Super gemacht!</h2>
+            <p class="celebration-message" id="celebrationMessage">Du hast das Thema abgeschlossen!</p>
+            <div class="celebration-reward">
+                <div class="reward-item" id="rewardStars">⭐ +3 Sterne</div>
+                <div class="reward-item" id="rewardXP">💎 +50 XP</div>
+            </div>
+            <button class="celebration-btn" onclick="closeCelebration()">Weiter lernen! 🚀</button>
+        </div>
+    </div>
+    <div class="confetti" id="confettiContainer"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXEMGKw3g24o0a-fkrD7ywk_MOuTtZJeY",
+            authDomain: "isn-movember.firebaseapp.com",
+            databaseURL: "https://isn-movember-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "isn-movember",
+            storageBucket: "isn-movember.firebasestorage.app",
+            messagingSenderId: "397597913187",
+            appId: "1:397597913187:web:333e00f47ee6414f348856"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let gameState = {
+            playerName: '', playerId: '', xp: 0, level: 1, stars: 0, badges: [],
+            topicsCompleted: {}, topicStars: {}, practiceHistory: [], currentTopic: null, currentQuestion: 0
+        };
+
+        const levelTitles = { 1: 'Wassertropfen', 2: 'Regenwolke', 3: 'Bachforscher', 4: 'Flussentdecker', 5: 'Ozeanexperte', 6: 'Wassermeister' };
+        const levelXP = { 1: 100, 2: 250, 3: 500, 4: 800, 5: 1200, 6: 2000 };
+
+        const allBadges = [
+            { id: 'first-topic', name: 'Erster Schritt', icon: '🎯', description: 'Schließe dein erstes Thema ab' },
+            { id: 'all-topics', name: 'Wasserexperte', icon: '🏆', description: 'Schließe alle 8 Themen ab' },
+            { id: 'star-collector', name: 'Sternensammler', icon: '⭐', description: 'Sammle 10 Sterne' },
+            { id: 'star-master', name: 'Sternenmeister', icon: '🌟', description: 'Sammle 25 Sterne' },
+            { id: 'xp-100', name: 'Lernheld', icon: '💎', description: 'Erreiche 100 XP' },
+            { id: 'xp-500', name: 'Wissensgenie', icon: '💠', description: 'Erreiche 500 XP' },
+            { id: 'kreislauf-pro', name: 'Kreislauf-Profi', icon: '🔄', description: 'Wasserkreislauf mit 3 Sternen' },
+            { id: 'experiment', name: 'Wissenschaftler', icon: '🔬', description: 'Führe das Experiment durch' },
+            { id: 'writer', name: 'Schreibtalent', icon: '✍️', description: 'Schreibe 5 Übungstexte' },
+            { id: 'eco-hero', name: 'Umweltheld', icon: '🌍', description: 'Lerne alles über Wassersparen' },
+            { id: 'level5', name: 'Ozeanexperte', icon: '🌊', description: 'Erreiche Level 5' },
+            { id: 'perfect', name: 'Perfektionist', icon: '👑', description: '3 Sterne in allen Themen' }
+        ];
+
+        const topicContent = {
+            'aggregatzustaende': {
+                title: '🧊 Aggregatzustände des Wassers',
+                intro: {
+                    title: 'Was sind Aggregatzustände?',
+                    content: `<p>Wasser kann in <span class="highlight">drei verschiedenen Formen</span> vorkommen:</p><br>
+                        <p><strong>🧊 FEST (Eis)</strong> - Wenn Wasser sehr kalt wird (unter 0°C), gefriert es zu Eis.</p><br>
+                        <p><strong>💧 FLÜSSIG (Wasser)</strong> - Das normale Wasser, das wir trinken.</p><br>
+                        <p><strong>💨 GASFÖRMIG (Wasserdampf)</strong> - Wenn Wasser sehr heiß wird (über 100°C), verdampft es.</p><br>
+                        <p>Die Übergänge haben besondere Namen:</p>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Schmelzen</strong> - von fest zu flüssig</li>
+                            <li><strong>Gefrieren</strong> - von flüssig zu fest</li>
+                            <li><strong>Verdunsten/Verdampfen</strong> - von flüssig zu gasförmig</li>
+                            <li><strong>Kondensieren</strong> - von gasförmig zu flüssig</li>
+                        </ul>`
+                },
+                questions: [
+                    { question: 'Wie heißen die drei Aggregatzustände des Wassers?', hint: 'Denke an Eis, normales Wasser und Dampf!', keywords: ['fest', 'flüssig', 'gasförmig'], freeText: true },
+                    { question: 'Was passiert mit Wasser, wenn es unter 0°C kalt wird?', hint: 'Denke an den Winter...', keywords: ['gefrier', 'eis', 'fest'], freeText: true },
+                    { question: 'Wie nennt man den Übergang von flüssig zu gasförmig?', hint: 'Was passiert mit einer Pfütze in der Sonne?', keywords: ['verdunst', 'verdampf'], freeText: true },
+                    { question: 'Erkläre: Warum werden Pfützen nach dem Regen kleiner?', hint: 'Die Sonne erwärmt das Wasser...', keywords: ['sonne', 'warm', 'verdunst', 'dampf', 'gas', 'luft'], freeText: true }
+                ]
+            },
+            'wasserkreislauf': {
+                title: '🔄 Der Wasserkreislauf',
+                intro: {
+                    title: 'Die Reise des Wassers',
+                    content: `<p>Das Wasser auf der Erde macht eine <span class="highlight">endlose Reise</span> - den Wasserkreislauf!</p><br>
+                        <p><strong>☀️ 1. Verdunstung</strong> - Die Sonne erwärmt das Wasser. Es verdunstet und steigt als Wasserdampf nach oben.</p><br>
+                        <p><strong>☁️ 2. Kondensation</strong> - Oben ist es kalt. Der Wasserdampf wird zu Wassertropfen. Viele Tropfen bilden Wolken.</p><br>
+                        <p><strong>🌧️ 3. Niederschlag</strong> - Wenn die Wolken schwer werden, fällt das Wasser als Regen, Schnee oder Hagel.</p><br>
+                        <p><strong>🏔️ 4. Sammlung</strong> - Das Wasser sammelt sich in Bächen, Flüssen und Seen. Ein Teil versickert als Grundwasser.</p><br>
+                        <p><strong>🌊 5. Zurück zum Meer</strong> - Über Flüsse fließt das Wasser zurück ins Meer. Der Kreislauf beginnt von vorne!</p><br>
+                        <p>💡 <span class="highlight">Kein einziger Tropfen geht verloren!</span></p>`
+                },
+                questions: [
+                    { question: 'Was passiert bei der Verdunstung?', hint: 'Die Sonne erwärmt das Wasser...', keywords: ['dampf', 'gas', 'verdunst', 'aufsteig', 'luft'], freeText: true },
+                    { question: 'Wie entstehen Wolken?', hint: 'Was passiert mit Wasserdampf, wenn er abkühlt?', keywords: ['kondens', 'tropfen', 'abkühl', 'kalt'], freeText: true },
+                    { question: 'Nenne drei Arten von Niederschlag!', hint: 'Was fällt aus den Wolken?', keywords: ['regen', 'schnee', 'hagel'], freeText: true },
+                    { question: 'Erkläre den Wasserkreislauf vom Meer zurück zum Meer!', hint: 'Starte mit der Verdunstung...', keywords: ['verdunst', 'wolke', 'regen', 'fluss', 'meer', 'niederschlag'], freeText: true }
+                ]
+            },
+            'wasser-leben': {
+                title: '🌱 Wasser ist Leben',
+                intro: {
+                    title: 'Ohne Wasser kein Leben!',
+                    content: `<p>Wasser ist das <span class="highlight">wichtigste Element für alle Lebewesen</span>!</p><br>
+                        <p><strong>👤 Menschen:</strong> Unser Körper besteht zu etwa 60-70% aus Wasser. Wir brauchen jeden Tag etwa 2 Liter Wasser.</p><br>
+                        <p><strong>🌿 Pflanzen:</strong> Pflanzen brauchen Wasser zum Wachsen und um Nährstoffe zu transportieren.</p><br>
+                        <p><strong>🐾 Tiere:</strong> Alle Tiere brauchen Wasser. Viele leben auch im Wasser!</p><br>
+                        <p>💧 Die Erde heißt auch <span class="highlight">"der blaue Planet"</span> wegen des vielen Wassers!</p><br>
+                        <p>Von 100 Eimern Wasser auf der Erde sind <strong>97 Eimer Salzwasser</strong>, <strong>2 Eimer Eis</strong> und nur <strong>1 Eimer Trinkwasser</strong>!</p>`
+                },
+                questions: [
+                    { question: 'Warum wird die Erde "der blaue Planet" genannt?', hint: 'Was sieht man von oben?', keywords: ['wasser', 'meer', 'blau', 'ozean'], freeText: true },
+                    { question: 'Wie viel Prozent unseres Körpers besteht aus Wasser?', hint: 'Mehr als die Hälfte!', keywords: ['60', '70'], freeText: true },
+                    { question: 'Wie viele von 100 Eimern Wasser wären Trinkwasser?', hint: 'Es ist sehr wenig!', keywords: ['1', 'ein'], freeText: true },
+                    { question: 'Erkläre, warum Trinkwasser so kostbar ist!', hint: 'Wie viel Trinkwasser gibt es auf der Erde?', keywords: ['wenig', 'selten', 'kostbar', 'nur 1', 'wichtig'], freeText: true }
+                ]
+            },
+            'wassergewinnung': {
+                title: '🏭 Wassergewinnung',
+                intro: {
+                    title: 'Woher kommt unser Trinkwasser?',
+                    content: `<p><strong>Wasserwerke</strong> bekommen ihr <span class="highlight">Rohwasser</span> aus verschiedenen Quellen:</p><br>
+                        <p><strong>🏔️ Quellen:</strong> Natürliches Wasser aus dem Boden</p><br>
+                        <p><strong>🕳️ Grundwasserbrunnen:</strong> Tiefe Brunnen holen Grundwasser</p><br>
+                        <p><strong>🌊 Talsperren:</strong> Große Stauseen sammeln Regenwasser</p><br>
+                        <p><strong>🌊 Uferfiltratbrunnen:</strong> Brunnen in Flussnähe</p><br>
+                        <p>Im <span class="highlight">Wasserwerk</span> wird das Rohwasser gereinigt, gefiltert und von Keimen befreit, bis es <strong>Trinkwasserqualität</strong> hat!</p>`
+                },
+                questions: [
+                    { question: 'Nenne drei Quellen, aus denen Wasserwerke Rohwasser bekommen!', hint: 'Denke an natürliche Wasservorkommen...', keywords: ['quelle', 'grundwasser', 'brunnen', 'talsperre', 'stausee'], freeText: true },
+                    { question: 'Was passiert mit dem Rohwasser im Wasserwerk?', hint: 'Es muss sauber gemacht werden...', keywords: ['reinig', 'filter', 'keim', 'sauber', 'prüf'], freeText: true },
+                    { question: 'Wie kommt das Trinkwasser vom Wasserwerk zu uns?', hint: 'Es gibt ein Leitungssystem...', keywords: ['rohr', 'leitung'], freeText: true }
+                ]
+            },
+            'experiment': {
+                title: '🔬 Experiment: Wir reinigen Schmutzwasser',
+                isExperiment: true,
+                experimentContent: {
+                    title: '🧪 Dein eigenes Klärwerk!',
+                    materials: ['Große Plastikflasche', 'Kies', 'Sand', 'Watte', 'Schmutziges Wasser', 'Auffangbehälter'],
+                    steps: [
+                        { title: 'Flasche vorbereiten', description: 'Schneide die Flasche in der Mitte durch. Der obere Teil wird dein Filter.' },
+                        { title: 'Schichten aufbauen', description: 'Lege Watte unten hinein. Dann fülle: Kies (unten), Sand (Mitte), Kies (oben).' },
+                        { title: 'Schmutzwasser vorbereiten', description: 'Mische Wasser mit Erde und kleinen Blättern.' },
+                        { title: 'Filtern', description: 'Gieße das Schmutzwasser langsam in deinen Filter.' },
+                        { title: 'Beobachten', description: 'Vergleiche das gefilterte Wasser mit dem Schmutzwasser!' }
+                    ]
+                },
+                questions: [
+                    { question: 'Was bleibt im Filter hängen?', hint: 'Schau dir den Filter an...', keywords: ['schmutz', 'erde', 'blätter', 'dreck'], freeText: true },
+                    { question: 'Ist das gefilterte Wasser trinkbar? Warum?', hint: 'Was kann man nicht sehen?', keywords: ['nein', 'keim', 'bakterie', 'nicht', 'wasserwerk'], freeText: true }
+                ]
+            },
+            'trinkwasser': {
+                title: '🚿 Trinkwasser im Haushalt',
+                intro: {
+                    title: 'Wofür brauchen wir Wasser zu Hause?',
+                    content: `<p>Im Haushalt benutzen wir Wasser für <span class="highlight">drei Zwecke</span>:</p><br>
+                        <p><strong>🥤 Als Lebensmittel:</strong> Trinken, Kochen, Zähneputzen</p><br>
+                        <p><strong>🧹 Als Reinigungsmittel:</strong> Waschen, Putzen, Wäsche waschen</p><br>
+                        <p><strong>🚽 Als Transportmittel:</strong> Toilette (transportiert Abfälle weg)</p><br>
+                        <p>Bei jedem Gebrauch wird Wasser zu <span class="highlight">Abwasser</span>.</p><br>
+                        <p>Das Abwasser fließt zur <strong>Kläranlage</strong>, wo es gereinigt wird!</p>`
+                },
+                questions: [
+                    { question: 'Nenne die drei Verwendungszwecke von Wasser im Haushalt!', hint: 'Lebensmittel, Reinigung, Transport...', keywords: ['lebensmittel', 'reinigung', 'transport'], freeText: true },
+                    { question: 'Wohin fließt das Abwasser aus unserem Haus?', hint: 'Es gibt einen Ort, wo Wasser gereinigt wird...', keywords: ['klär', 'anlage'], freeText: true },
+                    { question: 'Warum ist die Toilettenspülung ein "Transportmittel"?', hint: 'Was wird transportiert?', keywords: ['transport', 'weg', 'abfall', 'spül'], freeText: true }
+                ]
+            },
+            'wasser-sparen': {
+                title: '💚 So kann ich Wasser sparen',
+                intro: {
+                    title: 'Jeder Tropfen zählt!',
+                    content: `<p>Trinkwasser ist kostbar! So kannst du Wasser sparen:</p><br>
+                        <p><strong>🚿 Im Badezimmer:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Duschen statt Baden (spart 100 Liter!)</li>
+                            <li>Wasser abstellen beim Zähneputzen</li>
+                            <li>Tropfende Hähne reparieren lassen</li>
+                        </ul><br>
+                        <p><strong>🍽️ In der Küche:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Geschirrspüler nur voll anstellen</li>
+                            <li>Obst in einer Schüssel waschen</li>
+                        </ul><br>
+                        <p><strong>🌳 Im Garten:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Morgens oder abends gießen</li>
+                            <li>Regenwasser sammeln</li>
+                        </ul><br>
+                        <p>💧 Ein tropfender Wasserhahn verschwendet <span class="highlight">5.000 Liter im Jahr</span>!</p>`
+                },
+                questions: [
+                    { question: 'Nenne drei Wege, wie du Wasser sparen kannst!', hint: 'Badezimmer, Küche, Garten...', keywords: ['dusch', 'abstell', 'voll', 'regenwasser', 'spar'], freeText: true },
+                    { question: 'Warum soll man Pflanzen morgens oder abends gießen?', hint: 'Was macht die Mittagssonne?', keywords: ['verdunst', 'sonne', 'heiß', 'weniger'], freeText: true },
+                    { question: 'Wie viel Wasser verschwendet ein tropfender Wasserhahn im Jahr?', hint: 'Eine große Zahl!', keywords: ['5000', '5.000'], freeText: true }
+                ]
+            },
+            'grundwasser': {
+                title: '⛰️ So bildet sich Grundwasser',
+                intro: {
+                    title: 'Die Reise des Wassers unter der Erde',
+                    content: `<p>Regenwasser <span class="highlight">sickert</span> durch verschiedene Bodenschichten:</p><br>
+                        <p><strong>🌱 1. Humus</strong> - die dunkle oberste Schicht</p>
+                        <p><strong>🏖️ 2. Sand</strong> - lässt Wasser gut durch</p>
+                        <p><strong>🪨 3. Kies</strong> - kleine Steine</p>
+                        <p><strong>🧱 4. Ton</strong> - lässt <u>kein</u> Wasser durch!</p><br>
+                        <p>Wenn das Wasser auf <strong>Ton</strong> trifft, sammelt es sich darüber - das ist <span class="highlight">Grundwasser</span>!</p><br>
+                        <p><strong>⚠️ Wasserschutzgebiete:</strong> Schützen das Grundwasser vor Verschmutzung.</p><br>
+                        <p>🌍 <span class="highlight">Ein Liter Öl macht eine Million Liter Wasser ungenießbar!</span></p>`
+                },
+                questions: [
+                    { question: 'Durch welche Bodenschichten sickert das Regenwasser? (Von oben nach unten)', hint: 'Humus, Sand, Kies, Ton...', keywords: ['humus', 'sand', 'kies', 'ton'], freeText: true },
+                    { question: 'Welche Bodenschicht lässt kein Wasser durch?', hint: 'Diese Schicht ist ganz dicht...', keywords: ['ton'], freeText: true },
+                    { question: 'Wie entsteht Grundwasser?', hint: 'Was passiert auf der Tonschicht?', keywords: ['sammel', 'ton', 'sicker'], freeText: true },
+                    { question: 'Warum gibt es Wasserschutzgebiete?', hint: 'Was soll geschützt werden?', keywords: ['schutz', 'sauber', 'verschmutz', 'gift', 'öl', 'grundwasser'], freeText: true }
+                ]
+            }
+        };
+
+        const practicePrompts = [
+            'Erkläre den Wasserkreislauf mit deinen eigenen Worten.',
+            'Beschreibe die drei Aggregatzustände des Wassers.',
+            'Warum ist Trinkwasser so kostbar? Erkläre!',
+            'Wie funktioniert ein Wasserwerk?',
+            'Nenne fünf Möglichkeiten, wie du Wasser sparen kannst.',
+            'Erkläre, wie sich Grundwasser bildet.',
+            'Beschreibe den Weg des Wassers vom Meer bis zu den Bergen.',
+            'Was passiert mit dem Abwasser aus unserem Haushalt?',
+            'Warum brauchen alle Lebewesen Wasser?',
+            'Erkläre, warum die Tonschicht wichtig für das Grundwasser ist.'
+        ];
+
+        function startGame() {
+            const name = document.getElementById('playerNameInput').value.trim();
+            if (!name) { alert('Bitte gib deinen Namen ein! 😊'); return; }
+            gameState.playerName = name;
+            gameState.playerId = name.toLowerCase().replace(/\s+/g, '_') + '_' + Date.now();
+            localStorage.setItem('wasserLernspielName', name);
+            document.getElementById('nameEntry').classList.add('hidden');
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('playerNameDisplay').textContent = name;
+            loadProgress();
+        }
+
+        function loadProgress() {
+            const playerRef = database.ref('wasser-lernspiel/' + gameState.playerId);
+            playerRef.once('value').then((snapshot) => {
+                const data = snapshot.val();
+                if (data) gameState = { ...gameState, ...data };
+                updateDisplay(); renderBadges();
+            }).catch(() => { updateDisplay(); renderBadges(); });
+        }
+
+        function saveProgress() {
+            database.ref('wasser-lernspiel/' + gameState.playerId).set({
+                playerName: gameState.playerName, xp: gameState.xp, level: gameState.level,
+                stars: gameState.stars, badges: gameState.badges, topicsCompleted: gameState.topicsCompleted,
+                topicStars: gameState.topicStars, practiceHistory: gameState.practiceHistory || [],
+                lastUpdated: new Date().toISOString()
+            });
+        }
+
+        function updateDisplay() {
+            document.getElementById('totalStars').textContent = gameState.stars;
+            document.getElementById('totalXP').textContent = gameState.xp;
+            document.getElementById('totalBadges').textContent = gameState.badges.length;
+            document.getElementById('completedTopics').textContent = Object.keys(gameState.topicsCompleted).length + '/8';
+
+            let currentLevel = 1;
+            for (let lvl = 6; lvl >= 1; lvl--) {
+                if (gameState.xp >= (levelXP[lvl - 1] || 0)) { currentLevel = lvl; break; }
+            }
+            gameState.level = currentLevel;
+            document.getElementById('currentLevel').textContent = currentLevel;
+            document.getElementById('levelTitle').textContent = levelTitles[currentLevel] || 'Wassermeister';
+
+            const currentLevelXPVal = levelXP[currentLevel] || 100;
+            const prevLevelXP = levelXP[currentLevel - 1] || 0;
+            const progressPercent = Math.min(100, ((gameState.xp - prevLevelXP) / (currentLevelXPVal - prevLevelXP)) * 100);
+            document.getElementById('currentXP').textContent = gameState.xp;
+            document.getElementById('nextLevelXP').textContent = currentLevelXPVal;
+            document.getElementById('levelProgressBar').style.width = progressPercent + '%';
+
+            Object.keys(topicContent).forEach(topicId => {
+                const card = document.getElementById('topic-' + topicId);
+                const starsEl = document.getElementById('stars-' + topicId);
+                if (gameState.topicsCompleted[topicId]) card.classList.add('completed');
+                const topicStars = gameState.topicStars[topicId] || 0;
+                starsEl.textContent = '⭐'.repeat(topicStars) + '☆'.repeat(3 - topicStars);
+            });
+        }
+
+        function showSection(sectionId, btn) {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(sectionId + 'Section').classList.add('active');
+        }
+
+        function startTopic(topicId) {
+            gameState.currentTopic = topicId;
+            gameState.currentQuestion = 0;
+            const topic = topicContent[topicId];
+            document.getElementById('gameTitle').textContent = topic.title;
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            document.getElementById('gameSection').classList.add('active');
+            if (topic.isExperiment) renderExperiment(topic);
+            else renderIntro(topic);
+        }
+
+        function renderIntro(topic) {
+            document.getElementById('gameContent').innerHTML = `
+                <div class="info-card"><h4>${topic.intro.title}</h4>${topic.intro.content}</div>
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="quiz-btn primary" onclick="startQuestions()">🎯 Jetzt lernen und üben!</button>
+                </div>`;
+        }
+
+        function renderExperiment(topic) {
+            const c = topic.experimentContent;
+            document.getElementById('gameContent').innerHTML = `
+                <div class="experiment-container">
+                    <h3 class="experiment-title">${c.title}</h3>
+                    <div class="materials-list"><h4>🛒 Das brauchst du:</h4><ul>${c.materials.map(m => `<li>📦 ${m}</li>`).join('')}</ul></div>
+                    <div class="experiment-steps">${c.steps.map((s, i) => `
+                        <div class="experiment-step"><div class="step-number">${i+1}</div><div class="step-content"><h5>${s.title}</h5><p>${s.description}</p></div></div>
+                    `).join('')}</div>
+                </div>
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="quiz-btn primary" onclick="startQuestions()">✅ Weiter zu den Fragen!</button>
+                </div>`;
+        }
+
+        function startQuestions() {
+            gameState.currentQuestion = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const topic = topicContent[gameState.currentTopic];
+            const q = topic.questions[gameState.currentQuestion];
+            document.getElementById('gameContent').innerHTML = `
+                <div class="quiz-container">
+                    <div class="quiz-progress">Frage ${gameState.currentQuestion + 1} von ${topic.questions.length}</div>
+                    <div class="quiz-question"><h3>❓ ${q.question}</h3><div class="quiz-hint" id="hintBox">💡 ${q.hint}</div></div>
+                    <input type="text" class="answer-input" id="answerInput" placeholder="Schreibe deine Antwort hier..." onkeypress="if(event.key === 'Enter') checkAnswer()">
+                    <div class="feedback" id="feedbackBox"></div>
+                    <div class="quiz-buttons">
+                        <button class="quiz-btn secondary" onclick="showHint()">💡 Tipp</button>
+                        <button class="quiz-btn primary" onclick="checkAnswer()" id="checkBtn">✓ Prüfen</button>
+                        <button class="quiz-btn primary" onclick="nextQuestion()" id="nextBtn" style="display: none;">Weiter →</button>
+                    </div>
+                </div>`;
+            document.getElementById('answerInput').focus();
+        }
+
+        function showHint() { document.getElementById('hintBox').classList.add('show'); }
+
+        function checkAnswer() {
+            const topic = topicContent[gameState.currentTopic];
+            const q = topic.questions[gameState.currentQuestion];
+            const userAnswer = document.getElementById('answerInput').value.toLowerCase().trim();
+            if (!userAnswer) { alert('Bitte schreibe eine Antwort! 📝'); return; }
+
+            const input = document.getElementById('answerInput');
+            const feedback = document.getElementById('feedbackBox');
+            const matchedKeywords = q.keywords.filter(kw => userAnswer.includes(kw.toLowerCase()));
+            const isCorrect = matchedKeywords.length >= Math.min(2, q.keywords.length);
+
+            if (isCorrect) {
+                input.classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = '🎉 Super gemacht! Das ist richtig!';
+                gameState.xp += 10;
+            } else {
+                input.classList.add('incorrect');
+                feedback.className = 'feedback show incorrect';
+                feedback.innerHTML = `🤔 Versuche Wörter wie: ${q.keywords.slice(0, 3).join(', ')} zu benutzen.`;
+                gameState.xp += 3;
+            }
+
+            document.getElementById('checkBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'inline-block';
+            input.disabled = true;
+            saveProgress(); updateDisplay();
+        }
+
+        function nextQuestion() {
+            const topic = topicContent[gameState.currentTopic];
+            gameState.currentQuestion++;
+            if (gameState.currentQuestion >= topic.questions.length) completeTopic();
+            else renderQuestion();
+        }
+
+        function completeTopic() {
+            const topicId = gameState.currentTopic;
+            gameState.topicsCompleted[topicId] = true;
+            gameState.topicStars[topicId] = Math.max(gameState.topicStars[topicId] || 0, 3);
+            gameState.stars += 3;
+            gameState.xp += 50;
+            checkBadges();
+            saveProgress(); updateDisplay();
+            showCelebration(3);
+        }
+
+        function showCelebration(stars) {
+            document.getElementById('celebrationTitle').textContent = 'Thema abgeschlossen!';
+            document.getElementById('celebrationMessage').textContent = `Toll gemacht! Du hast "${topicContent[gameState.currentTopic].title}" erfolgreich bearbeitet!`;
+            document.getElementById('rewardStars').textContent = `⭐ +${stars} Sterne`;
+            document.getElementById('rewardXP').textContent = '💎 +50 XP';
+            document.getElementById('celebrationModal').classList.add('show');
+            createConfetti();
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            container.innerHTML = '';
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da'];
+            for (let i = 0; i < 50; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(piece);
+            }
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebrationModal').classList.remove('show');
+            backToTopics();
+        }
+
+        function backToTopics() {
+            gameState.currentTopic = null;
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            document.getElementById('topicsSection').classList.add('active');
+            document.querySelectorAll('.nav-tab').forEach((tab, i) => tab.classList.toggle('active', i === 0));
+        }
+
+        function renderBadges() {
+            const container = document.getElementById('badgesContainer');
+            container.innerHTML = allBadges.map(badge => {
+                const isEarned = gameState.badges.includes(badge.id);
+                return `<div class="badge-card ${isEarned ? 'earned' : 'locked'}">
+                    <span class="badge-icon">${badge.icon}</span>
+                    <h3 class="badge-name">${badge.name}</h3>
+                    <p class="badge-description">${badge.description}</p>
+                </div>`;
+            }).join('');
+        }
+
+        function checkBadges() {
+            const newBadges = [];
+            if (Object.keys(gameState.topicsCompleted).length >= 1 && !gameState.badges.includes('first-topic')) newBadges.push('first-topic');
+            if (Object.keys(gameState.topicsCompleted).length >= 8 && !gameState.badges.includes('all-topics')) newBadges.push('all-topics');
+            if (gameState.stars >= 10 && !gameState.badges.includes('star-collector')) newBadges.push('star-collector');
+            if (gameState.stars >= 25 && !gameState.badges.includes('star-master')) newBadges.push('star-master');
+            if (gameState.xp >= 100 && !gameState.badges.includes('xp-100')) newBadges.push('xp-100');
+            if (gameState.xp >= 500 && !gameState.badges.includes('xp-500')) newBadges.push('xp-500');
+            if (gameState.topicStars['wasserkreislauf'] >= 3 && !gameState.badges.includes('kreislauf-pro')) newBadges.push('kreislauf-pro');
+            if (gameState.topicsCompleted['experiment'] && !gameState.badges.includes('experiment')) newBadges.push('experiment');
+            if ((gameState.practiceHistory || []).length >= 5 && !gameState.badges.includes('writer')) newBadges.push('writer');
+            if (gameState.topicsCompleted['wasser-sparen'] && !gameState.badges.includes('eco-hero')) newBadges.push('eco-hero');
+            if (gameState.level >= 5 && !gameState.badges.includes('level5')) newBadges.push('level5');
+            gameState.badges = [...gameState.badges, ...newBadges];
+            renderBadges();
+        }
+
+        function newPracticePrompt() {
+            document.getElementById('practicePrompt').textContent = practicePrompts[Math.floor(Math.random() * practicePrompts.length)];
+            document.getElementById('practiceTextarea').value = '';
+            document.getElementById('wordCount').textContent = '0';
+        }
+
+        function savePractice() {
+            const text = document.getElementById('practiceTextarea').value.trim();
+            if (text.length < 20) { alert('Bitte schreibe mindestens ein paar Sätze! 📝'); return; }
+            gameState.practiceHistory = gameState.practiceHistory || [];
+            gameState.practiceHistory.push({ prompt: document.getElementById('practicePrompt').textContent, text: text, date: new Date().toISOString() });
+            gameState.xp += 20; gameState.stars += 1;
+            checkBadges(); saveProgress(); updateDisplay();
+            alert('🎉 Super! Dein Übungstext wurde gespeichert! +20 XP +1 ⭐');
+            newPracticePrompt();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedName = localStorage.getItem('wasserLernspielName');
+            if (savedName) document.getElementById('playerNameInput').value = savedName;
+            const textarea = document.getElementById('practiceTextarea');
+            if (textarea) textarea.addEventListener('input', function() {
+                document.getElementById('wordCount').textContent = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            });
+        });
+    </script>
+</body>
+</html>
