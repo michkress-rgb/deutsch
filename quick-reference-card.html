@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOL Tracker - Quick Reference Card</title>
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 1cm;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.4;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        .card {
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            font-size: 1.3em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+
+        .login-box {
+            background: #fff3cd;
+            border: 2px dashed #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .login-box strong {
+            font-size: 1.2em;
+            color: #856404;
+        }
+
+        .checklist {
+            background: white;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .checklist li {
+            margin: 8px 0;
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .badge-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #ecf0f1;
+        }
+
+        .badge-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .badge-name {
+            font-size: 0.7em;
+            color: #666;
+        }
+
+        .tip-box {
+            background: #d4edda;
+            border-left: 4px solid #27ae60;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #e74c3c;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+        }
+
+        .schedule {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .schedule-day {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .schedule-tasks {
+            color: #333;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #667eea;
+            color: #666;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🎯 SOL Progress Tracker</h1>
+        <p style="text-align: center; color: #666; font-size: 1.1em;">
+            Your Personal Journey to an A-Grade<br>
+            Cambridge A-Level German 9897
+        </p>
+
+        <div class="login-box">
+            <p style="margin-bottom: 10px;">📱 <strong>Your Login URL:</strong></p>
+            <p style="font-family: monospace; font-size: 1.1em; margin: 0;">
+                _____________________________________
+            </p>
+            <p style="font-size: 0.85em; color: #856404; margin-top: 5px;">
+                (Teacher will provide - bookmark this!)
+            </p>
+        </div>
+
+        <h2>🔐 Quick Start</h2>
+        <ol>
+            <li>Go to your SOL Tracker URL</li>
+            <li>Select your <strong>User ID</strong> from dropdown</li>
+            <li>Enter your <strong>password</strong></li>
+            <li>Click <strong>Login</strong></li>
+        </ol>
+
+        <div class="tip-box">
+            <strong>💡 First Time?</strong> Bookmark the URL! You'll use this every day.
+        </div>
+
+        <h2>⏱️ Study Timer - 3 Steps</h2>
+        <table>
+            <tr>
+                <th style="width: 60px;">Step</th>
+                <th>Action</th>
+                <th>When</th>
+            </tr>
+            <tr>
+                <td style="text-align: center; font-size: 1.5em;">▶️</td>
+                <td><strong>Start</strong> - Click when you begin studying</td>
+                <td>Beginning of session</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; font-size: 1.5em;">⏸️</td>
+                <td><strong>Pause</strong> - Take a break if needed</td>
+                <td>During session (optional)</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; font-size: 1.5em;">💾</td>
+                <td><strong>Save Session</strong> - Logs your time</td>
+                <td>End of session</td>
+            </tr>
+        </table>
+
+        <div class="warning-box">
+            <strong>⚠️ Important:</strong> Sessions must be at least 1 minute to save!
+        </div>
+
+        <h2>✅ Your Three Task Types</h2>
+        
+        <h3>1️⃣ Daily Tasks (25 min) - EVERY DAY Mon-Fri</h3>
+        <div class="checklist">
+            <ul style="list-style: none; padding-left: 0;">
+                <li>□ Vocabulary practice (10-15 min)</li>
+                <li>□ Grammar exercises (10-15 min)</li>
+            </ul>
+        </div>
+
+        <h3>2️⃣ Weekly Tasks - ONCE PER WEEK</h3>
+        <div class="checklist">
+            <ul style="list-style: none; padding-left: 0;">
+                <li>□ Essay writing</li>
+                <li>□ Reading comprehension</li>
+                <li>□ Listening practice / Literature study</li>
+            </ul>
+        </div>
+
+        <h3>3️⃣ Specimen Papers - BY DEADLINE</h3>
+        <div class="checklist">
+            <ul style="list-style: none; padding-left: 0;">
+                <li>□ Full exam practice under time conditions</li>
+                <li>□ Check your tasks tab for specific deadlines</li>
+                <li>□ These are your MOST IMPORTANT tasks!</li>
+            </ul>
+        </div>
+
+        <h2>📔 Learning Journal - Communicate!</h2>
+        <p><strong>Write about:</strong></p>
+        <ul>
+            <li>What you studied today</li>
+            <li>What went well ✅</li>
+            <li>Problems you faced ❌</li>
+            <li>Help you need 🆘</li>
+        </ul>
+
+        <div class="tip-box">
+            <strong>💡 Your teacher reads these!</strong> Use tags to get help faster:
+            <br>✅ Success | ❌ Problem | 🆘 Need Help
+        </div>
+
+        <h2>🏆 Achievement Badges to Unlock</h2>
+        <div class="badge-grid">
+            <div class="badge-item">
+                <div class="badge-icon">🎯</div>
+                <div class="badge-name">Getting Started</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">⏰</div>
+                <div class="badge-name">Time Master</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">🔥</div>
+                <div class="badge-name">Week Warrior</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">✅</div>
+                <div class="badge-name">Task Master</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">📅</div>
+                <div class="badge-name">Daily Disciplin</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">📝</div>
+                <div class="badge-name">Exam Ready</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">📔</div>
+                <div class="badge-name">Reflective Learner</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">🏃</div>
+                <div class="badge-name">Marathon Runner</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">💯</div>
+                <div class="badge-name">Perfectionist</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">🎓</div>
+                <div class="badge-name">A-Grade Ready</div>
+            </div>
+        </div>
+
+        <h2>📅 Your Weekly Routine</h2>
+        <div class="schedule">
+            <div class="schedule-day">Monday-Friday:</div>
+            <div class="schedule-tasks">Daily tasks (25 min) + Timer + Quick journal</div>
+            
+            <div class="schedule-day">Weekend:</div>
+            <div class="schedule-tasks">Weekly tasks (1-2 hours) + Specimen paper (if scheduled) + Longer journal</div>
+            
+            <div class="schedule-day">Total Time:</div>
+            <div class="schedule-tasks"><strong>3-5 hours per week</strong></div>
+        </div>
+
+        <h2>🎯 A-Grade Checklist</h2>
+        <p>You're ready when you have:</p>
+        <div class="checklist">
+            <ul style="list-style: none; padding-left: 0;">
+                <li>□ 40+ hours studied</li>
+                <li>□ 80%+ tasks completed</li>
+                <li>□ Consistent study streak</li>
+                <li>□ All specimen papers done</li>
+                <li>□ Regular journal updates</li>
+                <li>□ 8+ badges unlocked</li>
+                <li>□ <strong>80% progress bar</strong></li>
+            </ul>
+        </div>
+
+        <h2>💡 Top 5 Success Tips</h2>
+        <table>
+            <tr>
+                <th style="width: 50px;">Tip</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td style="text-align: center;">1️⃣</td>
+                <td><strong>Study every day</strong> - Even 25 min counts!</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">2️⃣</td>
+                <td><strong>Be honest</strong> - Only check off tasks you actually did</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">3️⃣</td>
+                <td><strong>Use the journal</strong> - Ask for help when stuck!</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">4️⃣</td>
+                <td><strong>Protect your streak</strong> - Don't break that 🔥</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">5️⃣</td>
+                <td><strong>Aim for badges</strong> - Make it a game!</td>
+            </tr>
+        </table>
+
+        <h2>📱 Pro Features</h2>
+        <ul>
+            <li><strong>Works on phone/tablet</strong> - Same URL everywhere</li>
+            <li><strong>Real-time sync</strong> - Start on laptop, continue on phone</li>
+            <li><strong>Export data</strong> - Download your progress anytime</li>
+            <li><strong>Charts & graphs</strong> - Visualize your improvement</li>
+        </ul>
+
+        <h2>❓ Troubleshooting</h2>
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Solution</th>
+            </tr>
+            <tr>
+                <td>Can't login</td>
+                <td>Check username/password (case-sensitive!)</td>
+            </tr>
+            <tr>
+                <td>Timer stopped</td>
+                <td>Refresh page, check internet connection</td>
+            </tr>
+            <tr>
+                <td>Task won't check</td>
+                <td>Refresh page, wait a few seconds</td>
+            </tr>
+            <tr>
+                <td>Forgot password</td>
+                <td>Ask teacher to reset it</td>
+            </tr>
+        </table>
+
+        <div class="warning-box">
+            <strong>⚠️ Need Help?</strong> Use the 🆘 tag in your journal or email your teacher!
+        </div>
+
+        <div class="footer">
+            <p style="font-size: 1.2em; margin-bottom: 10px;">
+                <strong>Your A-Grade Journey Starts NOW! 🚀</strong>
+            </p>
+            <p style="font-size: 0.9em;">
+                Mock Exams: February 24, 2025 | Cambridge A-Level German 9897
+            </p>
+            <p style="font-size: 0.85em; color: #999; margin-top: 15px;">
+                International School Neustadt | SOL Progress Tracker v1.0
+            </p>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px; color: #999; font-size: 0.85em;">
+        <p>Print this card and keep it handy! 📄</p>
+    </div>
+</body>
+</html>

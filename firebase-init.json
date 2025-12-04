@@ -1,0 +1,166 @@
+{
+  "users": {
+    "user001": {
+      "profile": {
+        "studentName": "Finn",
+        "plan": "structured",
+        "joinedDate": "2024-12-04"
+      },
+      "stats": {
+        "totalMinutes": 0,
+        "completedTasks": 0,
+        "currentStreak": 0,
+        "earnedBadges": [],
+        "journalEntries": 0,
+        "totalSessions": 0,
+        "dailyCompletions": 0,
+        "specimenPapers": 0,
+        "perfectWeeks": 0,
+        "overallProgress": 0
+      },
+      "tasks": {
+        "daily": {},
+        "weekly": {},
+        "specimen": {}
+      },
+      "sessions": {},
+      "journal": {},
+      "lastStudyDate": null
+    },
+    "user002": {
+      "profile": {
+        "studentName": "Ayca",
+        "plan": "turkish-german",
+        "joinedDate": "2024-12-04"
+      },
+      "stats": {
+        "totalMinutes": 0,
+        "completedTasks": 0,
+        "currentStreak": 0,
+        "earnedBadges": [],
+        "journalEntries": 0,
+        "totalSessions": 0,
+        "dailyCompletions": 0,
+        "specimenPapers": 0,
+        "perfectWeeks": 0,
+        "overallProgress": 0
+      },
+      "tasks": {
+        "daily": {},
+        "weekly": {},
+        "specimen": {}
+      },
+      "sessions": {},
+      "journal": {},
+      "lastStudyDate": null
+    },
+    "user003": {
+      "profile": {
+        "studentName": "Raffaele",
+        "plan": "law-economics",
+        "joinedDate": "2024-12-04"
+      },
+      "stats": {
+        "totalMinutes": 0,
+        "completedTasks": 0,
+        "currentStreak": 0,
+        "earnedBadges": [],
+        "journalEntries": 0,
+        "totalSessions": 0,
+        "dailyCompletions": 0,
+        "specimenPapers": 0,
+        "perfectWeeks": 0,
+        "overallProgress": 0
+      },
+      "tasks": {
+        "daily": {},
+        "weekly": {},
+        "specimen": {}
+      },
+      "sessions": {},
+      "journal": {},
+      "lastStudyDate": null
+    },
+    "user004": {
+      "profile": {
+        "studentName": "Max",
+        "plan": "accountability",
+        "joinedDate": "2024-12-04"
+      },
+      "stats": {
+        "totalMinutes": 0,
+        "completedTasks": 0,
+        "currentStreak": 0,
+        "earnedBadges": [],
+        "journalEntries": 0,
+        "totalSessions": 0,
+        "dailyCompletions": 0,
+        "specimenPapers": 0,
+        "perfectWeeks": 0,
+        "overallProgress": 0
+      },
+      "tasks": {
+        "daily": {},
+        "weekly": {},
+        "specimen": {}
+      },
+      "sessions": {},
+      "journal": {},
+      "lastStudyDate": null
+    },
+    "user005": {
+      "profile": {
+        "studentName": "Moritz",
+        "plan": "native-speaker",
+        "joinedDate": "2024-12-04"
+      },
+      "stats": {
+        "totalMinutes": 0,
+        "completedTasks": 0,
+        "currentStreak": 0,
+        "earnedBadges": [],
+        "journalEntries": 0,
+        "totalSessions": 0,
+        "dailyCompletions": 0,
+        "specimenPapers": 0,
+        "perfectWeeks": 0,
+        "overallProgress": 0
+      },
+      "tasks": {
+        "daily": {},
+        "weekly": {},
+        "specimen": {}
+      },
+      "sessions": {},
+      "journal": {},
+      "lastStudyDate": null
+    },
+    "user006": {
+      "profile": {
+        "studentName": "Emilia",
+        "plan": "philosophical",
+        "joinedDate": "2024-12-04"
+      },
+      "stats": {
+        "totalMinutes": 0,
+        "completedTasks": 0,
+        "currentStreak": 0,
+        "earnedBadges": [],
+        "journalEntries": 0,
+        "totalSessions": 0,
+        "dailyCompletions": 0,
+        "specimenPapers": 0,
+        "perfectWeeks": 0,
+        "overallProgress": 0
+      },
+      "tasks": {
+        "daily": {},
+        "weekly": {},
+        "specimen": {}
+      },
+      "sessions": {},
+      "journal": {},
+      "lastStudyDate": null
+    }
+  }
+}
