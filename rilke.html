@@ -2,117 +2,66 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Rilke: Das Karussell - Atmospheric V2</title>
+    <title>Rilke: Das Karussell (Fixed)</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <style>
-        body { margin: 0; background-color: #050510; overflow: hidden; font-family: sans-serif; }
+        body { margin: 0; background-color: #000; font-family: sans-serif; }
         
-        /* UI Overlay */
-        #ui-layer {
-            position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 15, 20, 0.98);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: #fff; transition: opacity 1s ease-out; text-align: center;
+        /* The Start Button Overlay */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9999;
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; color: white;
         }
-        h1 { font-weight: 100; letter-spacing: 8px; font-size: 2.5rem; text-transform: uppercase; margin-bottom: 0.5rem; }
-        p { font-weight: 300; letter-spacing: 2px; color: #aab; max-width: 600px; line-height: 1.5; margin-bottom: 30px; }
-        
         button {
-            padding: 15px 40px; background: transparent;
-            border: 1px solid #7df; color: #7df; font-size: 1.2rem;
-            cursor: pointer; transition: all 0.3s; letter-spacing: 3px; text-transform: uppercase;
-            border-radius: 4px;
+            padding: 20px 40px; font-size: 1.5rem; cursor: pointer;
+            background: #fff; border: none; border-radius: 5px; margin-top: 20px;
         }
-        button:hover { background: #7df; color: #000; box-shadow: 0 0 25px rgba(119, 221, 255, 0.6); }
-        
-        .hidden { opacity: 0; pointer-events: none; }
+        button:hover { background: #ddd; }
     </style>
 </head>
 <body>
 
-    <div id="ui-layer">
+    <div id="overlay">
         <h1>Das Karussell</h1>
-        <p>A Spatial Poem by R.M. Rilke</p>
-        <p style="font-size: 0.9rem; font-style: italic;">
-            (Audio generated procedurally: Wind, Ambience, and Voice)
-        </p>
-        <button id="start-btn">Eintreten (Start)</button>
+        <p>Click below to load Audio and Visuals</p>
+        <button id="btn-start">Start Experience</button>
     </div>
 
     <script>
-        let audioCtx;
-        let isAudioInit = false;
+        // 1. VOICE AND AUDIO ENGINE
+        let voice = null;
+        let audioCtx = null;
 
-        // --- 1. ATMOSPHERIC SOUND ENGINE (Wind & Music) ---
-        function initAudioEngine() {
-            if(isAudioInit) return;
+        // Try to load German voice immediately
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            // Try to find a German voice, fallback to first available
+            voice = voices.find(v => v.lang.includes('de')) || voices[0];
+        }
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+
+        // Music / Ambience Generator
+        function startAmbience() {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             audioCtx = new AudioContext();
-
-            // A. WIND/PARK AMBIENCE (Pink Noise Generator)
-            // Creates a gentle "shushing" sound like leaves or wind
-            const bufferSize = 2 * audioCtx.sampleRate;
-            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                let white = Math.random() * 2 - 1;
-                output[i] = (lastOut + (0.02 * white)) / 1.02;
-                lastOut = output[i];
-                output[i] *= 3.5; 
-            }
-            let lastOut = 0;
-
-            const windSource = audioCtx.createBufferSource();
-            windSource.buffer = noiseBuffer;
-            windSource.loop = true;
             
-            // Filter the noise to sound like low wind
-            const windFilter = audioCtx.createBiquadFilter();
-            windFilter.type = 'lowpass';
-            windFilter.frequency.value = 400; 
-
-            const windGain = audioCtx.createGain();
-            windGain.gain.value = 0.15; // Volume of wind
-
-            windSource.connect(windFilter);
-            windFilter.connect(windGain);
-            windGain.connect(audioCtx.destination);
-            windSource.start();
-
-            // Animate wind filter (gentle breeze effect)
-            setInterval(() => {
-                if(audioCtx.state === 'running'){
-                    const time = audioCtx.currentTime;
-                    // Vary the filter frequency to simulate gusts
-                    windFilter.frequency.setValueAtTime(300 + Math.sin(time * 0.5) * 100, time);
-                }
-            }, 100);
-
-
-            // B. MUSICAL CHORDS (The "Gentle" Music)
-            const tones = [130.81, 196.00, 261.63]; // C3, G3, C4 (C Major chord)
-            tones.forEach(freq => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.value = freq;
-                gain.gain.value = 0.03; // Very quiet background hum
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-            });
-
-            isAudioInit = true;
+            // Simple low drone (Cello-like)
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = 55; // Low A
+            gain.gain.value = 0.1;
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
         }
 
-        // --- 2. GERMAN NARRATION ---
-        function speakPoem() {
-            if (!window.speechSynthesis) return;
-            
-            // Cancel any previous speaking to start fresh
-            window.speechSynthesis.cancel();
-
-            const poemLines = [
+        // Poem Reader
+        function readPoem() {
+            const lines = [
                 "Mit einem Dach und seinem Schatten dreht sich eine kleine Weile der Bestand",
                 "von bunten Pferden, alle aus dem Land, das lange zögert, eh es untergeht.",
                 "Zwar manche sind an Wagen angespannt, doch alle haben Mut in ihren Mienen;",
@@ -124,157 +73,92 @@
                 "Und manchesmal ein Lächeln, hergewendet, ein seliges, das blendet und verschwendet an dieses atemlose blinde Spiel."
             ];
 
-            let index = 0;
-            function speakNext() {
-                if(index >= poemLines.length) return;
-                
-                const utter = new SpeechSynthesisUtterance(poemLines[index]);
-                utter.lang = 'de-DE'; // German
-                utter.rate = 0.85;    // Slightly slow
-                utter.pitch = 1.0;
-                
-                utter.onend = () => {
-                    index++;
-                    setTimeout(speakNext, 2000); // 2 second pause between stanzas
+            let i = 0;
+            function nextLine() {
+                if(i >= lines.length) return;
+                const u = new SpeechSynthesisUtterance(lines[i]);
+                if(voice) u.voice = voice;
+                u.rate = 0.8; 
+                u.pitch = 0.9;
+                u.onend = () => {
+                    i++;
+                    setTimeout(nextLine, 1500); // Pause between lines
                 };
-                
-                window.speechSynthesis.speak(utter);
+                window.speechSynthesis.speak(u);
             }
-            speakNext();
+            nextLine();
         }
 
-        // --- 3. FIREFLIES COMPONENT ---
-        AFRAME.registerComponent('fireflies', {
-            init: function() {
-                for (let i = 0; i < 60; i++) {
-                    let fly = document.createElement('a-entity');
-                    let theta = Math.random() * Math.PI * 2;
-                    let r = 6 + Math.random() * 12;
-                    let x = r * Math.cos(theta);
-                    let z = r * Math.sin(theta);
-                    let y = 0.5 + Math.random() * 3;
-                    
-                    fly.setAttribute('geometry', {primitive: 'sphere', radius: 0.04});
-                    fly.setAttribute('material', {color: '#ffffaa', shader: 'flat', opacity: 0.6});
-                    fly.setAttribute('position', {x: x, y: y, z: z});
-                    
-                    let dur = 3000 + Math.random() * 2000;
-                    fly.setAttribute('animation', {
-                        property: 'position', to: `${x} ${y+1} ${z}`, 
-                        dir: 'alternate', loop: true, dur: dur, easing: 'easeInOutSine'
-                    });
-                    this.el.appendChild(fly);
-                }
-            }
-        });
-
-        // Initialize
+        // Start Button Logic
         document.addEventListener('DOMContentLoaded', () => {
-            const btn = document.getElementById('start-btn');
-            const overlay = document.getElementById('ui-layer');
-            
-            btn.addEventListener('click', () => {
-                overlay.classList.add('hidden');
-                initAudioEngine();
-                // Short delay before reading starts
-                setTimeout(speakPoem, 1000);
-                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            loadVoices(); // Try loading voices again
+            document.getElementById('btn-start').addEventListener('click', function() {
+                document.getElementById('overlay').style.display = 'none';
+                startAmbience();
+                // Short delay to ensure browser audio context is ready
+                setTimeout(readPoem, 500); 
             });
         });
     </script>
 
-    <a-scene background="color: #050510"
-             fog="type: linear; color: #050510; near: 5; far: 40"
-             shadow="type: basic">
+    <a-scene background="color: #000">
 
         <a-assets>
-            <a-mixin id="bounce" animation="property: position; dir: alternate; loop: true; easing: easeInOutSine"></a-mixin>
-            <a-mixin id="text-style" text="font: kelsonsans; align: center; width: 6; color: #fff; opacity: 0.9"></a-mixin>
-            <a-mixin id="panel-bg" geometry="primitive: plane; width: 6.5; height: 3" material="color: #000; opacity: 0.4; transparent: true"></a-mixin>
+            <a-mixin id="bounce" animation="property: position; dir: alternate; loop: true; dur: 2000; easing: easeInOutSine; from: 0 0 0; to: 0 0.5 0"></a-mixin>
+            <a-mixin id="text-style" text="font: kelsonsans; align: center; width: 6; color: #fff; wrapCount: 30"></a-mixin>
         </a-assets>
 
         <a-sky color="#050510"></a-sky>
 
-        <a-entity light="type: ambient; color: #404050; intensity: 0.6"></a-entity>
-        <a-entity position="0 3 0" light="type: point; color: #ffcc77; intensity: 0.8; distance: 20; castShadow: true"></a-entity>
+        <a-plane position="0 0 0" rotation="-90 0 0" width="50" height="50" color="#111"></a-plane>
 
-        <a-plane rotation="-90 0 0" width="100" height="100" color="#111" shadow="receive: true"></a-plane>
+        <a-entity light="type: ambient; color: #888; intensity: 0.5"></a-entity>
+        <a-entity light="type: point; intensity: 1; distance: 20; color: #ffcc00" position="0 4 0"></a-entity>
 
-        <a-entity fireflies></a-entity>
-
-        <a-entity position="0 3 10" rotation="0 0 0">
-            <a-entity mixin="panel-bg"></a-entity>
+        <a-entity position="0 3 8" rotation="0 0 0">
+            <a-plane width="7" height="3" color="#000" opacity="0.6"></a-plane>
             <a-entity mixin="text-style" text="value: Mit einem Dach und seinem Schatten dreht\nsich eine kleine Weile der Bestand\nvon bunten Pferden, alle aus dem Land,\ndas lange zögert, eh es untergeht."></a-entity>
         </a-entity>
 
-        <a-entity position="8.6 3 5" rotation="0 -60 0">
-            <a-entity mixin="panel-bg"></a-entity>
-            <a-entity mixin="text-style" text="value: Zwar manche sind an Wagen angespannt,\ndoch alle haben Mut in ihren Mienen;\nein böser roter Löwe geht mit ihnen\nund dann ein ganz weißer Elefant."></a-entity>
+        <a-entity position="6 3 6" rotation="0 -45 0">
+            <a-plane width="7" height="3" color="#000" opacity="0.6"></a-plane>
+            <a-entity mixin="text-style" text="value: Ein böser roter Löwe geht mit ihnen\nund dann ein ganz weißer Elefant."></a-entity>
         </a-entity>
 
-        <a-entity position="8.6 3 -5" rotation="0 -120 0">
-            <a-entity mixin="panel-bg"></a-entity>
-            <a-entity mixin="text-style" text="value: Sogar ein Hirsch ist da, ganz wie im Wald,\nnur daß er einen Sattel trägt und drüber\nein kleines blaues Mädchen aufgeschnallt."></a-entity>
+        <a-entity position="-6 3 6" rotation="0 45 0">
+            <a-plane width="7" height="3" color="#000" opacity="0.6"></a-plane>
+            <a-entity mixin="text-style" text="value: Und das geht hin und eilt sich, daß es endet,\nund kreist und dreht sich nur und hat kein Ziel."></a-entity>
         </a-entity>
 
-        <a-entity position="0 3 -10" rotation="0 180 0">
-            <a-entity mixin="panel-bg"></a-entity>
-            <a-entity mixin="text-style" text="value: Und dann ein böser roter Löwe.\n\nUnd dann ein ganz weißer Elefant."></a-entity>
-        </a-entity>
-
-        <a-entity position="-8.6 3 -5" rotation="0 120 0">
-            <a-entity mixin="panel-bg"></a-entity>
-            <a-entity mixin="text-style" text="value: Und das geht hin und eilt sich, daß es endet,\nund kreist und dreht sich nur und hat kein Ziel.\nEin Rot, ein Grün, ein Grau vorbeigesendet,\nein kleines kaum begonnenes Profil."></a-entity>
-        </a-entity>
-
-        <a-entity position="-8.6 3 5" rotation="0 60 0">
-            <a-entity mixin="panel-bg"></a-entity>
-            <a-entity mixin="text-style" text="value: Und manchesmal ein Lächeln, hergewendet,\nein seliges, das blendet und verschwendet\nan dieses atemlose blinde Spiel."></a-entity>
-        </a-entity>
-
-
-        <a-entity position="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 25000; easing: linear">
+        <a-entity position="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 20000; easing: linear">
             
-            <a-cylinder height="5" radius="0.3" color="#444"></a-cylinder>
-            <a-cone position="0 4.5 0" radius-bottom="6" radius-top="0" height="2.5" color="#223" shadow="cast: true"></a-cone>
-            <a-cylinder position="0 0.2 0" radius="5.5" height="0.4" color="#111"></a-cylinder>
+            <a-cylinder color="#555" height="5" radius="0.2" position="0 2.5 0"></a-cylinder>
+            <a-cone color="#333" height="2" radius-bottom="6" position="0 5 0"></a-cone>
+            <a-cylinder color="#222" height="0.2" radius="6" position="0 0.1 0"></a-cylinder>
 
             <a-entity rotation="0 0 0">
-                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 1500; from: 3.5 1 0; to: 3.5 1.3 0">
-                    <a-box color="#800" width="1" height="1.2" depth="1.5" shadow="cast: true"></a-box>
+                <a-entity position="4 1 0">
+                     <a-box color="red" depth="2" height="1.5" width="1"></a-box>
                 </a-entity>
             </a-entity>
 
-            <a-entity rotation="0 72 0">
-                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 2500">
-                    <a-sphere radius="1.2" color="#eee" shadow="cast: true"></a-sphere>
+            <a-entity rotation="0 120 0">
+                <a-entity position="4 1 0">
+                    <a-sphere color="white" radius="1.2"></a-sphere>
                 </a-entity>
             </a-entity>
 
-            <a-entity rotation="0 144 0">
-                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 1200">
-                    <a-cylinder radius="0.3" height="1.5" color="#2e8b57"></a-cylinder>
+            <a-entity rotation="0 240 0">
+                <a-entity position="4 1 0">
+                    <a-cylinder color="brown" height="1" radius="0.3"></a-cylinder>
+                    <a-sphere color="blue" radius="0.5" position="0 1 0"></a-sphere>
                 </a-entity>
             </a-entity>
-
-            <a-entity rotation="0 216 0">
-                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 1800">
-                    <a-cylinder radius="0.35" height="1.2" color="#5d4037"></a-cylinder>
-                    <a-sphere position="0 1.0 0" radius="0.5" color="#00bfff" emissive="#00bfff" emissive-intensity="0.3"></a-sphere>
-                </a-entity>
-            </a-entity>
-
-            <a-entity rotation="0 288 0">
-                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 1300">
-                    <a-cylinder radius="0.3" height="1.5" color="#888"></a-cylinder>
-                </a-entity>
-            </a-entity>
-
         </a-entity>
 
-        <a-entity position="0 1.6 15">
-            <a-camera look-controls wasd-controls="acceleration: 100">
-                <a-cursor color="#fff" scale="0.5 0.5 0.5" opacity="0.5"></a-cursor>
+        <a-entity position="0 1.6 12">
+            <a-camera look-controls wasd-controls>
+                <a-cursor color="yellow"></a-cursor>
             </a-camera>
         </a-entity>
 
