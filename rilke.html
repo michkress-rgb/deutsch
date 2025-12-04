@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Rilke: Das Karussell - Immersive Experience</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <style>
+        body { margin: 0; background-color: #050510; overflow: hidden; font-family: 'Helvetica Neue', sans-serif; }
+        
+        /* Cinematic UI Overlay */
+        #ui-layer {
+            position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 16, 0.95);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: #e0e0e0; transition: opacity 1s ease-out;
+        }
+        h1 { font-weight: 100; letter-spacing: 10px; font-size: 3rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+        p { font-weight: 300; letter-spacing: 2px; color: #889; }
+        
+        button {
+            margin-top: 30px; padding: 15px 40px; background: transparent;
+            border: 1px solid #fff; color: #fff; font-size: 1.2rem;
+            cursor: pointer; transition: all 0.3s; letter-spacing: 3px; text-transform: uppercase;
+        }
+        button:hover { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        
+        .hidden { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <h1>Das Karussell</h1>
+        <p>Rainer Maria Rilke</p>
+        <button id="start-btn">Eintreten (Enter)</button>
+        <p style="font-size: 0.8rem; margin-top: 20px; color: #556;">Headphones Recommended • Audio Generated Real-Time</p>
+    </div>
+
+    <script>
+        // --- 1. PROXIMITY DRONE AUDIO ENGINE (Web Audio API) ---
+        let audioCtx, oscillator, gainNode;
+        let isPlaying = false;
+
+        function initAudio() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            
+            // Create a low drone oscillator
+            oscillator = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 60; // Low hum (B1 approx)
+            
+            // Connect
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            gainNode.gain.value = 0; // Start silent
+            oscillator.start();
+            isPlaying = true;
+        }
+
+        // --- 2. GERMAN NARRATION (Speech Synthesis) ---
+        function speakPoem() {
+            if (!window.speechSynthesis) return;
+            
+            const fullPoem = [
+                "Mit einem Dach und seinem Schatten dreht sich eine kleine Weile der Bestand",
+                "von bunten Pferden, alle aus dem Land, das lange zögert, eh es untergeht.",
+                "Zwar manche sind an Wagen angespannt, doch alle haben Mut in ihren Mienen;",
+                "ein böser roter Löwe geht mit ihnen und dann ein ganz weißer Elefant.",
+                "Sogar ein Hirsch ist da, ganz wie im Wald, nur daß er einen Sattel trägt und drüber ein kleines blaues Mädchen aufgeschnallt.",
+                "Und dann ein böser roter Löwe. Und dann ein ganz weißer Elefant.",
+                "Und das geht hin und eilt sich, daß es endet, und kreist und dreht sich nur und hat kein Ziel.",
+                "Ein Rot, ein Grün, ein Grau vorbeigesendet, ein kleines kaum begonnenes Profil.",
+                "Und manchesmal ein Lächeln, hergewendet, ein seliges, das blendet und verschwendet an dieses atemlose blinde Spiel."
+            ];
+
+            let index = 0;
+            function speakNext() {
+                if(index >= fullPoem.length) return;
+                const utter = new SpeechSynthesisUtterance(fullPoem[index]);
+                utter.lang = 'de-DE';
+                utter.rate = 0.8; // Slow and poetic
+                utter.pitch = 0.9;
+                utter.volume = 0.8;
+                
+                // Pause between stanzas slightly
+                utter.onend = () => {
+                    index++;
+                    setTimeout(speakNext, 1500); 
+                };
+                window.speechSynthesis.speak(utter);
+            }
+            speakNext();
+        }
+
+        // --- 3. CUSTOM COMPONENT: FIREFLIES ---
+        AFRAME.registerComponent('fireflies', {
+            init: function() {
+                const count = 100;
+                for (let i = 0; i < count; i++) {
+                    let fly = document.createElement('a-entity');
+                    // Random pos inside a radius
+                    let theta = Math.random() * Math.PI * 2;
+                    let r = 5 + Math.random() * 15;
+                    let x = r * Math.cos(theta);
+                    let z = r * Math.sin(theta);
+                    let y = 1 + Math.random() * 4;
+                    
+                    fly.setAttribute('geometry', {primitive: 'sphere', radius: 0.03});
+                    fly.setAttribute('material', {color: '#ffffcc', shader: 'flat', transparent: true, opacity: 0.8});
+                    fly.setAttribute('position', {x: x, y: y, z: z});
+                    
+                    // Random Animation
+                    let dur = 2000 + Math.random() * 3000;
+                    let toY = y + (Math.random() - 0.5);
+                    fly.setAttribute('animation', {
+                        property: 'position', to: `${x} ${toY} ${z}`, 
+                        dir: 'alternate', loop: true, dur: dur, easing: 'easeInOutSine'
+                    });
+                    
+                    this.el.appendChild(fly);
+                }
+            }
+        });
+
+        // --- 4. COMPONENT: DYNAMIC AUDIO VOLUME BASED ON DISTANCE ---
+        AFRAME.registerComponent('audio-proximity', {
+            tick: function () {
+                if (!audioCtx || !isPlaying) return;
+                
+                // Get camera position
+                let camPos = this.el.sceneEl.camera.el.getAttribute('position');
+                // Calculate distance to center (0,0,0)
+                let dist = Math.sqrt(camPos.x**2 + camPos.z**2);
+                
+                // Map distance to volume (Closer = Louder)
+                // Max volume at 5m, 0 volume at 25m
+                let vol = 1 - ((dist - 5) / 20);
+                if (vol < 0) vol = 0;
+                if (vol > 0.5) vol = 0.5; // Cap volume
+                
+                gainNode.gain.setTargetAtTime(vol, audioCtx.currentTime, 0.1);
+            }
+        });
+
+        // --- INTERACTION HANDLING ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('start-btn');
+            const overlay = document.getElementById('ui-layer');
+            
+            btn.addEventListener('click', () => {
+                initAudio();
+                speakPoem();
+                overlay.classList.add('hidden');
+                // Resume Audio Context if blocked by browser policy
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            });
+        });
+    </script>
+
+    <a-scene background="color: #050510" 
+             fog="type: exponential; color: #101018; density: 0.04"
+             renderer="antialias: true; colorManagement: true; highRefreshRate: true"
+             shadow="type: pcfsoft"
+             audio-proximity>
+
+        <a-assets>
+            <a-mixin id="bounce" animation="property: position; dir: alternate; loop: true; easing: easeInOutSine"></a-mixin>
+            <a-mixin id="metal" material="metalness: 0.6; roughness: 0.4; color: #aaa"></a-mixin>
+            <a-mixin id="text-glow" text="font: kelsonsans; align: center; width: 5; color: #fff; opacity: 0.9; shader: msdf"></a-mixin>
+        </a-assets>
+
+        <a-entity light="type: ambient; color: #202040; intensity: 0.4"></a-entity>
+        
+        <a-entity position="0 2.5 0" 
+                  light="type: point; color: #ffaa55; intensity: 1.5; distance: 20; castShadow: true; shadowBias: -0.0001">
+            <a-sphere radius="0.2" color="#fff" emissive="#ffaa55" emissive-intensity="2"></a-sphere>
+        </a-entity>
+
+        <a-entity light="type: spot; angle: 45; penumbra: 0.5; intensity: 0.8; color: #88ccff" position="10 10 10" rotation="-45 45 0"></a-entity>
+
+        <a-plane rotation="-90 0 0" width="100" height="100" 
+                 material="color: #080808; metalness: 0.2; roughness: 0.7" 
+                 shadow="receive: true"></a-plane>
+
+        <a-entity id="forest-ring">
+            <a-cylinder position="15 5 5" height="10" radius="0.3" color="#111" material="roughness: 1"></a-cylinder>
+            <a-cylinder position="-18 5 8" height="12" radius="0.4" color="#111" material="roughness: 1"></a-cylinder>
+            <a-cylinder position="12 5 -14" height="11" radius="0.3" color="#111" material="roughness: 1"></a-cylinder>
+            <a-cylinder position="-10 5 -16" height="9" radius="0.5" color="#111" material="roughness: 1"></a-cylinder>
+            <a-cylinder position="0 5 -22" height="14" radius="0.6" color="#050505" material="roughness: 1"></a-cylinder>
+            <a-cylinder position="20 5 0" height="10" radius="0.3" color="#111" material="roughness: 1"></a-cylinder>
+        </a-entity>
+
+        <a-entity fireflies position="0 0 0"></a-entity>
+
+
+        <a-entity position="0 0 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 25000; easing: linear">
+            
+            <a-cylinder height="5" radius="0.2" color="#444" material="metalness: 0.8; roughness: 0.2"></a-cylinder>
+            
+            <a-cone position="0 4.5 0" radius-bottom="7" radius-top="0.5" height="3" 
+                    material="color: #1a2a3a; opacity: 0.95; metalness: 0.5; roughness: 0.4; side: double" 
+                    shadow="cast: true"></a-cone>
+            
+            <a-torus position="0 3 0" rotation="90 0 0" radius="6.8" radius-tubular="0.05" color="#c0c0c0" mixin="metal"></a-torus>
+
+            <a-cylinder position="0 0.2 0" radius="6.5" height="0.4" material="color: #111; metalness: 0.5; roughness: 0.6" shadow="receive: true"></a-cylinder>
+            
+            <a-cylinder position="3.5 2 0" height="4" radius="0.05" color="#555"></a-cylinder>
+            <a-cylinder position="-3.5 2 0" height="4" radius="0.05" color="#555"></a-cylinder>
+            <a-cylinder position="0 2 3.5" height="4" radius="0.05" color="#555"></a-cylinder>
+            <a-cylinder position="0 2 -3.5" height="4" radius="0.05" color="#555"></a-cylinder>
+
+
+            <a-entity rotation="0 0 0">
+                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 1500; from: 3.5 1 0; to: 3.5 1.3 0">
+                   <a-box width="1.2" height="1.4" depth="2" color="#660000" material="roughness: 0.2"></a-box>
+                   <a-box position="0.3 0.4 1" width="0.1" height="0.1" depth="0.1" color="red" emissive="red" emissive-intensity="2"></a-box>
+                   <a-box position="-0.3 0.4 1" width="0.1" height="0.1" depth="0.1" color="red" emissive="red" emissive-intensity="2"></a-box>
+                </a-entity>
+            </a-entity>
+
+            <a-entity rotation="0 72 0">
+                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 3000">
+                    <a-sphere radius="1.3" material="color: #fdfdfd; roughness: 0.1; metalness: 0.1" shadow="cast: true"></a-sphere>
+                </a-entity>
+            </a-entity>
+
+            <a-entity rotation="0 144 0">
+                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 1800">
+                    <a-cylinder radius="0.4" height="1.2" color="#4a3b2a" material="roughness: 0.8"></a-cylinder>
+                    <a-sphere position="0 1.2 0" radius="0.5" 
+                              material="color: #00ffff; opacity: 0.7; transparent: true; emissive: #00ffff; emissive-intensity: 0.5"></a-sphere>
+                    <a-ring radius-inner="0.6" radius-outer="0.7" position="0 1.2 0" rotation="90 0 0" color="#fff"></a-ring>
+                </a-entity>
+            </a-entity>
+
+            <a-entity rotation="0 216 0">
+                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 1200">
+                    <a-cylinder radius="0.3" height="1.6" color="#2e8b57" material="metalness: 0.7; roughness: 0.2" shadow="cast: true"></a-cylinder>
+                </a-entity>
+            </a-entity>
+
+            <a-entity rotation="0 288 0">
+                <a-entity position="3.5 1 0" mixin="bounce" animation="dur: 1300">
+                    <a-cylinder radius="0.3" height="1.6" color="#777" material="roughness: 0.9" shadow="cast: true"></a-cylinder>
+                </a-entity>
+            </a-entity>
+
+        </a-entity> <a-entity position="0 3 11" rotation="0 0 0">
+            <a-plane width="6" height="3" material="color: #000; opacity: 0.3; transparent: true"></a-plane>
+            <a-entity mixin="text-glow" 
+                      text="value: Mit einem Dach und seinem Schatten dreht\nsich eine kleine Weile der Bestand\nvon bunten Pferden, alle aus dem Land,\ndas lange zögert, eh es untergeht."></a-entity>
+        </a-entity>
+
+        <a-entity position="9 3 6" rotation="0 -60 0">
+            <a-plane width="6" height="3" material="color: #000; opacity: 0.3; transparent: true"></a-plane>
+            <a-entity mixin="text-glow" 
+                      text="value: Zwar manche sind an Wagen angespannt,\ndoch alle haben Mut in ihren Mienen;\nein böser roter Löwe geht mit ihnen\nund dann ein ganz weißer Elefant."></a-entity>
+        </a-entity>
+
+        <a-entity position="9 3 -6" rotation="0 -120 0">
+            <a-plane width="6" height="3" material="color: #000; opacity: 0.3; transparent: true"></a-plane>
+            <a-entity mixin="text-glow" 
+                      text="value: Sogar ein Hirsch ist da, ganz wie im Wald,\nnur daß er einen Sattel trägt und drüber\nein kleines blaues Mädchen aufgeschnallt."></a-entity>
+        </a-entity>
+
+        <a-entity position="0 3 -11" rotation="0 180 0">
+            <a-plane width="6" height="3" material="color: #000; opacity: 0.3; transparent: true"></a-plane>
+            <a-entity mixin="text-glow" 
+                      text="value: Und dann ein böser roter Löwe.\n\nUnd dann ein ganz weißer Elefant."></a-entity>
+        </a-entity>
+
+        <a-entity position="-9 3 -6" rotation="0 120 0">
+            <a-plane width="6" height="3" material="color: #000; opacity: 0.3; transparent: true"></a-plane>
+            <a-entity mixin="text-glow" 
+                      text="value: Und das geht hin und eilt sich, daß es endet,\nund kreist und dreht sich nur und hat kein Ziel.\nEin Rot, ein Grün, ein Grau vorbeigesendet,\nein kleines kaum begonnenes Profil."></a-entity>
+        </a-entity>
+
+        <a-entity position="-9 3 6" rotation="0 60 0">
+            <a-plane width="6" height="3" material="color: #000; opacity: 0.3; transparent: true"></a-plane>
+            <a-entity mixin="text-glow" 
+                      text="value: Und manchesmal ein Lächeln, hergewendet,\nein seliges, das blendet und verschwendet\nan dieses atemlose blinde Spiel."></a-entity>
+        </a-entity>
+
+
+        <a-entity position="0 1.6 16">
+            <a-camera wasd-controls="acceleration: 60" look-controls>
+                <a-cursor color="#fff" scale="0.5 0.5 0.5" opacity="0.3"></a-cursor>
+            </a-camera>
+        </a-entity>
+
+    </a-scene>
+</body>
+</html>
