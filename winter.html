@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wintertraditionen-Expedition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 3px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-item .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-item .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #f5576c;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 40px;
+            min-height: 400px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .intro-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .level-selection {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .level-card {
+            background: white;
+            border: 3px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            width: 280px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .level-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .level-card h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .level-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .region-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .region-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .region-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .region-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .region-card:hover {
+            transform: scale(1.05);
+        }
+
+        .region-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .region-card .mission-count {
+            font-size: 0.9em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .mission-view {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .mission-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .mission-card h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .mission-card .mission-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .mission-card .hint {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .mission-card .hint strong {
+            color: #856404;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button-secondary {
+            background: #6c757d;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .button-secondary:hover {
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .badges-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .badge {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .badge.earned {
+            border-color: #28a745;
+            background: #d4edda;
+            animation: badgeEarned 0.5s;
+        }
+
+        @keyframes badgeEarned {
+            0% { transform: scale(0.8) rotate(-5deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .badge-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .badge-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .badge-description {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .summary-section {
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .summary-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary-item h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .summary-item .answer {
+            color: #666;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .country-select {
+            margin: 20px 0;
+        }
+
+        .country-select label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .country-select select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+        }
+
+        .country-select select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .save-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .save-buttons button {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .level-card {
+                width: 100%;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Wintertraditionen-Expedition ❄️</h1>
+            <p>Entdecke Winterbräuche aus aller Welt!</p>
+        </div>
+
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-item">
+                <div class="label">Punkte</div>
+                <div class="value" id="points">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Missionen</div>
+                <div class="value" id="missionCount">0/0</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Badges</div>
+                <div class="value" id="badgeCount">0</div>
+            </div>
+            <div class="stat-item" style="flex: 1; min-width: 200px;">
+                <div class="label">Fortschritt</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Intro Screen -->
+            <div class="screen active" id="introScreen">
+                <div class="intro-text">
+                    <h2>🎯 Willkommen zur Wintertraditionen-Expedition!</h2>
+                    <p style="margin-top: 20px;">
+                        Du bist Teil eines internationalen Forscherteams! Eure Mission: Sammelt Informationen über Winterbräuche und Traditionen aus verschiedenen Ländern der Welt. Eure Erkenntnisse werden für eine große Wintertraditions-Ausstellung an eurer Schule verwendet.
+                    </p>
+                    <p style="margin-top: 20px;">
+                        <strong>So funktioniert es:</strong><br>
+                        ✓ Wähle deine Klassenstufe<br>
+                        ✓ Reise durch verschiedene Regionen der Welt<br>
+                        ✓ Erfülle spannende Forschungsmissionen<br>
+                        ✓ Recherchiere im Internet und sammle Informationen<br>
+                        ✓ Sammle Punkte und Badges<br>
+                        ✓ Bereite deine Ergebnisse für die Klasse vor
+                    </p>
+                </div>
+
+                <h2 style="text-align: center; margin-top: 50px; color: #667eea;">Wähle deine Klassenstufe:</h2>
+
+                <div class="level-selection">
+                    <div class="level-card" onclick="selectLevel(6)">
+                        <h3>📚 Klasse 6</h3>
+                        <p>Geführte Aufgaben mit konkreten Fragen. Perfekt zum Einstieg in die Wintertraditionen-Forschung!</p>
+                    </div>
+                    <div class="level-card" onclick="selectLevel(7)">
+                        <h3>🔍 Klasse 7</h3>
+                        <p>Vergleiche verschiedene Länder und entwickle eigene Begründungen. Für fortgeschrittene Forscher!</p>
+                    </div>
+                    <div class="level-card" onclick="selectLevel(8)">
+                        <h3>🎓 Klasse 8</h3>
+                        <p>Offene Forschungsaufgaben mit Reflexion und kritischem Denken. Für erfahrene Traditions-Experten!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Region Selection Screen -->
+            <div class="screen" id="regionScreen">
+                <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">Wähle eine Region für deine Forschung:</h2>
+                <div class="region-grid" id="regionGrid"></div>
+                <div class="button-group" style="justify-content: center; margin-top: 30px;">
+                    <button class="button button-secondary" onclick="showSummary()">Zum Abschluss</button>
+                    <button class="button button-secondary" onclick="saveProgress()">💾 Fortschritt speichern</button>
+                    <button class="button button-secondary" onclick="loadProgress()">📂 Fortschritt laden</button>
+                </div>
+            </div>
+
+            <!-- Mission Screen -->
+            <div class="screen" id="missionScreen">
+                <div class="mission-view" id="missionView"></div>
+            </div>
+
+            <!-- Summary Screen -->
+            <div class="screen" id="summaryScreen">
+                <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">🎉 Deine Forschungsergebnisse</h2>
+                
+                <div class="summary-section">
+                    <h3>📊 Deine Statistik</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div style="text-align: center; padding: 20px; background: white; border-radius: 10px;">
+                            <div style="font-size: 3em; color: #667eea;" id="finalPoints">0</div>
+                            <div style="color: #666;">Gesamtpunkte</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: white; border-radius: 10px;">
+                            <div style="font-size: 3em; color: #f5576c;" id="finalMissions">0</div>
+                            <div style="color: #666;">Erledigte Missionen</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: white; border-radius: 10px;">
+                            <div style="font-size: 3em; color: #28a745;" id="finalBadges">0</div>
+                            <div style="color: #666;">Gesammelte Badges</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>🏆 Deine Badges</h3>
+                    <div class="badges-container" id="earnedBadges"></div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>📝 Deine gesammelten Traditionen</h3>
+                    <div id="completedMissions"></div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>🎤 Vorbereitung für die Präsentation</h3>
+                    <p style="line-height: 1.8; margin-bottom: 20px;">
+                        <strong>Tipps für dein Teilen in der Klasse (2–5 Minuten):</strong><br>
+                        • Wähle 1–2 Bräuche aus, die du am spannendsten oder überraschendsten findest<br>
+                        • Bereite 3–4 Sätze vor:<br>
+                        &nbsp;&nbsp;– In welchem Land gibt es diese Tradition?<br>
+                        &nbsp;&nbsp;– Was ist der Brauch genau?<br>
+                        &nbsp;&nbsp;– Was fandest du daran besonders interessant oder ungewöhnlich?<br>
+                        &nbsp;&nbsp;– Gibt es eine Parallele zu deinem eigenen Leben?
+                    </p>
+                    <div id="presentationPrep"></div>
+                </div>
+
+                <div class="save-buttons">
+                    <button class="button" onclick="downloadResults()">📥 Ergebnisse herunterladen (für Teams)</button>
+                    <button class="button button-secondary" onclick="saveProgress()">💾 Fortschritt speichern</button>
+                    <button class="button button-secondary" onclick="location.reload()">🔄 Neu starten</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            level: 0,
+            points: 0,
+            completedMissions: [],
+            earnedBadges: new Set(),
+            currentRegion: null,
+            currentMission: null,
+            answers: {}
+        };
+
+        // Regions and Countries
+        const regions = {
+            europa: {
+                name: 'Europa',
+                countries: ['Deutschland', 'Österreich', 'Schweiz', 'Schweden', 'Norwegen', 'Finnland', 'Polen', 'Tschechien', 'Italien', 'Spanien', 'Frankreich', 'Niederlande', 'Großbritannien']
+            },
+            nordamerika: {
+                name: 'Nordamerika',
+                countries: ['USA', 'Kanada', 'Mexiko']
+            },
+            asien: {
+                name: 'Asien',
+                countries: ['Japan', 'China', 'Südkorea', 'Indien', 'Thailand', 'Philippinen']
+            },
+            ozeanien: {
+                name: 'Ozeanien & Südamerika',
+                countries: ['Australien', 'Neuseeland', 'Brasilien', 'Argentinien', 'Chile']
+            }
+        };
+
+        // Missions per Level
+        const missions = {
+            6: [
+                {
+                    id: 'm6_1',
+                    title: '🎄 Weihnachtsbräuche erforschen',
+                    text: 'Wähle ein Land aus der Liste. Finde heraus, wie die Menschen dort den 24. oder 25. Dezember feiern.',
+                    hint: 'Nutze Suchbegriffe wie "[Land] Weihnachten Bräuche" oder "[Land] Christmas traditions". Achte auf verlässliche Quellen wie Wikipedia oder Kulturseiten.',
+                    questions: [
+                        'Welches Land hast du gewählt?',
+                        'Wie wird der 24./25. Dezember dort genannt?',
+                        'Notiere 2-3 typische Bräuche (mit eigenen Worten):'
+                    ],
+                    points: 50,
+                    badge: 'weihnachtsexperte'
+                },
+                {
+                    id: 'm6_2',
+                    title: '🍽️ Traditionelle Winteressen',
+                    text: 'Suche dir ein Land aus. Welche besonderen Speisen isst man dort im Winter oder zu Winterfesten?',
+                    hint: 'Suche nach "[Land] traditionelles Essen Winter" oder "[Land] Weihnachtsessen". Schreibe mindestens 3 Gerichte auf.',
+                    questions: [
+                        'Welches Land?',
+                        'Nenne 3 traditionelle Speisen oder Getränke:',
+                        'Welches davon würdest du gerne probieren? Warum?'
+                    ],
+                    points: 50,
+                    badge: 'essensprofi'
+                },
+                {
+                    id: 'm6_3',
+                    title: '💡 Licht und Laternen',
+                    text: 'Gibt es in deinem gewählten Land einen Brauch, der mit Licht, Kerzen, Feuer oder Laternen zu tun hat?',
+                    hint: 'Suche nach "[Land] Lichterfest" oder "[Land] Laternen Winter". Manche Länder feiern Lucia, Chanukka, Diwali oder andere Lichtfeste.',
+                    questions: [
+                        'Welches Land?',
+                        'Wie heißt der Brauch oder das Fest?',
+                        'Beschreibe kurz, was dabei gemacht wird:'
+                    ],
+                    points: 50,
+                    badge: 'lichterexperte'
+                },
+                {
+                    id: 'm6_4',
+                    title: '🎁 Geschenke und Geben',
+                    text: 'Finde heraus: Wann und wie werden in deinem gewählten Land Geschenke verteilt?',
+                    hint: 'Suche nach "[Land] Geschenke Weihnachten" oder "[Land] gift giving traditions".',
+                    questions: [
+                        'Welches Land?',
+                        'Wer bringt die Geschenke? (z.B. Weihnachtsmann, Christkind, andere Figur)',
+                        'An welchem Tag werden Geschenke ausgepackt?'
+                    ],
+                    points: 50,
+                    badge: 'geschenkekenner'
+                },
+                {
+                    id: 'm6_5',
+                    title: '🎵 Musik und Lieder',
+                    text: 'Welche Lieder oder Musik werden in deinem Land zur Winterzeit gesungen oder gespielt?',
+                    hint: 'Suche nach "[Land] Weihnachtslieder" oder "[Land] winter songs".',
+                    questions: [
+                        'Welches Land?',
+                        'Nenne 1-2 bekannte Winterlieder aus diesem Land:',
+                        'Konntest du eines davon online anhören? Was fandest du interessant?'
+                    ],
+                    points: 50,
+                    badge: 'musikforscher'
+                },
+                {
+                    id: 'm6_6',
+                    title: '🌟 Besondere Symbole',
+                    text: 'Welche besonderen Symbole oder Dekorationen gehören in deinem Land zum Winter?',
+                    hint: 'Suche nach "[Land] Weihnachtsschmuck" oder "[Land] winter decorations". Denke an Bäume, Sterne, besondere Figuren.',
+                    questions: [
+                        'Welches Land?',
+                        'Welche Symbole oder Dekorationen sind typisch?',
+                        'Gibt es ein Symbol, das du besonders schön oder interessant findest?'
+                    ],
+                    points: 50,
+                    badge: 'symbolkenner'
+                }
+            ],
+            7: [
+                {
+                    id: 'm7_1',
+                    title: '🔄 Vergleich: Zwei Länder, ein Thema',
+                    text: 'Wähle zwei Länder aus verschiedenen Regionen. Vergleiche, wie dort ein Winterfest (z.B. Weihnachten, Neujahr) gefeiert wird.',
+                    hint: 'Suche Informationen zu beiden Ländern und erstelle eine kleine Vergleichstabelle in deinen Notizen.',
+                    questions: [
+                        'Welche zwei Länder hast du gewählt?',
+                        'Was ist in beiden Ländern ähnlich?',
+                        'Was ist deutlich unterschiedlich?',
+                        'Welche Tradition findest du interessanter? Begründe kurz.'
+                    ],
+                    points: 75,
+                    badge: 'kulturvergleicher'
+                },
+                {
+                    id: 'm7_2',
+                    title: '👨‍👩‍👧‍👦 Familie und Gemeinschaft',
+                    text: 'Untersuche, welche Rolle Familie und Gemeinschaft bei Winterfesten in deinem gewählten Land spielen.',
+                    hint: 'Achte darauf: Wird im kleinen Kreis gefeiert oder gibt es große öffentliche Feste? Wer kommt zusammen?',
+                    questions: [
+                        'Welches Land?',
+                        'Wie wichtig ist Familie bei den Winterfesten?',
+                        'Gibt es öffentliche Feiern oder Feste? Beschreibe eines.',
+                        'Vergleiche mit deiner eigenen Erfahrung: Wie feiert deine Familie?'
+                    ],
+                    points: 75,
+                    badge: 'familienexperte'
+                },
+                {
+                    id: 'm7_3',
+                    title: '🎭 Kostüme und Figuren',
+                    text: 'Finde heraus, ob es in deinem Land besondere Kostüme, Masken oder mythische Figuren zu Winterfesten gibt.',
+                    hint: 'Suche nach "[Land] Krampus", "[Land] Lucia", "[Land] winter characters" oder ähnlichen Begriffen.',
+                    questions: [
+                        'Welches Land?',
+                        'Welche besonderen Figuren oder Kostüme gibt es?',
+                        'Was ist die Geschichte oder Bedeutung dieser Figur?',
+                        'Findest du diese Tradition gruselig, lustig oder interessant? Warum?'
+                    ],
+                    points: 75,
+                    badge: 'figurenkenner'
+                },
+                {
+                    id: 'm7_4',
+                    title: '📅 Kalender-Unterschiede',
+                    text: 'Nicht alle Länder feiern am gleichen Tag! Untersuche, ob dein Land einen anderen Kalender für religiöse Feste nutzt.',
+                    hint: 'Suche nach "[Land] orthodoxes Weihnachten" oder "[Land] julianischer Kalender".',
+                    questions: [
+                        'Welches Land?',
+                        'Wird dort am 25. Dezember gefeiert oder an einem anderen Tag?',
+                        'Was ist der Grund für den Unterschied?',
+                        'Warum ist es wichtig, solche Unterschiede zu kennen?'
+                    ],
+                    points: 75,
+                    badge: 'kalenderkenner'
+                },
+                {
+                    id: 'm7_5',
+                    title: '🌍 Moderne vs. Traditionell',
+                    text: 'Untersuche, wie sich Winterbräuche in deinem Land im Laufe der Zeit verändert haben.',
+                    hint: 'Suche nach "[Land] alte Weihnachtsbräuche" und "[Land] moderne Traditionen". Was ist neu, was ist alt?',
+                    questions: [
+                        'Welches Land?',
+                        'Nenne einen alten Brauch, der heute fast vergessen ist:',
+                        'Nenne einen neuen oder veränderten Brauch:',
+                        'Was denkst du: Ist es gut oder schade, dass sich Traditionen ändern?'
+                    ],
+                    points: 75,
+                    badge: 'zeitforscher'
+                }
+            ],
+            8: [
+                {
+                    id: 'm8_1',
+                    title: '⚖️ Soziale Gerechtigkeit und Solidarität',
+                    text: 'Suche einen Winterbrauch, der mit Themen wie Armut, Teilen, Gerechtigkeit oder Solidarität verbunden ist.',
+                    hint: 'Denke an Bräuche wie "Weihnachten im Schuhkarton", Spendenaktionen oder historische Traditionen des Teilens.',
+                    questions: [
+                        'Welches Land und welcher Brauch?',
+                        'Beschreibe den Brauch und seine soziale Bedeutung:',
+                        'Warum findest du diesen Brauch wichtig oder bedeutsam?',
+                        'Kennst du ähnliche Aktionen in deiner Umgebung?'
+                    ],
+                    points: 100,
+                    badge: 'reflexionsmeister'
+                },
+                {
+                    id: 'm8_2',
+                    title: '🔍 Faktencheck: Tradition oder Mythos?',
+                    text: 'Wähle eine Wintertraditionen-Behauptung und überprüfe sie kritisch mit mehreren Quellen.',
+                    hint: 'Suche nach ungewöhnlichen oder "zu gut um wahr zu sein" Traditionen. Prüfe mindestens 3 verschiedene Quellen.',
+                    questions: [
+                        'Welche Behauptung hast du untersucht?',
+                        'Welche Quellen hast du genutzt? (mindestens 3)',
+                        'Was ist dein Ergebnis: Wahr, teilweise wahr oder falsch?',
+                        'Was hast du über kritisches Recherchieren gelernt?'
+                    ],
+                    points: 100,
+                    badge: 'detektiv'
+                },
+                {
+                    id: 'm8_3',
+                    title: '🌐 Globalisierung der Traditionen',
+                    text: 'Untersuche, wie westliche (z.B. amerikanische) Winterbräuche andere Kulturen beeinflusst haben.',
+                    hint: 'Suche nach "[Land] amerikanischer Einfluss Weihnachten" oder "commercialization of Christmas [Land]".',
+                    questions: [
+                        'Welches Land hast du untersucht?',
+                        'Welche "importierten" Bräuche gibt es dort?',
+                        'Wie reagieren die Menschen dort darauf? (positiv, negativ, gemischt)',
+                        'Was ist deine persönliche Meinung zur Globalisierung von Traditionen?'
+                    ],
+                    points: 100,
+                    badge: 'globalisierungsexperte'
+                },
+                {
+                    id: 'm8_4',
+                    title: '🏛️ Historische Wurzeln',
+                    text: 'Wähle einen bekannten Winterbrauch und erforsche seine historischen oder vorchristlichen Wurzeln.',
+                    hint: 'Viele Bräuche haben heidnische oder sehr alte Ursprünge. Suche nach "[Brauch] Ursprung" oder "[Brauch] history".',
+                    questions: [
+                        'Welchen Brauch hast du gewählt?',
+                        'Was sind die historischen Wurzeln dieses Brauchs?',
+                        'Wie hat er sich im Laufe der Zeit verändert?',
+                        'Was findest du an dieser Entwicklung bemerkenswert?'
+                    ],
+                    points: 100,
+                    badge: 'historiker'
+                },
+                {
+                    id: 'm8_5',
+                    title: '🎨 Kreative Neuinterpretation',
+                    text: 'Finde Beispiele, wie moderne Künstler oder Gemeinschaften alte Wintertraditionen neu interpretieren.',
+                    hint: 'Suche nach modernen Festivals, Kunstprojekten oder alternativen Feiern zur Winterzeit.',
+                    questions: [
+                        'Welches Beispiel hast du gefunden?',
+                        'Beschreibe die traditionelle und die moderne Version:',
+                        'Was ist die Botschaft oder das Ziel dieser Neuinterpretation?',
+                        'Würdest du an so etwas teilnehmen wollen? Warum/nicht?'
+                    ],
+                    points: 100,
+                    badge: 'innovator'
+                }
+            ]
+        };
+
+        // Badges
+        const badges = {
+            weihnachtsexperte: {
+                icon: '🎄',
+                title: 'Weihnachts-Experte',
+                description: 'Du kennst dich mit Weihnachtsbräuchen aus!'
+            },
+            essensprofi: {
+                icon: '🍽️',
+                title: 'Essens-Profi',
+                description: 'Du weißt, was auf den Wintertisch kommt!'
+            },
+            lichterexperte: {
+                icon: '💡',
+                title: 'Lichter-Experte',
+                description: 'Du hast die Lichterfeste erforscht!'
+            },
+            geschenkekenner: {
+                icon: '🎁',
+                title: 'Geschenke-Kenner',
+                description: 'Du weißt alles über Geschenkbräuche!'
+            },
+            musikforscher: {
+                icon: '🎵',
+                title: 'Musik-Forscher',
+                description: 'Du hast Winterlieder entdeckt!'
+            },
+            symbolkenner: {
+                icon: '🌟',
+                title: 'Symbol-Kenner',
+                description: 'Du kennst die Bedeutung von Wintersymbolen!'
+            },
+            kulturvergleicher: {
+                icon: '🔄',
+                title: 'Kultur-Vergleicher',
+                description: 'Du kannst verschiedene Kulturen vergleichen!'
+            },
+            familienexperte: {
+                icon: '👨‍👩‍👧‍👦',
+                title: 'Familien-Experte',
+                description: 'Du verstehst die Rolle von Familie im Winter!'
+            },
+            figurenkenner: {
+                icon: '🎭',
+                title: 'Figuren-Kenner',
+                description: 'Du kennst die mythischen Winterfiguren!'
+            },
+            kalenderkenner: {
+                icon: '📅',
+                title: 'Kalender-Kenner',
+                description: 'Du verstehst unterschiedliche Feiertagskalender!'
+            },
+            zeitforscher: {
+                icon: '🌍',
+                title: 'Zeit-Forscher',
+                description: 'Du erforschst den Wandel von Traditionen!'
+            },
+            reflexionsmeister: {
+                icon: '⚖️',
+                title: 'Reflexions-Meister',
+                description: 'Du denkst tief über Traditionen nach!'
+            },
+            detektiv: {
+                icon: '🔍',
+                title: 'Traditions-Detektiv',
+                description: 'Du überprüfst Fakten kritisch!'
+            },
+            globalisierungsexperte: {
+                icon: '🌐',
+                title: 'Globalisierungs-Experte',
+                description: 'Du verstehst kulturelle Einflüsse!'
+            },
+            historiker: {
+                icon: '🏛️',
+                title: 'Historiker',
+                description: 'Du kennst die Wurzeln der Traditionen!'
+            },
+            innovator: {
+                icon: '🎨',
+                title: 'Innovator',
+                description: 'Du entdeckst moderne Interpretationen!'
+            }
+        };
+
+        // Functions
+        function selectLevel(level) {
+            gameState.level = level;
+            showScreen('regionScreen');
+            renderRegions();
+            document.getElementById('statsBar').style.display = 'flex';
+            updateStats();
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function renderRegions() {
+            const grid = document.getElementById('regionGrid');
+            grid.innerHTML = '';
+            
+            for (const [key, region] of Object.entries(regions)) {
+                const card = document.createElement('div');
+                card.className = 'region-card';
+                card.onclick = () => selectRegion(key);
+                
+                const availableMissions = missions[gameState.level].filter(m => 
+                    !gameState.completedMissions.includes(m.id)
+                ).length;
+                
+                card.innerHTML = `
+                    <h3>${region.name}</h3>
+                    <p class="mission-count">${availableMissions} Missionen verfügbar</p>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        function selectRegion(regionKey) {
+            gameState.currentRegion = regionKey;
+            showMissions();
+        }
+
+        function showMissions() {
+            const availableMissions = missions[gameState.level].filter(m => 
+                !gameState.completedMissions.includes(m.id)
+            );
+            
+            if (availableMissions.length === 0) {
+                showNotification('Alle Missionen in diesem Level abgeschlossen! 🎉');
+                showScreen('regionScreen');
+                return;
+            }
+            
+            const mission = availableMissions[0];
+            gameState.currentMission = mission;
+            
+            const view = document.getElementById('missionView');
+            const region = regions[gameState.currentRegion];
+            
+            let questionsHtml = mission.questions.map((q, i) => `
+                <div style="margin: 20px 0;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 10px; color: #667eea;">
+                        ${q}
+                    </label>
+                    <textarea id="answer_${i}" placeholder="Deine Antwort hier...">${gameState.answers[mission.id]?.[i] || ''}</textarea>
+                </div>
+            `).join('');
+            
+            let countrySelect = '';
+            if (mission.questions[0].includes('Land')) {
+                countrySelect = `
+                    <div class="country-select">
+                        <label>Wähle dein Land für diese Mission:</label>
+                        <select id="selectedCountry">
+                            <option value="">-- Bitte wählen --</option>
+                            ${region.countries.map(c => `<option value="${c}">${c}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            }
+            
+            view.innerHTML = `
+                <div class="mission-card">
+                    <h3>${mission.title}</h3>
+                    <p class="mission-text">${mission.text}</p>
+                    <div class="hint">
+                        <strong>💡 Recherche-Tipp:</strong> ${mission.hint}
+                    </div>
+                    ${countrySelect}
+                    ${questionsHtml}
+                    <div class="button-group">
+                        <button class="button" onclick="completeMission()">✅ Mission abschließen</button>
+                        <button class="button button-secondary" onclick="saveMissionProgress()">💾 Zwischenspeichern</button>
+                        <button class="button button-secondary" onclick="backToRegions()">↩️ Zurück</button>
+                    </div>
+                </div>
+            `;
+            
+            showScreen('missionScreen');
+        }
+
+        function saveMissionProgress() {
+            const mission = gameState.currentMission;
+            const answers = [];
+            
+            mission.questions.forEach((q, i) => {
+                const answer = document.getElementById(`answer_${i}`).value;
+                answers.push(answer);
+            });
+            
+            if (!gameState.answers[mission.id]) {
+                gameState.answers[mission.id] = [];
+            }
+            gameState.answers[mission.id] = answers;
+            
+            showNotification('Fortschritt gespeichert! 💾');
+        }
+
+        function completeMission() {
+            const mission = gameState.currentMission;
+            const answers = [];
+            
+            mission.questions.forEach((q, i) => {
+                const answer = document.getElementById(`answer_${i}`).value.trim();
+                answers.push(answer);
+            });
+            
+            // Check if all answers are filled
+            if (answers.some(a => a === '')) {
+                alert('Bitte beantworte alle Fragen, bevor du die Mission abschließt!');
+                return;
+            }
+            
+            // Save answers
+            gameState.answers[mission.id] = answers;
+            gameState.completedMissions.push(mission.id);
+            gameState.points += mission.points;
+            
+            // Award badge
+            if (mission.badge && !gameState.earnedBadges.has(mission.badge)) {
+                gameState.earnedBadges.add(mission.badge);
+                showNotification(`Neues Badge erhalten: ${badges[mission.badge].title}! 🏆`);
+            }
+            
+            updateStats();
+            showNotification(`Mission abgeschlossen! +${mission.points} Punkte! 🎉`);
+            
+            // Go back to regions
+            setTimeout(() => {
+                showScreen('regionScreen');
+            }, 1500);
+        }
+
+        function backToRegions() {
+            saveMissionProgress();
+            showScreen('regionScreen');
+        }
+
+        function updateStats() {
+            const totalMissions = missions[gameState.level].length;
+            const completed = gameState.completedMissions.length;
+            const progress = (completed / totalMissions) * 100;
+            
+            document.getElementById('points').textContent = gameState.points;
+            document.getElementById('missionCount').textContent = `${completed}/${totalMissions}`;
+            document.getElementById('badgeCount').textContent = gameState.earnedBadges.size;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showSummary() {
+            // Update final stats
+            document.getElementById('finalPoints').textContent = gameState.points;
+            document.getElementById('finalMissions').textContent = gameState.completedMissions.length;
+            document.getElementById('finalBadges').textContent = gameState.earnedBadges.size;
+            
+            // Show earned badges
+            const earnedBadgesContainer = document.getElementById('earnedBadges');
+            earnedBadgesContainer.innerHTML = '';
+            
+            gameState.earnedBadges.forEach(badgeId => {
+                const badge = badges[badgeId];
+                const badgeEl = document.createElement('div');
+                badgeEl.className = 'badge earned';
+                badgeEl.innerHTML = `
+                    <div class="badge-icon">${badge.icon}</div>
+                    <div class="badge-title">${badge.title}</div>
+                    <div class="badge-description">${badge.description}</div>
+                `;
+                earnedBadgesContainer.appendChild(badgeEl);
+            });
+            
+            // Show completed missions
+            const completedContainer = document.getElementById('completedMissions');
+            completedContainer.innerHTML = '';
+            
+            gameState.completedMissions.forEach(missionId => {
+                const mission = missions[gameState.level].find(m => m.id === missionId);
+                const answers = gameState.answers[missionId];
+                
+                const item = document.createElement('div');
+                item.className = 'summary-item';
+                item.innerHTML = `
+                    <h4>${mission.title}</h4>
+                    ${mission.questions.map((q, i) => `
+                        <p style="margin-top: 15px;">
+                            <strong>${q}</strong><br>
+                            <span class="answer">${answers[i]}</span>
+                        </p>
+                    `).join('')}
+                `;
+                completedContainer.appendChild(item);
+            });
+            
+            // Presentation prep
+            const prepContainer = document.getElementById('presentationPrep');
+            if (gameState.completedMissions.length > 0) {
+                prepContainer.innerHTML = `
+                    <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107;">
+                        <h4 style="color: #856404; margin-bottom: 15px;">✨ Deine Präsentations-Stichpunkte:</h4>
+                        <p style="line-height: 1.8;">
+                            Du hast ${gameState.completedMissions.length} Mission(en) abgeschlossen!<br><br>
+                            <strong>Empfehlung:</strong> Wähle die Mission über "${missions[gameState.level].find(m => m.id === gameState.completedMissions[0]).title}" für deine Präsentation.<br><br>
+                            <strong>Deine wichtigsten Punkte:</strong><br>
+                            ${gameState.answers[gameState.completedMissions[0]].slice(0, 3).map((a, i) => `• ${a.substring(0, 100)}${a.length > 100 ? '...' : ''}`).join('<br>')}
+                        </p>
+                    </div>
+                `;
+            }
+            
+            showScreen('summaryScreen');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function saveProgress() {
+            const saveData = JSON.stringify(gameState);
+            localStorage.setItem('wintertraditionen_save', saveData);
+            
+            // Also create downloadable file
+            const blob = new Blob([saveData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wintertraditionen_fortschritt_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Fortschritt gespeichert und heruntergeladen! 💾');
+        }
+
+        function loadProgress() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const loadedState = JSON.parse(event.target.result);
+                        gameState = loadedState;
+                        gameState.earnedBadges = new Set(loadedState.earnedBadges);
+                        
+                        if (gameState.level > 0) {
+                            document.getElementById('statsBar').style.display = 'flex';
+                            showScreen('regionScreen');
+                            renderRegions();
+                            updateStats();
+                            showNotification('Fortschritt geladen! ✅');
+                        }
+                    } catch (err) {
+                        alert('Fehler beim Laden der Datei. Bitte überprüfe, ob es die richtige Datei ist.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function downloadResults() {
+            let text = `WINTERTRADITIONEN-EXPEDITION - FORSCHUNGSERGEBNISSE\n`;
+            text += `=================================================\n\n`;
+            text += `Name: ___________________________\n`;
+            text += `Klasse: ${gameState.level}\n`;
+            text += `Datum: ${new Date().toLocaleDateString('de-DE')}\n\n`;
+            text += `STATISTIK\n`;
+            text += `---------\n`;
+            text += `Gesamtpunkte: ${gameState.points}\n`;
+            text += `Erledigte Missionen: ${gameState.completedMissions.length}\n`;
+            text += `Gesammelte Badges: ${gameState.earnedBadges.size}\n\n`;
+            
+            text += `GESAMMELTE BADGES\n`;
+            text += `-----------------\n`;
+            gameState.earnedBadges.forEach(badgeId => {
+                const badge = badges[badgeId];
+                text += `${badge.icon} ${badge.title}: ${badge.description}\n`;
+            });
+            text += `\n`;
+            
+            text += `FORSCHUNGSERGEBNISSE\n`;
+            text += `====================\n\n`;
+            
+            gameState.completedMissions.forEach((missionId, index) => {
+                const mission = missions[gameState.level].find(m => m.id === missionId);
+                const answers = gameState.answers[missionId];
+                
+                text += `MISSION ${index + 1}: ${mission.title}\n`;
+                text += `-`.repeat(mission.title.length + 12) + `\n\n`;
+                
+                mission.questions.forEach((q, i) => {
+                    text += `${q}\n`;
+                    text += `${answers[i]}\n\n`;
+                });
+                
+                text += `\n`;
+            });
+            
+            text += `\n=================================================\n`;
+            text += `Bitte sende diese Datei an Michael via Microsoft Teams.\n`;
+            text += `Diese Antworten können für ein Quiz verwendet werden!\n`;
+            
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Wintertraditionen_Ergebnisse_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Ergebnisse heruntergeladen! 📥 Bitte via Teams an Michael senden.');
+        }
+
+        // Auto-save to localStorage every 30 seconds
+        setInterval(() => {
+            if (gameState.level > 0) {
+                localStorage.setItem('wintertraditionen_autosave', JSON.stringify(gameState));
+            }
+        }, 30000);
+
+        // Load from localStorage on startup
+        window.addEventListener('load', () => {
+            const autoSave = localStorage.getItem('wintertraditionen_autosave');
+            if (autoSave) {
+                try {
+                    const loadedState = JSON.parse(autoSave);
+                    const shouldLoad = confirm('Es wurde ein automatisch gespeicherter Fortschritt gefunden. Möchtest du ihn laden?');
+                    if (shouldLoad) {
+                        gameState = loadedState;
+                        gameState.earnedBadges = new Set(loadedState.earnedBadges);
+                        if (gameState.level > 0) {
+                            document.getElementById('statsBar').style.display = 'flex';
+                            showScreen('regionScreen');
+                            renderRegions();
+                            updateStats();
+                        }
+                    }
+                } catch (err) {
+                    console.log('Could not load autosave');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
