@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindenburg: Verhindere die Katastrophe!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poiret+One&family=Raleway:wght@300;400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-dark: #1a1a2e;
+            --primary-mid: #16213e;
+            --primary-light: #0f3460;
+            --accent-silver: #c4c4c4;
+            --accent-gold: #d4af37;
+            --text-light: #e8e8e8;
+            --text-muted: #a0a0a0;
+            --success: #4a7c59;
+            --warning: #c9a227;
+            --danger: #8b3a3a;
+        }
+        
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-mid) 50%, var(--primary-light) 100%);
+            min-height: 100vh;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        /* Art Deco Header */
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            border-bottom: 3px solid var(--accent-gold);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .header::before,
+        .header::after {
+            content: '◆';
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .header::before {
+            left: 10px;
+        }
+        
+        .header::after {
+            right: 10px;
+        }
+        
+        .header h1 {
+            font-family: 'Poiret One', cursive;
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--accent-silver);
+            font-weight: 300;
+        }
+        
+        /* Airship SVG Art */
+        .airship-art {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .airship-svg {
+            width: 200px;
+            height: 60px;
+            fill: var(--accent-silver);
+            opacity: 0.7;
+        }
+        
+        /* Stats Panel */
+        .stats-panel {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--accent-silver);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+        }
+        
+        .stat-wissenschaft .stat-value {
+            color: #6eb5ff;
+        }
+        
+        .stat-mut .stat-value {
+            color: #ff9f6e;
+        }
+        
+        /* Game Content */
+        .game-content {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(196, 196, 196, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        
+        .scene-title {
+            font-family: 'Poiret One', cursive;
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .narrative {
+            font-size: 1.05rem;
+            margin-bottom: 25px;
+            text-align: justify;
+        }
+        
+        .narrative p {
+            margin-bottom: 15px;
+        }
+        
+        /* Vocabulary Hints */
+        .vocab-hint {
+            background: rgba(106, 181, 255, 0.1);
+            border-left: 3px solid #6eb5ff;
+            padding: 12px 15px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .vocab-hint strong {
+            color: #6eb5ff;
+        }
+        
+        /* Science Info Box */
+        .science-box {
+            background: rgba(74, 124, 89, 0.2);
+            border: 1px solid var(--success);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .science-box h4 {
+            color: #7dcea0;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .science-box h4::before {
+            content: '⚗️';
+        }
+        
+        /* Choices */
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .choice-btn {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.1) 100%);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-light);
+            padding: 18px 25px;
+            font-size: 1rem;
+            font-family: 'Raleway', sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .choice-btn:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.4) 0%, rgba(212, 175, 55, 0.2) 100%);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .choice-btn:active {
+            transform: translateX(2px);
+        }
+        
+        .choice-letter {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        /* Feedback Messages */
+        .feedback {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feedback-positive {
+            background: rgba(74, 124, 89, 0.3);
+            border: 1px solid var(--success);
+        }
+        
+        .feedback-warning {
+            background: rgba(201, 162, 39, 0.3);
+            border: 1px solid var(--warning);
+        }
+        
+        .feedback-negative {
+            background: rgba(139, 58, 58, 0.3);
+            border: 1px solid var(--danger);
+        }
+        
+        .feedback h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .points-earned {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+        }
+        
+        /* Continue Button */
+        .continue-btn {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Raleway', sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+        }
+        
+        .continue-btn:hover {
+            background: #e8c547;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        /* Endings */
+        .ending-screen {
+            text-align: center;
+        }
+        
+        .ending-title {
+            font-family: 'Poiret One', cursive;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .ending-best .ending-title {
+            color: #7dcea0;
+        }
+        
+        .ending-good .ending-title {
+            color: #6eb5ff;
+        }
+        
+        .ending-partial .ending-title {
+            color: var(--warning);
+        }
+        
+        .ending-historical .ending-title {
+            color: var(--accent-silver);
+        }
+        
+        .final-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .final-stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .final-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .final-stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        /* History Box */
+        .history-box {
+            background: rgba(196, 196, 196, 0.1);
+            border: 1px solid var(--accent-silver);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+        }
+        
+        .history-box h4 {
+            color: var(--accent-silver);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .history-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .history-box li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(196, 196, 196, 0.2);
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .history-box li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+        }
+        
+        .history-box li:last-child {
+            border-bottom: none;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-gold), #e8c547);
+            transition: width 0.5s ease;
+        }
+        
+        /* Restart Button */
+        .restart-btn {
+            background: transparent;
+            border: 2px solid var(--accent-silver);
+            color: var(--accent-silver);
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-family: 'Raleway', sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .restart-btn:hover {
+            background: var(--accent-silver);
+            color: var(--primary-dark);
+        }
+        
+        /* Art Deco Decorations */
+        .deco-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            margin: 25px 0;
+        }
+        
+        .deco-divider {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+        }
+        
+        /* Decision Summary */
+        .decision-summary {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .decision-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .decision-item:last-child {
+            border-bottom: none;
+        }
+        
+        .decision-icon {
+            font-size: 1.2rem;
+        }
+        
+        .decision-good .decision-icon {
+            color: var(--success);
+        }
+        
+        .decision-bad .decision-icon {
+            color: var(--danger);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+                letter-spacing: 2px;
+            }
+            
+            .header::before,
+            .header::after {
+                display: none;
+            }
+            
+            .stats-panel {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            
+            .stat {
+                min-width: 80px;
+            }
+            
+            .game-content {
+                padding: 20px 15px;
+            }
+            
+            .scene-title {
+                font-size: 1.5rem;
+            }
+            
+            .choice-btn {
+                padding: 15px 18px;
+                font-size: 0.95rem;
+            }
+            
+            .final-stats {
+                gap: 15px;
+            }
+            
+            .final-stat {
+                padding: 15px 20px;
+            }
+        }
+        
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .start-screen .intro-text {
+            font-size: 1.1rem;
+            margin: 30px 0;
+            text-align: justify;
+        }
+        
+        .start-btn {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: 'Poiret One', cursive;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .start-btn:hover {
+            background: #e8c547;
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        /* Timestamp */
+        .timestamp {
+            font-family: 'Poiret One', cursive;
+            color: var(--accent-silver);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        /* Character quote */
+        .quote {
+            font-style: italic;
+            border-left: 3px solid var(--accent-gold);
+            padding-left: 15px;
+            margin: 15px 0;
+            color: var(--accent-silver);
+        }
+        
+        .quote-author {
+            display: block;
+            text-align: right;
+            font-style: normal;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Hindenburg</h1>
+            <p class="subtitle">Verhindere die Katastrophe!</p>
+        </header>
+        
+        <!-- Airship Art -->
+        <div class="airship-art">
+            <svg class="airship-svg" viewBox="0 0 200 60">
+                <ellipse cx="100" cy="25" rx="85" ry="20" fill="currentColor"/>
+                <rect x="80" y="40" width="40" height="12" rx="3" fill="currentColor"/>
+                <polygon points="185,25 200,20 200,30" fill="currentColor"/>
+                <rect x="20" y="22" width="8" height="6" fill="currentColor" opacity="0.7"/>
+                <rect x="35" y="22" width="8" height="6" fill="currentColor" opacity="0.7"/>
+                <line x1="85" y1="45" x2="75" y2="55" stroke="currentColor" stroke-width="1"/>
+                <line x1="115" y1="45" x2="125" y2="55" stroke="currentColor" stroke-width="1"/>
+            </svg>
+        </div>
+        
+        <!-- Stats Panel (hidden initially) -->
+        <div class="stats-panel hidden" id="stats-panel">
+            <div class="stat stat-wissenschaft">
+                <div class="stat-label">Wissenschaft</div>
+                <div class="stat-value" id="science-points">0</div>
+            </div>
+            <div class="stat stat-mut">
+                <div class="stat-label">Mut</div>
+                <div class="stat-value" id="courage-points">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Entscheidungen</div>
+                <div class="stat-value" id="decisions-count">0/7</div>
+            </div>
+        </div>
+        
+        <!-- Progress Bar (hidden initially) -->
+        <div class="progress-container hidden" id="progress-container">
+            <div class="progress-label">
+                <span>Fortschritt</span>
+                <span id="progress-percent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <!-- Game Content Area -->
+        <div class="game-content" id="game-content">
+            <!-- Content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const gameState = {
+            sciencePoints: 0,
+            couragePoints: 0,
+            decisions: [],
+            currentScene: 'start',
+            totalDecisions: 7,
+            flags: {
+                choseHelium: false,
+                foundLeak: false,
+                delayedFlight: false,
+                warnedAboutStatic: false,
+                improvedGrounding: false,
+                alertedCrew: false,
+                finalAction: null
+            }
+        };
+
+        // DOM Elements
+        const gameContent = document.getElementById('game-content');
+        const statsPanel = document.getElementById('stats-panel');
+        const progressContainer = document.getElementById('progress-container');
+        const sciencePointsEl = document.getElementById('science-points');
+        const couragePointsEl = document.getElementById('courage-points');
+        const decisionsCountEl = document.getElementById('decisions-count');
+        const progressFill = document.getElementById('progress-fill');
+        const progressPercent = document.getElementById('progress-percent');
+
+        // Scenes Data
+        const scenes = {
+            start: {
+                render: function() {
+                    return `
+                        <div class="start-screen">
+                            <div class="timestamp">Mai 1937 • Friedrichshafen, Deutschland</div>
+                            <div class="deco-divider">◆ ◆ ◆</div>
+                            <div class="intro-text">
+                                <p>Das Jahr ist 1937. Du bist <strong>Thomas Müller</strong>, ein junger Ingenieur bei der Deutschen Zeppelin-Reederei. Du hast gerade dein Studium der Luftfahrttechnik abgeschlossen und arbeitest nun an dem berühmtesten Luftschiff der Welt: der <strong>LZ 129 Hindenburg</strong>.</p>
+                                <p>Die Hindenburg ist ein Wunder der Technik – 245 Meter lang, gefüllt mit 200.000 Kubikmetern Wasserstoff. Bald soll sie ihre letzte Fahrt von Frankfurt nach Lakehurst, New Jersey antreten.</p>
+                                <p>Du hast jedoch Bedenken. Du hast wissenschaftliche Artikel über die Gefahren von Wasserstoff gelesen. Vielleicht kannst <em>du</em> etwas ändern?</p>
+                            </div>
+                            <div class="quote">
+                                „Die Zukunft gehört denen, die an die Schönheit ihrer Träume glauben – aber auch denen, die die Risiken verstehen."
+                                <span class="quote-author">— Dein Professor an der Technischen Hochschule</span>
+                            </div>
+                            <div class="deco-line"></div>
+                            <p style="color: var(--text-muted); margin-bottom: 20px;">In diesem Spiel triffst du wichtige Entscheidungen. Sammle <strong style="color: #6eb5ff;">Wissenschaft-Punkte</strong> durch kluges wissenschaftliches Denken und <strong style="color: #ff9f6e;">Mut-Punkte</strong> durch mutige Entscheidungen.</p>
+                            <button class="start-btn" onclick="startGame()">Spiel Starten</button>
+                        </div>
+                    `;
+                }
+            },
+
+            scene1: {
+                title: "Die Designbesprechung",
+                timestamp: "April 1937 • Konstruktionsbüro",
+                render: function() {
+                    return `
+                        <div class="timestamp">${this.timestamp}</div>
+                        <h2 class="scene-title">${this.title}</h2>
+                        <div class="narrative">
+                            <p>Du sitzt in einer wichtigen Besprechung mit den leitenden Ingenieuren. Das Thema: die Gasfüllung für zukünftige Flüge der Hindenburg.</p>
+                            <p>Dr. Hugo Eckener, der legendäre Luftschiffkapitän, spricht: „Meine Herren, wir müssen über das Traggas diskutieren. Die Amerikaner haben ein Helium-Embargo gegen Deutschland verhängt. Wir haben nur Wasserstoff zur Verfügung."</p>
+                            <p>Ein älterer Ingenieur fügt hinzu: „Wasserstoff ist bewährt. Wir fliegen seit Jahren damit."</p>
+                        </div>
+                        <div class="vocab-hint">
+                            <strong>Vokabelhilfe:</strong> das Traggas = lifting gas; das Embargo = embargo (Handelsverbot); bewährt = proven, tested
+                        </div>
+                        <div class="science-box">
+                            <h4>Wissenschaftliche Fakten</h4>
+                            <p><strong>Wasserstoff (H₂):</strong> Sehr leicht und günstig, aber hochentzündlich (brennt leicht). Explosionsgefahr bei Kontakt mit Sauerstoff und einer Zündquelle.</p>
+                            <p><strong>Helium (He):</strong> Auch sehr leicht, aber nicht brennbar. Sicherer, aber viel teurer und seltener.</p>
+                        </div>
+                        <p class="narrative">Dr. Eckener schaut dich an: „Müller, Sie sind jung und haben frische Ideen. Was meinen Sie?"</p>
+                        <div class="choices">
+                            <button class="choice-btn" onclick="makeChoice('scene1', 'helium')">
+                                <span class="choice-letter">A</span>
+                                „Wir sollten alles versuchen, um Helium zu bekommen. Die Sicherheit unserer Passagiere muss Priorität haben!"
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene1', 'hydrogen_safe')">
+                                <span class="choice-letter">B</span>
+                                „Wenn wir Wasserstoff verwenden müssen, sollten wir zumindest die Sicherheitsmaßnahmen verstärken."
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene1', 'hydrogen_accept')">
+                                <span class="choice-letter">C</span>
+                                „Die erfahrenen Ingenieure wissen es besser. Wasserstoff hat bisher funktioniert."
+                            </button>
+                        </div>
+                    `;
+                },
+                choices: {
+                    helium: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Mutige Entscheidung!',
+                            text: 'Du hast Mut gezeigt, indem du für die sicherere Option argumentiert hast. Dr. Eckener nickt nachdenklich. "Sie haben recht, junger Mann. Ich werde noch einmal mit den Amerikanern verhandeln." Obwohl das Embargo bestehen bleibt, hast du wichtige Diskussionen angestoßen.',
+                            science: 2,
+                            courage: 3
+                        },
+                        flag: { choseHelium: true }
+                    },
+                    hydrogen_safe: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Kluge wissenschaftliche Analyse!',
+                            text: 'Du zeigst wissenschaftliches Denken: Wenn ein Risiko unvermeidbar ist, muss man es minimieren. Die Ingenieure stimmen zu, zusätzliche Sicherheitsprotokolle zu entwickeln.',
+                            science: 3,
+                            courage: 1
+                        },
+                        flag: {}
+                    },
+                    hydrogen_accept: {
+                        feedback: {
+                            type: 'warning',
+                            title: 'Eine verpasste Gelegenheit',
+                            text: 'Du hast dich der Mehrheit angeschlossen. Das ist verständlich – du bist neu hier. Aber hättest du vielleicht einen wichtigen Beitrag leisten können?',
+                            science: 0,
+                            courage: 0
+                        },
+                        flag: {}
+                    }
+                }
+            },
+
+            scene2: {
+                title: "Die Inspektion",
+                timestamp: "3. Mai 1937 • Luftschiffhalle",
+                render: function() {
+                    return `
+                        <div class="timestamp">${this.timestamp}</div>
+                        <h2 class="scene-title">${this.title}</h2>
+                        <div class="narrative">
+                            <p>Die Hindenburg wird für ihre Reise nach Amerika vorbereitet. Du gehst durch die riesige Luftschiffhalle und inspizierst das Schiff. Der Geruch von Stoff und Dope (Spannlack) liegt in der Luft.</p>
+                            <p>Bei der Inspektion der Gaszellen bemerkst du etwas Ungewöhnliches: An einer Stelle scheint die Außenhaut leicht beschädigt zu sein. Es könnte nichts sein – oder ein potenzielles Leck.</p>
+                        </div>
+                        <div class="vocab-hint">
+                            <strong>Vokabelhilfe:</strong> die Gaszelle = gas cell; die Außenhaut = outer covering; das Leck = leak; der Spannlack = dope (fabric coating)
+                        </div>
+                        <div class="science-box">
+                            <h4>Wissenschaftliche Fakten</h4>
+                            <p>Die Außenhaut der Hindenburg war mit einem speziellen Lack behandelt, der Aluminiumpulver und Eisenoxid enthielt. Diese Kombination kann unter bestimmten Bedingungen wie Thermit reagieren – ein Material, das extrem heiß brennt!</p>
+                        </div>
+                        <p class="narrative">Was tust du?</p>
+                        <div class="choices">
+                            <button class="choice-btn" onclick="makeChoice('scene2', 'report')">
+                                <span class="choice-letter">A</span>
+                                Die Stelle sofort dem Chefingenieur melden und eine gründliche Untersuchung fordern.
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene2', 'investigate')">
+                                <span class="choice-letter">B</span>
+                                Selbst genauer untersuchen und Notizen machen, bevor du jemanden informierst.
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene2', 'ignore')">
+                                <span class="choice-letter">C</span>
+                                Es ist wahrscheinlich nichts Wichtiges. Die erfahrenen Techniker hätten es bemerkt.
+                            </button>
+                        </div>
+                    `;
+                },
+                choices: {
+                    report: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Verantwortungsvolles Handeln!',
+                            text: 'Der Chefingenieur nimmt deinen Bericht ernst. Eine Untersuchung zeigt tatsächlich eine kleine Schwachstelle in der Außenhaut. Sie wird repariert. "Gut beobachtet, Müller!", sagt er.',
+                            science: 2,
+                            courage: 2
+                        },
+                        flag: { foundLeak: true }
+                    },
+                    investigate: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Gründliche Analyse!',
+                            text: 'Du dokumentierst alles sorgfältig mit Skizzen und Messungen. Als du dann Bericht erstattest, ist dein detaillierter Bericht sehr hilfreich. Die Stelle wird überprüft und verstärkt.',
+                            science: 3,
+                            courage: 1
+                        },
+                        flag: { foundLeak: true }
+                    },
+                    ignore: {
+                        feedback: {
+                            type: 'negative',
+                            title: 'Eine gefährliche Annahme',
+                            text: 'Du gehst weiter, ohne die Stelle zu melden. Vielleicht ist es wirklich nichts – aber was, wenn doch? Wissenschaftler sollten immer vorsichtig sein und Anomalien untersuchen.',
+                            science: 0,
+                            courage: 0
+                        },
+                        flag: {}
+                    }
+                }
+            },
+
+            scene3: {
+                title: "Die Wetterprognose",
+                timestamp: "6. Mai 1937 • Morgens",
+                render: function() {
+                    return `
+                        <div class="timestamp">${this.timestamp}</div>
+                        <h2 class="scene-title">${this.title}</h2>
+                        <div class="narrative">
+                            <p>Die Hindenburg ist über dem Atlantik und nähert sich der amerikanischen Küste. Du bist mit an Bord als technischer Assistent. Der Funker hat gerade eine Wettermeldung erhalten.</p>
+                            <p>Kapitän Max Pruss studiert die Berichte: „Es gibt Gewitterwarnungen über Lakehurst. Starke Winde und elektrische Aktivität."</p>
+                            <p>Ein Offizier fragt: „Sollen wir warten oder versuchen zu landen?"</p>
+                        </div>
+                        <div class="vocab-hint">
+                            <strong>Vokabelhilfe:</strong> die Gewitterwarnung = thunderstorm warning; die elektrische Aktivität = electrical activity; der Funker = radio operator
+                        </div>
+                        <div class="science-box">
+                            <h4>Wissenschaftliche Fakten</h4>
+                            <p><strong>Gewitter und Luftschiffe:</strong> Gewitter erzeugen statische Elektrizität in der Atmosphäre. Ein Funke (Zündfunke) in der Nähe von Wasserstoffgas kann katastrophale Folgen haben.</p>
+                            <p><strong>Statische Aufladung:</strong> Wenn ein Luftschiff durch unterschiedlich geladene Luftschichten fliegt, kann es sich elektrisch aufladen.</p>
+                        </div>
+                        <p class="narrative">Der Kapitän bemerkt dich: „Müller, Sie haben doch Physik studiert. Was sagen Sie zur Wetterlage?"</p>
+                        <div class="choices">
+                            <button class="choice-btn" onclick="makeChoice('scene3', 'delay')">
+                                <span class="choice-letter">A</span>
+                                „Herr Kapitän, ich empfehle dringend zu warten. Gewitter und Wasserstoff sind eine gefährliche Kombination."
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene3', 'caution')">
+                                <span class="choice-letter">B</span>
+                                „Wir sollten sehr vorsichtig sein. Wenn wir landen müssen, dann nur mit maximalen Sicherheitsvorkehrungen."
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene3', 'proceed')">
+                                <span class="choice-letter">C</span>
+                                „Sie haben mehr Erfahrung als ich, Herr Kapitän. Ich vertraue Ihrem Urteil."
+                            </button>
+                        </div>
+                    `;
+                },
+                choices: {
+                    delay: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Wissenschaftlich fundierter Rat!',
+                            text: 'Kapitän Pruss nickt ernst. "Sie haben recht, Müller. Sicherheit geht vor." Die Hindenburg kreist mehrere Stunden über der Küste und wartet auf besseres Wetter. Die Passagiere sind ungeduldig, aber du weißt, dass es die richtige Entscheidung war.',
+                            science: 3,
+                            courage: 2
+                        },
+                        flag: { delayedFlight: true }
+                    },
+                    caution: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Vernünftiger Kompromiss!',
+                            text: 'Der Kapitän stimmt zu, besonders vorsichtig vorzugehen. Die Crew wird angewiesen, alle Sicherheitsprotokolle genau zu befolgen. Es ist nicht die sicherste Option, aber besser als nichts.',
+                            science: 2,
+                            courage: 1
+                        },
+                        flag: {}
+                    },
+                    proceed: {
+                        feedback: {
+                            type: 'warning',
+                            title: 'Verpasste Chance',
+                            text: 'Du hast wertvolles Wissen, das du nicht geteilt hast. Wissenschaftler haben die Verantwortung, ihr Wissen einzusetzen, besonders wenn Menschenleben auf dem Spiel stehen.',
+                            science: 0,
+                            courage: 0
+                        },
+                        flag: {}
+                    }
+                }
+            },
+
+            scene4: {
+                title: "Die Warnung",
+                timestamp: "6. Mai 1937 • Nachmittag",
+                render: function() {
+                    return `
+                        <div class="timestamp">${this.timestamp}</div>
+                        <h2 class="scene-title">${this.title}</h2>
+                        <div class="narrative">
+                            <p>Das Wetter hat sich etwas gebessert, aber die Atmosphäre fühlt sich immer noch „elektrisch" an. Du spürst ein leichtes Kribbeln auf der Haut – ein Zeichen für statische Aufladung.</p>
+                            <p>Die Hindenburg beginnt ihren Landeanflug auf Lakehurst. Unten warten Hunderte von Zuschauern und die Bodencrew.</p>
+                            <p>Du erinnerst dich an deine Vorlesungen über Elektrostatik: Wenn das Luftschiff nicht richtig geerdet wird, könnte die angesammelte elektrische Ladung.....</p>
+                        </div>
+                        <div class="vocab-hint">
+                            <strong>Vokabelhilfe:</strong> das Kribbeln = tingling; die Aufladung = charge; geerdet = grounded; die Bodencrew = ground crew
+                        </div>
+                        <div class="science-box">
+                            <h4>Wissenschaftliche Fakten</h4>
+                            <p><strong>Erdung (Grounding):</strong> Elektrische Ladung muss sicher in die Erde abgeleitet werden. Die Landeseile (mooring ropes) eines Luftschiffs sollten als erstes den Boden berühren, um das Schiff zu erden.</p>
+                            <p><strong>Potentialdifferenz:</strong> Wenn verschiedene Teile des Schiffs unterschiedliche elektrische Ladungen haben, kann ein Funke entstehen.</p>
+                        </div>
+                        <p class="narrative">Dir wird klar, dass du handeln musst. Aber wie?</p>
+                        <div class="choices">
+                            <button class="choice-btn" onclick="makeChoice('scene4', 'radio')">
+                                <span class="choice-letter">A</span>
+                                Zum Funkraum laufen und die Bodencrew warnen: Sie sollen auf statische Entladung achten und das Schiff sofort erden!
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene4', 'captain')">
+                                <span class="choice-letter">B</span>
+                                Den Kapitän informieren und vorschlagen, die Landung noch einmal zu überdenken.
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene4', 'observe')">
+                                <span class="choice-letter">C</span>
+                                Genau beobachten und bereit sein zu helfen, falls etwas passiert.
+                            </button>
+                        </div>
+                    `;
+                },
+                choices: {
+                    radio: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Schnelles, entschlossenes Handeln!',
+                            text: 'Du rennst zum Funkraum und übermittelst deine Warnung. Der Funker ist überrascht, aber er sendet die Nachricht. Unten bereitet sich die Bodencrew vor, das Schiff sofort zu erden.',
+                            science: 2,
+                            courage: 3
+                        },
+                        flag: { warnedAboutStatic: true }
+                    },
+                    captain: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Verantwortungsvoller Ansatz!',
+                            text: 'Du informierst Kapitän Pruss über deine Bedenken. Er nimmt sie ernst und befiehlt erhöhte Vorsicht bei der Landung. Die Crew wird angewiesen, besonders auf die Erdung zu achten.',
+                            science: 2,
+                            courage: 2
+                        },
+                        flag: { warnedAboutStatic: true }
+                    },
+                    observe: {
+                        feedback: {
+                            type: 'warning',
+                            title: 'Zu passiv',
+                            text: 'Beobachten ist nicht genug, wenn du wichtiges Wissen hast. Manchmal muss man aktiv handeln, auch wenn man unsicher ist.',
+                            science: 1,
+                            courage: 0
+                        },
+                        flag: {}
+                    }
+                }
+            },
+
+            scene5: {
+                title: "Die Landeseile",
+                timestamp: "6. Mai 1937 • 19:21 Uhr",
+                render: function() {
+                    return `
+                        <div class="timestamp">${this.timestamp}</div>
+                        <h2 class="scene-title">${this.title}</h2>
+                        <div class="narrative">
+                            <p>Die Hindenburg schwebt jetzt etwa 60 Meter über dem Boden. Die Landeseile werden herabgelassen. Du beobachtest nervös vom Fenster aus.</p>
+                            <p>Plötzlich siehst du etwas, das dich alarmiert: Die Seile berühren den nassen Boden, aber das Schiff selbst ist noch nicht geerdet. Es könnte eine Potentialdifferenz zwischen dem Schiff und dem Boden geben!</p>
+                            ${gameState.flags.warnedAboutStatic ? 
+                                '<p>Dank deiner früheren Warnung ist die Bodencrew bereits aufmerksam und bereitet sich auf schnelle Erdung vor.</p>' : 
+                                '<p>Die Bodencrew scheint sich der Gefahr nicht bewusst zu sein.</p>'}
+                        </div>
+                        <div class="vocab-hint">
+                            <strong>Vokabelhilfe:</strong> die Landeseile = mooring ropes; herabgelassen = lowered; die Potentialdifferenz = potential difference (voltage difference)
+                        </div>
+                        <div class="science-box">
+                            <h4>Wissenschaftliche Fakten</h4>
+                            <p>Wenn die nassen Landeseile den Boden berühren, werden sie leitfähig (conductive). Wenn das Schiff eine andere elektrische Ladung hat als der Boden, kann ein Ausgleichsstrom fließen – und möglicherweise einen Funken erzeugen.</p>
+                        </div>
+                        <p class="narrative">Du hast nur Sekunden. Was kannst du noch tun?</p>
+                        <div class="choices">
+                            <button class="choice-btn" onclick="makeChoice('scene5', 'shout')">
+                                <span class="choice-letter">A</span>
+                                Laut rufen und mit den Armen winken, um die Bodencrew auf die Gefahr aufmerksam zu machen!
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene5', 'ground_rod')">
+                                <span class="choice-letter">B</span>
+                                Zur Technikstation rennen und prüfen, ob es eine Möglichkeit gibt, das Schiff zusätzlich zu erden.
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene5', 'pray')">
+                                <span class="choice-letter">C</span>
+                                Du kannst jetzt nichts mehr tun. Du hoffst, dass alles gut geht.
+                            </button>
+                        </div>
+                    `;
+                },
+                choices: {
+                    shout: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Jede Sekunde zählt!',
+                            text: 'Du schreist aus dem Fenster und machst wilde Gesten. Ein Mitglied der Bodencrew schaut hoch und versteht. Er rennt zu einem Erdungskabel.',
+                            science: 1,
+                            courage: 3
+                        },
+                        flag: { improvedGrounding: true }
+                    },
+                    ground_rod: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Technisches Denken!',
+                            text: 'Du findest einen Notfall-Erdungsmechanismus und aktivierst ihn. Ein zusätzliches Kabel wird zum Rumpf des Schiffs geworfen, um es zu erden.',
+                            science: 3,
+                            courage: 2
+                        },
+                        flag: { improvedGrounding: true }
+                    },
+                    pray: {
+                        feedback: {
+                            type: 'warning',
+                            title: 'Hoffnung ist kein Plan',
+                            text: 'Manchmal fühlen wir uns machtlos. Aber Wissenschaftler und Ingenieure suchen immer nach Lösungen, auch in letzter Sekunde.',
+                            science: 0,
+                            courage: 0
+                        },
+                        flag: {}
+                    }
+                }
+            },
+
+            scene6: {
+                title: "Der kritische Moment",
+                timestamp: "6. Mai 1937 • 19:25 Uhr",
+                render: function() {
+                    return `
+                        <div class="timestamp">${this.timestamp}</div>
+                        <h2 class="scene-title">${this.title}</h2>
+                        <div class="narrative">
+                            <p>Die Luft knistert vor Spannung – im wahrsten Sinne des Wortes. Du siehst einen schwachen Schimmer am Heck des Schiffs. Ist das... ein Glühen?</p>
+                            ${gameState.flags.foundLeak ? 
+                                '<p>Du erinnerst dich an die Stelle, die du früher gefunden und gemeldet hast. Zum Glück wurde sie repariert.</p>' : 
+                                '<p>Am Heck des Schiffs scheint etwas nicht zu stimmen. War dort nicht die Stelle, die du gesehen hast?</p>'}
+                            <p>Die Bodencrew arbeitet hektisch. Einige haben die Landeseile gegriffen. Du hörst Rufe.</p>
+                        </div>
+                        <div class="vocab-hint">
+                            <strong>Vokabelhilfe:</strong> knistern = to crackle; der Schimmer = glow, shimmer; das Heck = stern, tail section; hektisch = hectic, frantic
+                        </div>
+                        <p class="narrative">Du weißt, dass du in den nächsten Sekunden eine Entscheidung treffen musst. Die Crew muss bereit sein für jede Möglichkeit.</p>
+                        <div class="choices">
+                            <button class="choice-btn" onclick="makeChoice('scene6', 'evacuate')">
+                                <span class="choice-letter">A</span>
+                                Den Passagieren und der Crew zurufen: „Bereitet euch auf eine Notevakuierung vor! Geht zu den Ausgängen!"
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene6', 'fire_team')">
+                                <span class="choice-letter">B</span>
+                                Zum Feuerlöschteam laufen und sie alarmieren, dass sie sofort bereit sein müssen.
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene6', 'stay')">
+                                <span class="choice-letter">C</span>
+                                Ruhig bleiben und beobachten. Panik würde alles nur schlimmer machen.
+                            </button>
+                        </div>
+                    `;
+                },
+                choices: {
+                    evacuate: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Lebensrettende Initiative!',
+                            text: 'Du rufst laut und klar. Einige Passagiere und Crewmitglieder bewegen sich bereits zu den Ausgängen. Falls etwas passiert, sind sie vorbereitet.',
+                            science: 1,
+                            courage: 3
+                        },
+                        flag: { alertedCrew: true }
+                    },
+                    fire_team: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Vorausschauendes Denken!',
+                            text: 'Das Feuerlöschteam ist jetzt in höchster Alarmbereitschaft. Die Feuerlöscher sind bereit, und die Männer wissen, was zu tun ist.',
+                            science: 2,
+                            courage: 2
+                        },
+                        flag: { alertedCrew: true }
+                    },
+                    stay: {
+                        feedback: {
+                            type: 'warning',
+                            title: 'Ruhig, aber vielleicht zu passiv',
+                            text: 'Es stimmt, dass Panik gefährlich ist. Aber es gibt einen Unterschied zwischen Panik und geordneter Vorbereitung auf einen Notfall.',
+                            science: 0,
+                            courage: 0
+                        },
+                        flag: {}
+                    }
+                }
+            },
+
+            scene7: {
+                title: "Die Entscheidung",
+                timestamp: "6. Mai 1937 • 19:25 Uhr",
+                render: function() {
+                    // Calculate which ending the player is heading toward
+                    const positiveFlags = Object.values(gameState.flags).filter(v => v === true).length;
+                    
+                    let situationText = '';
+                    if (positiveFlags >= 5) {
+                        situationText = 'Dank all deiner Bemühungen scheint die Situation unter Kontrolle. Die zusätzliche Erdung funktioniert, die Crew ist vorbereitet, und die reparierten Stellen halten.';
+                    } else if (positiveFlags >= 3) {
+                        situationText = 'Die Situation ist angespannt, aber deine Warnungen haben geholfen. Einige Sicherheitsmaßnahmen wurden ergriffen.';
+                    } else {
+                        situationText = 'Die Situation ist kritisch. Du hast einige Gelegenheiten verpasst, aber vielleicht ist noch nicht alles verloren.';
+                    }
+                    
+                    return `
+                        <div class="timestamp">${this.timestamp}</div>
+                        <h2 class="scene-title">${this.title}</h2>
+                        <div class="narrative">
+                            <p>${situationText}</p>
+                            <p>Ein Moment der Stille. Dann hörst du ein Geräusch – ein leises Zischen. Am Heck des Schiffs...</p>
+                            <p>Dies ist der Moment der Wahrheit. Was immer als nächstes passiert, du hast dein Bestes getan. Aber es gibt noch eine letzte Entscheidung.</p>
+                        </div>
+                        <div class="vocab-hint">
+                            <strong>Vokabelhilfe:</strong> das Zischen = hissing sound; der Moment der Wahrheit = moment of truth
+                        </div>
+                        <p class="narrative">Was ist deine letzte Handlung?</p>
+                        <div class="choices">
+                            <button class="choice-btn" onclick="makeChoice('scene7', 'hero')">
+                                <span class="choice-letter">A</span>
+                                Sofort handeln: Anderen helfen, das Schiff so schnell wie möglich zu verlassen, während du selbst als Letzter gehst.
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene7', 'technical')">
+                                <span class="choice-letter">B</span>
+                                Versuchen, das Wasserstoff-Ventilsystem zu erreichen und Gas kontrolliert abzulassen.
+                            </button>
+                            <button class="choice-btn" onclick="makeChoice('scene7', 'escape')">
+                                <span class="choice-letter">C</span>
+                                Deine eigene Sicherheit priorisieren und sofort zum nächsten Ausgang laufen.
+                            </button>
+                        </div>
+                    `;
+                },
+                choices: {
+                    hero: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Wahres Heldentum!',
+                            text: 'Du führst Menschen zum Ausgang, hilfst einem älteren Passagier und behältst die Übersicht. Dein Mut rettet Leben.',
+                            science: 1,
+                            courage: 4
+                        },
+                        flag: { finalAction: 'hero' }
+                    },
+                    technical: {
+                        feedback: {
+                            type: 'positive',
+                            title: 'Wissenschaftler bis zum Schluss!',
+                            text: 'Du versuchst, das Problem an der Wurzel zu packen. Selbst in einer Krise denkst du analytisch. Das kontrollierte Ablassen von Gas könnte eine größere Explosion verhindern.',
+                            science: 4,
+                            courage: 2
+                        },
+                        flag: { finalAction: 'technical' }
+                    },
+                    escape: {
+                        feedback: {
+                            type: 'warning',
+                            title: 'Selbsterhaltung',
+                            text: 'Es ist verständlich, an die eigene Sicherheit zu denken. Du überlebst – aber hättest du mehr tun können?',
+                            science: 0,
+                            courage: 0
+                        },
+                        flag: { finalAction: 'escape' }
+                    }
+                }
+            },
+
+            // Endings
+            ending_best: {
+                title: "Das Beste Ergebnis",
+                render: function() {
+                    return `
+                        <div class="ending-screen ending-best">
+                            <h2 class="ending-title">★ Die Katastrophe wurde verhindert! ★</h2>
+                            <div class="deco-divider">◆ ◆ ◆</div>
+                            <div class="narrative" style="text-align: center;">
+                                <p>Dank deiner wissenschaftlichen Kenntnisse, deines Mutes und deiner schnellen Entscheidungen wurde das Schlimmste verhindert.</p>
+                                <p>Die zusätzlichen Erdungsmaßnahmen, die frühe Reparatur der beschädigten Stelle und die vorbereitete Crew machten den Unterschied. Als ein kleiner Funke entstand, wurde er sofort neutralisiert.</p>
+                                <p>Die Hindenburg landete sicher. Alle 97 Menschen an Bord überlebten.</p>
+                            </div>
+                            <div class="deco-line"></div>
+                            <div class="quote">
+                                „Ein einzelner Mensch mit dem richtigen Wissen zur richtigen Zeit kann die Welt verändern."
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+
+            ending_good: {
+                title: "Ein gutes Ergebnis",
+                render: function() {
+                    return `
+                        <div class="ending-screen ending-good">
+                            <h2 class="ending-title">Die Katastrophe wurde abgewendet</h2>
+                            <div class="deco-divider">◆ ◆ ◆</div>
+                            <div class="narrative" style="text-align: center;">
+                                <p>Deine Warnungen und Handlungen haben einen großen Unterschied gemacht. Obwohl es einige kritische Momente gab, konnte das Schlimmste verhindert werden.</p>
+                                <p>Ein kleines Feuer brach am Heck aus, aber dank der vorbereiteten Crew und der schnellen Evakuierung wurde es schnell gelöscht.</p>
+                                <p>Einige kleinere Verletzungen, aber keine Todesfälle. Die Hindenburg ist beschädigt, aber reparierbar.</p>
+                            </div>
+                            <div class="deco-line"></div>
+                            <div class="quote">
+                                „Manchmal ist 'gut genug' ein Triumph. Du hast Leben gerettet."
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+
+            ending_partial: {
+                title: "Teilerfolg",
+                render: function() {
+                    return `
+                        <div class="ending-screen ending-partial">
+                            <h2 class="ending-title">Die Tragödie wurde gemildert</h2>
+                            <div class="deco-divider">◆ ◆ ◆</div>
+                            <div class="narrative" style="text-align: center;">
+                                <p>Trotz deiner Bemühungen konnte die Katastrophe nicht vollständig verhindert werden. Das Feuer brach aus und breitete sich schnell aus.</p>
+                                <p>Aber deine Warnungen retteten Leben. Viele Passagiere und Crewmitglieder konnten rechtzeitig fliehen, weil sie vorbereitet waren.</p>
+                                <p>Statt 36 Todesfällen wie in der Realität gab es weniger Opfer. Jedes gerettete Leben zählt.</p>
+                            </div>
+                            <div class="deco-line"></div>
+                            <div class="quote">
+                                „Wir können nicht immer alles verhindern. Aber wir können immer versuchen, den Schaden zu begrenzen."
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+
+            ending_historical: {
+                title: "Das historische Ergebnis",
+                render: function() {
+                    return `
+                        <div class="ending-screen ending-historical">
+                            <h2 class="ending-title">Die Hindenburg-Katastrophe</h2>
+                            <div class="deco-divider">◆ ◆ ◆</div>
+                            <div class="narrative" style="text-align: center;">
+                                <p>Trotz deiner Anwesenheit ereignete sich die Katastrophe wie in der Geschichte. Um 19:25 Uhr Ortszeit fing die Hindenburg Feuer und wurde in nur 34 Sekunden zerstört.</p>
+                                <p>36 Menschen verloren ihr Leben: 13 Passagiere, 22 Crewmitglieder und ein Mitglied der Bodencrew.</p>
+                                <p>Die Katastrophe beendete die Ära der Passagier-Luftschiffe für immer.</p>
+                            </div>
+                            <div class="deco-line"></div>
+                            <div class="history-box">
+                                <h4>Historische Reflexion</h4>
+                                <p>Die genaue Ursache der Hindenburg-Katastrophe ist bis heute umstritten. Theorien umfassen:</p>
+                                <ul>
+                                    <li>Statische Entladung und ein Wasserstoffleck</li>
+                                    <li>Die brennbare Beschichtung der Außenhaut</li>
+                                    <li>Sabotage (unwahrscheinlich, aber nie vollständig widerlegt)</li>
+                                </ul>
+                                <p style="margin-top: 15px;">Was wir wissen: Bessere Sicherheitsmaßnahmen hätten helfen können. Dein Versuch, etwas zu ändern, war nicht umsonst – er zeigt, wie wichtig wissenschaftliches Denken und Mut sind.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // Update UI
+        function updateStats() {
+            sciencePointsEl.textContent = gameState.sciencePoints;
+            couragePointsEl.textContent = gameState.couragePoints;
+            decisionsCountEl.textContent = `${gameState.decisions.length}/${gameState.totalDecisions}`;
+            
+            const progressPercentage = (gameState.decisions.length / gameState.totalDecisions) * 100;
+            progressFill.style.width = `${progressPercentage}%`;
+            progressPercent.textContent = `${Math.round(progressPercentage)}%`;
+        }
+
+        // Start Game
+        function startGame() {
+            statsPanel.classList.remove('hidden');
+            progressContainer.classList.remove('hidden');
+            renderScene('scene1');
+        }
+
+        // Render Scene
+        function renderScene(sceneId) {
+            gameState.currentScene = sceneId;
+            const scene = scenes[sceneId];
+            gameContent.innerHTML = scene.render();
+            gameContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Make Choice
+        function makeChoice(sceneId, choiceId) {
+            const scene = scenes[sceneId];
+            const choice = scene.choices[choiceId];
+            
+            // Record decision
+            gameState.decisions.push({
+                scene: sceneId,
+                choice: choiceId,
+                science: choice.feedback.science,
+                courage: choice.feedback.courage
+            });
+            
+            // Update points
+            gameState.sciencePoints += choice.feedback.science;
+            gameState.couragePoints += choice.feedback.courage;
+            
+            // Update flags
+            Object.assign(gameState.flags, choice.flag);
+            
+            // Update UI
+            updateStats();
+            
+            // Show feedback
+            showFeedback(choice.feedback, sceneId);
+        }
+
+        // Show Feedback
+        function showFeedback(feedback, currentSceneId) {
+            const feedbackClass = feedback.type === 'positive' ? 'feedback-positive' : 
+                                  feedback.type === 'warning' ? 'feedback-warning' : 'feedback-negative';
+            
+            const nextSceneId = getNextScene(currentSceneId);
+            const buttonText = nextSceneId.startsWith('ending') ? 'Zum Ergebnis' : 'Weiter';
+            
+            gameContent.innerHTML = `
+                <div class="feedback ${feedbackClass}">
+                    <h4>${feedback.title}</h4>
+                    <p>${feedback.text}</p>
+                    <div class="points-earned">
+                        ${feedback.science > 0 ? `<span>+${feedback.science} Wissenschaft-Punkte</span>` : ''}
+                        ${feedback.science > 0 && feedback.courage > 0 ? ' • ' : ''}
+                        ${feedback.courage > 0 ? `<span>+${feedback.courage} Mut-Punkte</span>` : ''}
+                    </div>
+                </div>
+                <button class="continue-btn" onclick="continueGame('${nextSceneId}')">${buttonText}</button>
+            `;
+        }
+
+        // Get Next Scene
+        function getNextScene(currentSceneId) {
+            const sceneOrder = ['scene1', 'scene2', 'scene3', 'scene4', 'scene5', 'scene6', 'scene7'];
+            const currentIndex = sceneOrder.indexOf(currentSceneId);
+            
+            if (currentIndex < sceneOrder.length - 1) {
+                return sceneOrder[currentIndex + 1];
+            } else {
+                // Determine ending
+                return determineEnding();
+            }
+        }
+
+        // Determine Ending
+        function determineEnding() {
+            const positiveFlags = [
+                gameState.flags.choseHelium,
+                gameState.flags.foundLeak,
+                gameState.flags.delayedFlight,
+                gameState.flags.warnedAboutStatic,
+                gameState.flags.improvedGrounding,
+                gameState.flags.alertedCrew
+            ].filter(v => v === true).length;
+            
+            const totalPoints = gameState.sciencePoints + gameState.couragePoints;
+            
+            if (positiveFlags >= 5 && totalPoints >= 25) {
+                return 'ending_best';
+            } else if (positiveFlags >= 4 && totalPoints >= 18) {
+                return 'ending_good';
+            } else if (positiveFlags >= 2 && totalPoints >= 10) {
+                return 'ending_partial';
+            } else {
+                return 'ending_historical';
+            }
+        }
+
+        // Continue Game
+        function continueGame(nextSceneId) {
+            if (nextSceneId.startsWith('ending')) {
+                renderEnding(nextSceneId);
+            } else {
+                renderScene(nextSceneId);
+            }
+        }
+
+        // Render Ending
+        function renderEnding(endingId) {
+            const ending = scenes[endingId];
+            let endingContent = ending.render();
+            
+            // Add final stats and decision summary
+            endingContent += `
+                <div class="final-stats">
+                    <div class="final-stat">
+                        <div class="final-stat-label">Wissenschaft-Punkte</div>
+                        <div class="final-stat-value" style="color: #6eb5ff;">${gameState.sciencePoints}</div>
+                    </div>
+                    <div class="final-stat">
+                        <div class="final-stat-label">Mut-Punkte</div>
+                        <div class="final-stat-value" style="color: #ff9f6e;">${gameState.couragePoints}</div>
+                    </div>
+                    <div class="final-stat">
+                        <div class="final-stat-label">Gesamt</div>
+                        <div class="final-stat-value" style="color: var(--accent-gold);">${gameState.sciencePoints + gameState.couragePoints}</div>
+                    </div>
+                </div>
+                
+                <div class="decision-summary">
+                    <h4 style="color: var(--accent-gold); margin-bottom: 15px;">Deine Entscheidungen:</h4>
+                    ${renderDecisionSummary()}
+                </div>
+                
+                <div class="history-box">
+                    <h4>📚 Historische Fakten zur Wiederholung</h4>
+                    <ul>
+                        <li><strong>Datum:</strong> 6. Mai 1937</li>
+                        <li><strong>Ort:</strong> Lakehurst, New Jersey, USA</li>
+                        <li><strong>Traggas:</strong> Wasserstoff (H₂) – leicht, aber hochentzündlich</li>
+                        <li><strong>Warum kein Helium?</strong> USA hatte ein Helium-Embargo gegen Deutschland</li>
+                        <li><strong>Mögliche Ursachen:</strong> Statische Entladung, Gasleck, brennbare Außenhaut</li>
+                        <li><strong>Dauer der Katastrophe:</strong> Nur 34 Sekunden vom ersten Feuer bis zur Zerstörung</li>
+                        <li><strong>Opfer:</strong> 36 von 97 Menschen an Bord + 1 am Boden</li>
+                        <li><strong>Folgen:</strong> Ende der Ära der Passagier-Luftschiffe</li>
+                    </ul>
+                </div>
+                
+                <div class="science-box">
+                    <h4>Wichtige wissenschaftliche Konzepte</h4>
+                    <p><strong>Wasserstoff vs. Helium:</strong> Beide sind Traggase, aber Wasserstoff ist brennbar und Helium nicht.</p>
+                    <p><strong>Statische Elektrizität:</strong> Elektrische Ladung, die sich auf Oberflächen ansammelt und durch einen Funken entladen kann.</p>
+                    <p><strong>Erdung:</strong> Das sichere Ableiten elektrischer Ladung in den Boden.</p>
+                    <p><strong>Potentialdifferenz:</strong> Unterschied in der elektrischen Ladung zwischen zwei Punkten.</p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="continue-btn" onclick="restartGame()">Noch einmal spielen</button>
+                    <button class="restart-btn" onclick="showStartScreen()">Zum Startbildschirm</button>
+                </div>
+            `;
+            
+            gameContent.innerHTML = endingContent;
+            progressContainer.classList.add('hidden');
+        }
+
+        // Render Decision Summary
+        function renderDecisionSummary() {
+            const decisionLabels = {
+                scene1: 'Designbesprechung',
+                scene2: 'Inspektion',
+                scene3: 'Wetterprognose',
+                scene4: 'Warnung',
+                scene5: 'Landeseile',
+                scene6: 'Kritischer Moment',
+                scene7: 'Letzte Entscheidung'
+            };
+            
+            return gameState.decisions.map(d => {
+                const isGood = d.science > 0 || d.courage > 0;
+                return `
+                    <div class="decision-item ${isGood ? 'decision-good' : 'decision-bad'}">
+                        <span class="decision-icon">${isGood ? '✓' : '✗'}</span>
+                        <span>${decisionLabels[d.scene]}: ${isGood ? 'Gute Entscheidung' : 'Verpasste Gelegenheit'}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Restart Game
+        function restartGame() {
+            gameState.sciencePoints = 0;
+            gameState.couragePoints = 0;
+            gameState.decisions = [];
+            gameState.currentScene = 'start';
+            gameState.flags = {
+                choseHelium: false,
+                foundLeak: false,
+                delayedFlight: false,
+                warnedAboutStatic: false,
+                improvedGrounding: false,
+                alertedCrew: false,
+                finalAction: null
+            };
+            
+            updateStats();
+            statsPanel.classList.remove('hidden');
+            progressContainer.classList.remove('hidden');
+            renderScene('scene1');
+        }
+
+        // Show Start Screen
+        function showStartScreen() {
+            gameState.sciencePoints = 0;
+            gameState.couragePoints = 0;
+            gameState.decisions = [];
+            gameState.currentScene = 'start';
+            gameState.flags = {
+                choseHelium: false,
+                foundLeak: false,
+                delayedFlight: false,
+                warnedAboutStatic: false,
+                improvedGrounding: false,
+                alertedCrew: false,
+                finalAction: null
+            };
+            
+            statsPanel.classList.add('hidden');
+            progressContainer.classList.add('hidden');
+            renderScene('start');
+        }
+
+        // Initialize
+        renderScene('start');
+    </script>
+</body>
+</html>
