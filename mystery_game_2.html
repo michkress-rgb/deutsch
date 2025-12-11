@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Der Fall der manipulierten Prüfung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #f5576c;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .game-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .game-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .suspects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .suspect-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .suspect-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .suspect-card.selected {
+            border-color: #f5576c;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .suspect-icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .suspect-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .suspect-role {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .suspect-info {
+            display: none;
+            background: white;
+            border: 3px solid #f5576c;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            animation: slideDown 0.3s;
+        }
+
+        .suspect-info.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .suspect-info h3 {
+            color: #f5576c;
+            margin-bottom: 10px;
+        }
+
+        .intro-instruction {
+            text-align: center;
+            font-size: 1.1em;
+            color: #f5576c;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .clue-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .clue-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+
+        .round-indicator {
+            background: #f5576c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .rules-box {
+            background: #e1f5fe;
+            border: 2px solid #f093fb;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .rules-box h3 {
+            color: #f5576c;
+            margin-bottom: 15px;
+        }
+
+        .rules-box ol, .rules-box ul {
+            margin-left: 20px;
+        }
+
+        .rules-box li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .timer {
+            background: #ff5252;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .timer.active {
+            display: block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .discussion-prompt {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .discussion-prompt h3 {
+            color: #9c27b0;
+            margin-bottom: 10px;
+        }
+
+        .voting-section {
+            margin: 30px 0;
+        }
+
+        .vote-tally {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .vote-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 5px;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .final-reveal {
+            background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            animation: bounceIn 0.8s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .confession {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .story-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        .emoji-big {
+            font-size: 3em;
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .red-herring {
+            background: #ffcdd2;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .difficulty-badge {
+            background: #ff5252;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcome" class="game-section active">
+            <h1>🔬 Der Fall der manipulierten Prüfung 📝</h1>
+            <p class="subtitle">Ein Detektivspiel für die Klasse</p>
+            <div class="center">
+                <span class="difficulty-badge">⚠️ SCHWIERIGER! ⚠️</span>
+            </div>
+            
+            <div class="rules-box">
+                <h3>📜 Spielregeln</h3>
+                <p><strong>Hintergrund:</strong> Bei der wichtigen Matheprüfung der Klasse 10 wurden die Antworten manipuliert! Drei Schüler, die normalerweise schlecht in Mathe sind, hatten plötzlich perfekte Ergebnisse. Die Lehrerin Frau Meier ist sich sicher: Jemand hat den Schülern vorher die Lösungen gegeben. Aber wer? Die Prüfung war in einem verschlossenen Safe im Lehrerzimmer.</p>
+                
+                <h4 style="margin-top: 15px;">NEU in diesem Fall:</h4>
+                <ul>
+                    <li>🎭 <strong>Falsche Spuren!</strong> Nicht jeder Hinweis führt zum Täter</li>
+                    <li>🤝 <strong>Komplizen?</strong> Vielleicht haben zwei Personen zusammengearbeitet</li>
+                    <li>🔐 <strong>Kompliziertere Beweise</strong> - Ihr müsst genauer kombinieren!</li>
+                    <li>⏰ <strong>Zeitfenster beachten</strong> - Wann war was möglich?</li>
+                </ul>
+
+                <h4 style="margin-top: 15px;">Spielablauf:</h4>
+                <ol>
+                    <li><strong>Das Spiel hat 4 Runden</strong> mit komplexeren Hinweisen</li>
+                    <li><strong>Nach jedem Hinweis: Diskussionszeit</strong> - besprecht ALLES genau!</li>
+                    <li><strong>Am Ende: Abstimmung</strong> - Aber diesmal gibt es viele Verdächtige!</li>
+                    <li><strong>Ziel:</strong> Trennt die echten Beweise von falschen Spuren!</li>
+                </ol>
+            </div>
+
+            <div class="center">
+                <button class="button" onclick="startGame()">🎮 Spiel starten!</button>
+            </div>
+        </div>
+
+        <!-- Suspects Introduction -->
+        <div id="suspects-intro" class="game-section">
+            <h1>🕵️ Die Verdächtigen</h1>
+            <p class="subtitle">Diese 5 Personen hatten Zugang zum Safe:</p>
+            <p class="intro-instruction">👆 Klickt auf jede Person, um mehr zu erfahren!</p>
+
+            <div class="suspects-grid">
+                <div class="suspect-card" onclick="showSuspectInfo('meier')">
+                    <div class="suspect-icon">👩‍🏫</div>
+                    <div class="suspect-name">Frau Meier</div>
+                    <div class="suspect-role">Mathelehrerin</div>
+                </div>
+                <div class="suspect-card" onclick="showSuspectInfo('paul')">
+                    <div class="suspect-icon">👨‍🎓</div>
+                    <div class="suspect-name">Paul Fischer</div>
+                    <div class="suspect-role">Schüler (Klasse 11)</div>
+                </div>
+                <div class="suspect-card" onclick="showSuspectInfo('jonas')">
+                    <div class="suspect-icon">🧑</div>
+                    <div class="suspect-name">Jonas Berg</div>
+                    <div class="suspect-role">Schüler (Klasse 10)</div>
+                </div>
+                <div class="suspect-card" onclick="showSuspectInfo('hoffmann')">
+                    <div class="suspect-icon">👨‍💼</div>
+                    <div class="suspect-name">Herr Hoffmann</div>
+                    <div class="suspect-role">Direktor</div>
+                </div>
+                <div class="suspect-card" onclick="showSuspectInfo('anna')">
+                    <div class="suspect-icon">👩</div>
+                    <div class="suspect-name">Anna Keller</div>
+                    <div class="suspect-role">Referendarin</div>
+                </div>
+            </div>
+
+            <div id="suspect-info-meier" class="suspect-info">
+                <h3>👩‍🏫 Frau Meier - Mathelehrerin</h3>
+                <p><strong>Alter:</strong> 51 Jahre</p>
+                <p><strong>Arbeitet hier seit:</strong> 25 Jahren</p>
+                <p><strong>Charakter:</strong> Sehr streng und gerecht. Sie duldet kein Schummeln und prüft alle Arbeiten dreimal.</p>
+                <p><strong>Interessantes:</strong> Sie kennt die Kombination des Safes. Vor zwei Wochen beschwerte sie sich, dass Schüler zu leicht durchkommen.</p>
+            </div>
+
+            <div id="suspect-info-paul" class="suspect-info">
+                <h3>👨‍🎓 Paul Fischer - Schüler (Klasse 11)</h3>
+                <p><strong>Alter:</strong> 17 Jahre</p>
+                <p><strong>In der Schule seit:</strong> 11 Jahren</p>
+                <p><strong>Charakter:</strong> Mathe-Genie und Streber. Er hilft oft anderen Schülern beim Lernen - aber manchmal gegen Bezahlung.</p>
+                <p><strong>Interessantes:</strong> Sein jüngerer Bruder Tim ist in der Klasse 10 und schreibt schlechte Noten. Paul wurde gesehen, wie er mit Tim stritt.</p>
+            </div>
+
+            <div id="suspect-info-jonas" class="suspect-info">
+                <h3>🧑 Jonas Berg - Schüler (Klasse 10)</h3>
+                <p><strong>Alter:</strong> 16 Jahre</p>
+                <p><strong>In der Schule seit:</strong> 10 Jahren</p>
+                <p><strong>Charakter:</strong> Beliebt und sportlich, aber schlecht in Mathe. Sein Vater droht ihm mit Hausarrest, wenn die Noten nicht besser werden.</p>
+                <p><strong>Interessantes:</strong> Er ist einer der drei Schüler mit plötzlich perfekter Note! Er behauptet, er hat "einfach gut gelernt".</p>
+            </div>
+
+            <div id="suspect-info-hoffmann" class="suspect-info">
+                <h3>👨‍💼 Herr Hoffmann - Direktor</h3>
+                <p><strong>Alter:</strong> 58 Jahre</p>
+                <p><strong>Arbeitet hier seit:</strong> 15 Jahren</p>
+                <p><strong>Charakter:</strong> Will, dass die Schule ein gutes Image hat. Ihm ist wichtig, dass die Durchfallquote niedrig ist.</p>
+                <p><strong>Interessantes:</strong> Er kennt auch die Safe-Kombination. Letzte Woche sagte er zu Frau Meier: "Ihre Prüfungen sind zu schwer!"</p>
+            </div>
+
+            <div id="suspect-info-anna" class="suspect-info">
+                <h3>👩 Anna Keller - Referendarin</h3>
+                <p><strong>Alter:</strong> 26 Jahre</p>
+                <p><strong>Arbeitet hier seit:</strong> 3 Monaten</p>
+                <p><strong>Charakter:</strong> Jung, freundlich und bei den Schülern sehr beliebt. Sie will allen helfen und findet Frau Meier zu streng.</p>
+                <p><strong>Interessantes:</strong> Sie assistiert Frau Meier. Sie hatte die Prüfung korrigiert und war überrascht über die drei perfekten Noten.</p>
+            </div>
+
+            <div class="center">
+                <button class="button" onclick="goToRound(1)">➡️ Zur ersten Runde!</button>
+            </div>
+        </div>
+
+        <!-- Round 1 -->
+        <div id="round1" class="game-section">
+            <div class="round-indicator">🔍 RUNDE 1: Die Entdeckung</div>
+            
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 1: Was ist passiert?</div>
+                <p class="story-text">
+                    Frau Meier hat die Prüfungen am Montagabend im Safe eingeschlossen. Am Dienstagmorgen um 8:00 Uhr holte sie die Prüfungen raus. 
+                    Die Prüfung fand statt. Am Mittwochabend beim Korrigieren bemerkte sie: 
+                    <span class="highlight">Jonas Berg, Tim Fischer und Sarah Klein hatten alle 100% richtig</span> - 
+                    normalerweise haben diese drei Schüler Note 4-5 in Mathe!
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 2: Der Safe</div>
+                <p class="story-text">
+                    Der Safe im Lehrerzimmer hat eine 4-stellige Zahlenkombination. Nur <span class="highlight">Frau Meier und Herr Hoffmann</span> kennen den Code. 
+                    <br><br>
+                    <strong>ABER:</strong> Anna Keller berichtet: "Am Montagnachmittag sah ich, wie <span class="red-herring">Frau Meier den Code auf einen Zettel schrieb</span> und ihn in ihre Schublade legte. Ich habe ihr gesagt, das ist unsicher, aber sie meinte, sie würde ihn immer vergessen."
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 3: Wer war wann da?</div>
+                <p class="story-text">
+                    <strong>Montagabend (nach 17:00 Uhr):</strong>
+                    <br>• Frau Meier verließ um 17:30 Uhr die Schule
+                    <br>• Anna blieb bis 18:00 Uhr (Vorbereitungen für ihren Unterricht)
+                    <br>• Die Reinigungskraft sah <span class="highlight">Paul Fischer um 18:15 Uhr im Gebäude</span>
+                    <br>• Herr Hoffmann arbeitete bis 19:00 Uhr in seinem Büro
+                </p>
+            </div>
+
+            <div class="discussion-prompt">
+                <h3>💬 Diskussionszeit: 4 Minuten</h3>
+                <p><strong>Diskutiert auf Deutsch:</strong></p>
+                <ul>
+                    <li>Wer hatte die Möglichkeit, den Code zu finden?</li>
+                    <li>Warum war Paul Fischer so spät in der Schule?</li>
+                    <li>War der Code wirklich in der Schublade? Wer könnte das wissen?</li>
+                    <li>Könnte Frau Meier selbst dahinter stecken?</li>
+                </ul>
+            </div>
+
+            <div class="timer" id="timer1">⏱️ <span id="timerDisplay1">4:00</span></div>
+            
+            <div class="center">
+                <button class="button" onclick="startTimer(1, 240)">⏱️ Timer starten (4 Min.)</button>
+                <button class="button" onclick="goToRound(2)">➡️ Nächste Runde</button>
+            </div>
+        </div>
+
+        <!-- Round 2 -->
+        <div id="round2" class="game-section">
+            <div class="round-indicator">🔍 RUNDE 2: Die Verhöre</div>
+            
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 4: Was sagen die Verdächtigen?</div>
+                <div class="story-text">
+                    <p><strong>Frau Meier:</strong> "Ich habe die Prüfung Montagabend eingeschlossen. Niemand außer Herrn Hoffmann kennt den Code. Der Zettel? Ja, ich habe den Code aufgeschrieben, aber ich habe ihn später wieder vernichtet!"</p>
+                    
+                    <p><strong>Paul Fischer:</strong> "Ja, ich war Montag noch in der Schule. Ich habe in der Bibliothek für mein eigenes Referat gelernt. Ich helfe manchmal Schülern, aber ich würde nie bei einer Prüfung helfen!"</p>
+                    
+                    <p><strong>Jonas Berg:</strong> "Ich habe einfach gut gelernt! Mein Vater hat mir einen Nachhilfelehrer bezahlt. <span class="red-herring">Paul hat mir zwar Lerntipps gegeben, aber er wusste nichts von der Prüfung.</span>"</p>
+                    
+                    <p><strong>Herr Hoffmann:</strong> "Ich war bis 19:00 Uhr in meinem Büro. Ich habe niemanden gesehen. Und nein, ich habe niemandem den Code verraten!"</p>
+                    
+                    <p><strong>Anna Keller:</strong> "Ich war bis 18:00 Uhr da und habe in meinem Klassenraum gearbeitet. Das Lehrerzimmer war abgeschlossen. <span class="highlight">Aber als ich ging, sah ich Licht im Lehrerzimmer!</span>"</p>
+                </div>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 5: Die Handschrift</div>
+                <p class="story-text">
+                    Bei den drei verdächtigen Prüfungen fand Frau Meier etwas Merkwürdiges: 
+                    <br><br>
+                    Alle drei Schüler haben <span class="highlight">bei Aufgabe 7 einen identischen Rechenfehler gemacht</span> - 
+                    aber trotzdem die richtige Endlösung! Das ist unmöglich, wenn man ehrlich rechnet.
+                    <br><br>
+                    Außerdem: <span class="highlight">Die Lösungswege waren fast identisch</span>, mit denselben Abkürzungen. 
+                    Diese Abkürzungen benutzt nur Frau Meier - und ihre Assistentin Anna.
+                </p>
+            </div>
+
+            <div class="discussion-prompt">
+                <h3>💬 Diskussionszeit: 4 Minuten</h3>
+                <p><strong>Diskutiert auf Deutsch:</strong></p>
+                <ul>
+                    <li>Was bedeutet der identische Fehler?</li>
+                    <li>Wer benutzt diese speziellen Abkürzungen?</li>
+                    <li>Warum sah Anna Licht im Lehrerzimmer?</li>
+                    <li>Hat Paul vielleicht indirekt geholfen?</li>
+                    <li>Welche Aussagen könnten Lügen sein?</li>
+                </ul>
+            </div>
+
+            <div class="timer" id="timer2">⏱️ <span id="timerDisplay2">4:00</span></div>
+            
+            <div class="center">
+                <button class="button" onclick="startTimer(2, 240)">⏱️ Timer starten (4 Min.)</button>
+                <button class="button" onclick="goToRound(3)">➡️ Nächste Runde</button>
+            </div>
+        </div>
+
+        <!-- Round 3 -->
+        <div id="round3" class="game-section">
+            <div class="round-indicator">🔍 RUNDE 3: Die technischen Beweise</div>
+            
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 6: Die Computerprotokolle</div>
+                <p class="story-text">
+                    Die IT-Abteilung prüfte alle Schulcomputer. Ergebnis:
+                    <br><br>
+                    <strong>Montag, 17:45 Uhr:</strong> Jemand hat sich am Computer im Lehrerzimmer eingeloggt - 
+                    mit <span class="highlight">Anna Kellers Benutzername!</span> 
+                    <br>• Zugriff auf Ordner: "Prüfungen_Klasse_10_Mathematik"
+                    <br>• Datei geöffnet: "Lösungsschlüssel_Prüfung.pdf"
+                    <br>• Druckauftrag: 3 Kopien (!)
+                    <br><br>
+                    <strong>Montag, 18:30 Uhr:</strong> Derselbe Computer wurde wieder benutzt - 
+                    diesmal mit <span class="red-herring">Herrn Hoffmanns Benutzername</span>.
+                    <br>• Keine relevanten Dateien geöffnet
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 7: Das WhatsApp-Protokoll</div>
+                <p class="story-text">
+                    Die Schule forderte von Jonas' Eltern sein Handy. Man fand folgende Nachrichten:
+                    <br><br>
+                    <strong>Sonntag, 20:15 Uhr</strong> - Unbekannte Nummer an Jonas:
+                    <br><em>"Treff dich Montag 18:30 am Hintereingang. Hab was für dich. Lösch diese Nachricht!"</em>
+                    <br><br>
+                    <strong>Montag, 18:45 Uhr</strong> - Jonas an Tim (Paul Fischers Bruder):
+                    <br><em>"Alles geklärt. Sag Paul danke 😉"</em>
+                    <br><br>
+                    <strong>Montag, 19:00 Uhr</strong> - Tim an Jonas:
+                    <br><em>"<span class="red-herring">Paul sagt, er weiß nicht, wovon du redest??</span>"</em>
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 8: Die Kamera-Aufnahmen</div>
+                <p class="story-text">
+                    Die Schule hat Kameras am Haupteingang und Hintereingang:
+                    <br><br>
+                    <strong>Haupteingang:</strong>
+                    <br>• 17:35 Uhr: Frau Meier verlässt Gebäude
+                    <br>• 18:05 Uhr: Anna Keller verlässt Gebäude
+                    <br>• 19:15 Uhr: Herr Hoffmann verlässt Gebäude
+                    <br><br>
+                    <strong>Hintereingang:</strong>
+                    <br>• 18:10 Uhr: Paul Fischer verlässt Gebäude
+                    <br>• <span class="highlight">18:32 Uhr: Eine Person in Kapuzenpullover betritt Gebäude</span>
+                    <br>• <span class="highlight">18:48 Uhr: Dieselbe Person verlässt Gebäude (trägt Rucksack)</span>
+                </p>
+            </div>
+
+            <div class="discussion-prompt">
+                <h3>💬 Diskussionszeit: 5 Minuten</h3>
+                <p><strong>Diskutiert auf Deutsch:</strong></p>
+                <ul>
+                    <li>Wer hat Annas Benutzernamen benutzt? Wie?</li>
+                    <li>Was bedeutet die WhatsApp-Nachricht mit "Sag Paul danke"?</li>
+                    <li>Wer ist die Person im Kapuzenpullover?</li>
+                    <li>Warum sagt Paul, er weiß von nichts?</li>
+                    <li>Arbeiten mehrere Personen zusammen?</li>
+                </ul>
+            </div>
+
+            <div class="timer" id="timer3">⏱️ <span id="timerDisplay3">5:00</span></div>
+            
+            <div class="center">
+                <button class="button" onclick="startTimer(3, 300)">⏱️ Timer starten (5 Min.)</button>
+                <button class="button" onclick="goToRound(4)">➡️ Letzte Runde!</button>
+            </div>
+        </div>
+
+        <!-- Round 4 -->
+        <div id="round4" class="game-section">
+            <div class="round-indicator">🔍 RUNDE 4: Die Wahrheit kommt ans Licht</div>
+            
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 9: Annas Aussage ändert sich</div>
+                <p class="story-text">
+                    Anna wird nochmal befragt. Diesmal sagt sie etwas anderes:
+                    <br><br>
+                    "Okay... Ich muss etwas gestehen. Als ich um 18:00 Uhr die Schule verließ, 
+                    habe ich <span class="highlight">meinen Schlüssel zum Lehrerzimmer verloren</span>. 
+                    Ich habe ihn später gesucht, aber nicht gefunden. Ich hatte Angst, das zuzugeben!
+                    <br><br>
+                    Und... mein Passwort für den Computer war sehr einfach: 'Anna2024'. 
+                    Viele Schüler könnten das erraten haben. Ich weiß, das war dumm von mir."
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 10: Der entscheidende Beweis</div>
+                <p class="story-text">
+                    Bei einer Durchsuchung fand man:
+                    <br><br>
+                    <strong>In Pauls Spind:</strong> <span class="highlight">Annas Schlüssel zum Lehrerzimmer!</span>
+                    <br>Und: Ein Kapuzenpullover mit dem Schullogo.
+                    <br><br>
+                    <strong>In Jonas' Rucksack:</strong> Drei gefaltete Papiere mit handgeschriebenen Lösungen 
+                    (mit den typischen Abkürzungen von Anna und Frau Meier).
+                    <br><br>
+                    <strong>Bei Paul zu Hause:</strong> Die Polizei fand auf Pauls Computer gelöschte Dateien - 
+                    es waren <span class="highlight">Screenshots vom Lösungsschlüssel</span>! 
+                    Die Screenshots wurden am Montag um 17:45 Uhr erstellt.
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 11: Die ganze Geschichte</div>
+                <p class="story-text">
+                    Die Polizei rekonstruiert:
+                    <br><br>
+                    Paul wusste von Annas einfachem Passwort (er hatte sie mal am Computer gesehen). 
+                    Er fand auch ihren verlorenen Schlüssel auf dem Schulhof.
+                    <br><br>
+                    <span class="highlight">Am Montag 17:45 Uhr</span>: Paul schlich sich ins Lehrerzimmer 
+                    (mit Annas Schlüssel), loggte sich mit ihrem Passwort ein, 
+                    druckte die Lösungen und fotografierte sie zusätzlich.
+                    <br><br>
+                    Er wollte Jonas (und zwei anderen Schülern) die Lösungen verkaufen. 
+                    Sein eigener Bruder Tim hatte Probleme, aber Paul weigerte sich, ihm kostenlos zu helfen - 
+                    daher die WhatsApp "Sag Paul danke" (sarkastisch gemeint).
+                </p>
+            </div>
+
+            <div class="discussion-prompt">
+                <h3>💬 Diskussionszeit: 5 Minuten - FINALE DISKUSSION!</h3>
+                <p><strong>Diskutiert auf Deutsch:</strong></p>
+                <ul>
+                    <li>Wie hat Paul alles gemacht?</li>
+                    <li>War Anna auch schuldig? (Sie war nachlässig, aber keine Täterin)</li>
+                    <li>Welche Hinweise waren falsche Spuren?</li>
+                    <li>Warum hat Jonas seinen Mitschüler nicht verraten?</li>
+                    <li>Was ist mit Herrn Hoffmanns Computer-Login?</li>
+                </ul>
+            </div>
+
+            <div class="timer" id="timer4">⏱️ <span id="timerDisplay4">5:00</span></div>
+            
+            <div class="center">
+                <button class="button" onclick="startTimer(4, 300)">⏱️ Timer starten (5 Min.)</button>
+                <button class="button" onclick="goToVoting()">🗳️ Zur Abstimmung!</button>
+            </div>
+        </div>
+
+        <!-- Voting -->
+        <div id="voting" class="game-section">
+            <h1>🗳️ Zeit für die Abstimmung!</h1>
+            <p class="subtitle">Wer ist der Haupttäter?</p>
+
+            <div class="voting-section">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">
+                    <strong>Jeder Student darf EINE Stimme abgeben.</strong><br>
+                    Wer hat die Prüfung manipuliert?
+                </p>
+
+                <div class="suspects-grid">
+                    <div class="suspect-card" onclick="vote('meier')">
+                        <div class="suspect-icon">👩‍🏫</div>
+                        <div class="suspect-name">Frau Meier</div>
+                        <div id="votes-meier" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                    <div class="suspect-card" onclick="vote('paul')">
+                        <div class="suspect-icon">👨‍🎓</div>
+                        <div class="suspect-name">Paul Fischer</div>
+                        <div id="votes-paul" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                    <div class="suspect-card" onclick="vote('jonas')">
+                        <div class="suspect-icon">🧑</div>
+                        <div class="suspect-name">Jonas Berg</div>
+                        <div id="votes-jonas" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                    <div class="suspect-card" onclick="vote('hoffmann')">
+                        <div class="suspect-icon">👨‍💼</div>
+                        <div class="suspect-name">Herr Hoffmann</div>
+                        <div id="votes-hoffmann" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                    <div class="suspect-card" onclick="vote('anna')">
+                        <div class="suspect-icon">👩</div>
+                        <div class="suspect-name">Anna Keller</div>
+                        <div id="votes-anna" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                </div>
+
+                <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+                    Gesamtstimmen: <strong><span id="totalVotes">0</span> / 5</strong>
+                </p>
+            </div>
+
+            <div class="center" style="margin-top: 30px;">
+                <button class="button" onclick="showReveal()">🎭 Auflösung zeigen!</button>
+            </div>
+        </div>
+
+        <!-- Reveal -->
+        <div id="reveal" class="game-section">
+            <div class="final-reveal">
+                <h1 style="color: #333; margin-bottom: 20px;">🎉 DIE AUFLÖSUNG! 🎉</h1>
+                <div class="emoji-big">👨‍🎓🔓</div>
+                <h2 style="color: #333; margin: 20px 0;">Der Haupttäter ist: PAUL FISCHER!</h2>
+                <h3 style="color: #555;">Mittäter: Jonas Berg (und zwei andere Schüler)</h3>
+            </div>
+
+            <div class="confession">
+                <h3 style="color: #f5576c; margin-bottom: 15px;">Pauls Geständnis:</h3>
+                <p class="story-text">
+                    "Ja, ich habe es getan. Aber ich wollte nur Geld verdienen - ich brauche es für mein Studium!
+                    <br><br>
+                    Ich hatte Glück: Letzte Woche fand ich Annas Schlüssel auf dem Pausenhof. 
+                    Ich wusste auch ihr Passwort, weil ich sie einmal dabei beobachtet habe, wie sie sich einloggte.
+                    <br><br>
+                    Am Montag um 17:45 Uhr, nachdem Anna gegangen war, schlich ich mich ins Lehrerzimmer. 
+                    Ich öffnete den Computer mit ihrem Login, fand die Prüfungslösungen und druckte drei Kopien aus. 
+                    Dann fotografierte ich alles mit meinem Handy, für den Fall dass die Ausdrucke verloren gehen.
+                    <br><br>
+                    Um 18:30 Uhr traf ich Jonas am Hintereingang. Er und zwei andere Schüler bezahlten mir 
+                    je 50 Euro für die Lösungen. Ich schrieb die Lösungen für sie ab - mit den Abkürzungen, 
+                    die ich von Frau Meiers Unterricht kannte.
+                    <br><br>
+                    Mein eigener Bruder Tim bat mich um Hilfe, aber ich sagte nein - er hatte kein Geld. 
+                    Deshalb war Jonas' Nachricht 'Sag Paul danke' so gemein... Tim war sauer auf mich.
+                    <br><br>
+                    Es tut mir leid. Ich dachte nicht, dass jemand es bemerken würde."
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔍 Die Beweise zusammengefasst:</div>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>✓ Paul hatte Annas Schlüssel (gefunden in seinem Spind)</li>
+                    <li>✓ Paul kannte Annas einfaches Passwort</li>
+                    <li>✓ Computer-Login um 17:45 mit Annas Account - Paul war noch da!</li>
+                    <li>✓ Screenshots auf Pauls Computer (vom Lösungsschlüssel)</li>
+                    <li>✓ Paul war die Person im Kapuzenpullover (Kamera 18:32 Uhr = Treffen mit Jonas)</li>
+                    <li>✓ Identische Fehler und Abkürzungen in den Prüfungen</li>
+                    <li>✓ WhatsApp-Nachricht "Sag Paul danke" (sarkastisch von Tim)</li>
+                </ul>
+            </div>
+
+            <div class="rules-box" style="background: #fff3e0; border-color: #ff9800;">
+                <h3 style="color: #ff9800;">🎓 Falsche Spuren erkannt?</h3>
+                <p>Diese Hinweise waren <strong>RED HERRINGS</strong> (falsche Spuren):</p>
+                <ul>
+                    <li>❌ Der Zettel mit dem Safe-Code (war vernichtet, Paul brauchte ihn nicht)</li>
+                    <li>❌ Herrn Hoffmanns Computer-Login um 18:30 (er hat nur E-Mails gecheckt)</li>
+                    <li>❌ "Paul hat mir Lerntipps gegeben" (Jonas wollte Paul schützen)</li>
+                    <li>❌ Frau Meiers strenge Art (machte sie verdächtig, aber sie war unschuldig)</li>
+                </ul>
+                <br>
+                <p><strong>Annas Rolle:</strong> Sie war <em>nachlässig</em> (schlechtes Passwort, Schlüssel verloren), 
+                aber KEINE Täterin! Das war eine schwierige Frage.</p>
+            </div>
+
+            <div class="rules-box" style="background: #e8f5e9; border-color: #4caf50;">
+                <h3 style="color: #4caf50;">🎓 Was habt ihr gelernt?</h3>
+                <ul>
+                    <li><strong>Kritisches Denken:</strong> Nicht alles ist, wie es scheint!</li>
+                    <li><strong>Beweise vs. Verdacht:</strong> Man braucht konkrete Beweise</li>
+                    <li><strong>Komplexe Zeitlinien:</strong> Wer war wann wo?</li>
+                    <li><strong>Deutsch diskutieren:</strong> Komplexe Argumente auf Deutsch</li>
+                    <li><strong>Teamarbeit:</strong> Verschiedene Perspektiven helfen!</li>
+                </ul>
+            </div>
+
+            <div class="center">
+                <button class="button" onclick="location.reload()">🔄 Gleiches Spiel nochmal</button>
+                <button class="button" onclick="window.open('mystery_game.html', '_self')">🎮 Zurück zum ersten Mystery</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let votes = {
+            meier: 0,
+            paul: 0,
+            jonas: 0,
+            hoffmann: 0,
+            anna: 0
+        };
+        let totalVotesCount = 0;
+        let timers = {};
+
+        function showSuspectInfo(suspect) {
+            const infoDiv = document.getElementById('suspect-info-' + suspect);
+            const allInfoDivs = document.querySelectorAll('.suspect-info');
+            
+            if (infoDiv.classList.contains('active')) {
+                infoDiv.classList.remove('active');
+            } else {
+                allInfoDivs.forEach(div => div.classList.remove('active'));
+                infoDiv.classList.add('active');
+            }
+        }
+
+        function startGame() {
+            document.getElementById('welcome').classList.remove('active');
+            document.getElementById('suspects-intro').classList.add('active');
+        }
+
+        function goToRound(roundNum) {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('round' + roundNum).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function goToVoting() {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('voting').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showReveal() {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('reveal').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function startTimer(roundNum, seconds) {
+            const timerElement = document.getElementById('timer' + roundNum);
+            const displayElement = document.getElementById('timerDisplay' + roundNum);
+            
+            if (timers[roundNum]) {
+                clearInterval(timers[roundNum]);
+            }
+            
+            timerElement.classList.add('active');
+            let remaining = seconds;
+            
+            timers[roundNum] = setInterval(() => {
+                remaining--;
+                const mins = Math.floor(remaining / 60);
+                const secs = remaining % 60;
+                displayElement.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+                
+                if (remaining <= 0) {
+                    clearInterval(timers[roundNum]);
+                    timerElement.style.background = '#4caf50';
+                    displayElement.textContent = 'Zeit ist um! ✓';
+                }
+            }, 1000);
+        }
+
+        function vote(suspect) {
+            if (totalVotesCount >= 5) {
+                alert('Alle 5 Stimmen wurden bereits abgegeben!');
+                return;
+            }
+            
+            votes[suspect]++;
+            totalVotesCount++;
+            
+            document.getElementById('votes-' + suspect).textContent = 'Stimmen: ' + votes[suspect];
+            document.getElementById('totalVotes').textContent = totalVotesCount;
+            
+            const card = event.currentTarget;
+            card.classList.add('selected');
+            setTimeout(() => card.classList.remove('selected'), 500);
+        }
+    </script>
+</body>
+</html>

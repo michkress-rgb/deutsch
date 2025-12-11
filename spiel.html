@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Das Geheimnis des verschwundenen Schatzes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #764ba2;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .game-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .game-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(118, 75, 162, 0.4);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .suspects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .suspect-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .suspect-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .suspect-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .suspect-icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .suspect-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .suspect-role {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .clue-box {
+            background: #fff9e6;
+            border-left: 5px solid #ffd700;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .clue-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .round-indicator {
+            background: #764ba2;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .rules-box {
+            background: #e8f4f8;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .rules-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .rules-box ol, .rules-box ul {
+            margin-left: 20px;
+        }
+
+        .rules-box li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .timer {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .timer.active {
+            display: block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .discussion-prompt {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .discussion-prompt h3 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .voting-section {
+            margin: 30px 0;
+        }
+
+        .vote-tally {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .vote-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 5px;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .final-reveal {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            animation: bounceIn 0.8s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .confession {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .story-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        .emoji-big {
+            font-size: 3em;
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcome" class="game-section active">
+            <h1>🕵️ Das Geheimnis des verschwundenen Schatzes 🔍</h1>
+            <p class="subtitle">Ein Detektivspiel für die Klasse</p>
+            
+            <div class="rules-box">
+                <h3>📜 Spielregeln</h3>
+                <p><strong>Hintergrund:</strong> Der goldene Pokal der Schule ist verschwunden! Er stand im Lehrerzimmer und sollte morgen bei der Schulversammlung präsentiert werden. Aber heute Morgen war er weg! Fünf Personen hatten gestern Nachmittag Zugang zum Lehrerzimmer.</p>
+                
+                <h4 style="margin-top: 15px;">Spielablauf:</h4>
+                <ol>
+                    <li><strong>Das Spiel hat 4 Runden</strong> - in jeder Runde bekommt ihr neue Hinweise</li>
+                    <li><strong>Nach jedem Hinweis: Diskussionszeit (3 Minuten)</strong>
+                        <ul>
+                            <li>Besprecht die Hinweise auf Deutsch</li>
+                            <li>Teilt eure Theorien</li>
+                            <li>Stellt Fragen</li>
+                            <li>Macht Notizen!</li>
+                        </ul>
+                    </li>
+                    <li><strong>Am Ende: Abstimmung</strong> - Wer ist der Täter?</li>
+                    <li><strong>Ziel:</strong> Findet durch logisches Denken und gute Diskussionen heraus, wer den Pokal gestohlen hat!</li>
+                </ol>
+
+                <h4 style="margin-top: 15px;">Wichtig für gutes Deutsch:</h4>
+                <ul>
+                    <li>✓ Verwendet Sätze wie: "Ich denke, dass..." oder "Vielleicht hat..."</li>
+                    <li>✓ Fragt nach: "Was bedeutet das?" oder "Warum glaubst du das?"</li>
+                    <li>✓ Begründet eure Meinungen!</li>
+                    <li>✓ Hört einander zu!</li>
+                </ul>
+            </div>
+
+            <div class="center">
+                <button class="button" onclick="startGame()">🎮 Spiel starten!</button>
+            </div>
+        </div>
+
+        <!-- Suspects Introduction -->
+        <div id="suspects-intro" class="game-section">
+            <h1>🕵️ Die Verdächtigen</h1>
+            <p class="subtitle">Diese 5 Personen waren gestern Nachmittag im Schulgebäude:</p>
+
+            <div class="suspects-grid">
+                <div class="suspect-card">
+                    <div class="suspect-icon">👨‍🏫</div>
+                    <div class="suspect-name">Herr Müller</div>
+                    <div class="suspect-role">Sportlehrer</div>
+                </div>
+                <div class="suspect-card">
+                    <div class="suspect-icon">👩‍💼</div>
+                    <div class="suspect-name">Frau Schmidt</div>
+                    <div class="suspect-role">Schulsekretärin</div>
+                </div>
+                <div class="suspect-card">
+                    <div class="suspect-icon">🧑‍🔧</div>
+                    <div class="suspect-name">Herr Klein</div>
+                    <div class="suspect-role">Hausmeister</div>
+                </div>
+                <div class="suspect-card">
+                    <div class="suspect-icon">👧</div>
+                    <div class="suspect-name">Lisa Weber</div>
+                    <div class="suspect-role">Schülerin (Klasse 12)</div>
+                </div>
+                <div class="suspect-card">
+                    <div class="suspect-icon">🧑‍🍳</div>
+                    <div class="suspect-name">Frau Wagner</div>
+                    <div class="suspect-role">Kantinenköchin</div>
+                </div>
+            </div>
+
+            <div class="center">
+                <button class="button" onclick="goToRound(1)">➡️ Zur ersten Runde!</button>
+            </div>
+        </div>
+
+        <!-- Round 1 -->
+        <div id="round1" class="game-section">
+            <div class="round-indicator">🔍 RUNDE 1: Der Tatort</div>
+            
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 1: Was wurde gefunden?</div>
+                <p class="story-text">
+                    Die Direktorin entdeckte heute Morgen um 7:30 Uhr, dass der goldene Pokal weg war. 
+                    Das Fenster im Lehrerzimmer stand offen, obwohl es gestern Abend geschlossen war. 
+                    Auf dem Schreibtisch lag ein <span class="highlight">zerrissenes Stück Papier</span> mit den Worten: 
+                    "...muss das heute noch schaffen... bevor jemand..."
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 2: Die Zeitlinie</div>
+                <p class="story-text">
+                    Laut dem Hausmeister hat er das Schulgebäude gestern um <strong>18:00 Uhr</strong> abgeschlossen. 
+                    Alle fünf Verdächtigen waren zwischen 15:00 und 18:00 Uhr im Gebäude. 
+                    Die Alarmanlage wurde um 18:15 Uhr scharf geschaltet - sie hat nicht ausgelöst.
+                </p>
+            </div>
+
+            <div class="discussion-prompt">
+                <h3>💬 Diskussionszeit: 3 Minuten</h3>
+                <p><strong>Diskutiert auf Deutsch:</strong></p>
+                <ul>
+                    <li>Was sagen uns diese Hinweise?</li>
+                    <li>Warum ist das offene Fenster wichtig?</li>
+                    <li>Was bedeutet der zerrissene Zettel?</li>
+                    <li>Wer hatte bis 18:00 Uhr Zeit?</li>
+                </ul>
+            </div>
+
+            <div class="timer" id="timer1">⏱️ <span id="timerDisplay1">3:00</span></div>
+            
+            <div class="center">
+                <button class="button" onclick="startTimer(1, 180)">⏱️ Timer starten (3 Min.)</button>
+                <button class="button" onclick="goToRound(2)">➡️ Nächste Runde</button>
+            </div>
+        </div>
+
+        <!-- Round 2 -->
+        <div id="round2" class="game-section">
+            <div class="round-indicator">🔍 RUNDE 2: Die Alibis</div>
+            
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 3: Was sagen die Verdächtigen?</div>
+                <div class="story-text">
+                    <p><strong>Herr Müller (Sportlehrer):</strong> "Ich war bis 16:30 Uhr in der Turnhalle. Danach bin ich nach Hause gegangen."</p>
+                    <p><strong>Frau Schmidt (Sekretärin):</strong> "Ich habe bis 17:00 Uhr im Büro gearbeitet. Dann habe ich noch mit Frau Wagner in der Kantine geplaudert."</p>
+                    <p><strong>Herr Klein (Hausmeister):</strong> "Ich war überall im Gebäude - Reparaturen! Gegen 17:30 Uhr habe ich das Fenster im Lehrerzimmer repariert. Es klemmte."</p>
+                    <p><strong>Lisa Weber (Schülerin):</strong> "Ich hatte Nachsitzen bis 16:00 Uhr. Danach war ich noch in der Bibliothek für mein Referat."</p>
+                    <p><strong>Frau Wagner (Köchin):</strong> "Ich habe die Küche geputzt bis etwa 17:30 Uhr. Frau Schmidt kann das bestätigen - wir haben uns unterhalten."</p>
+                </div>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 4: Die Kameraaufnahmen</div>
+                <p class="story-text">
+                    Die Schule hat eine Kamera am Haupteingang. Die Aufnahmen zeigen:
+                    <br>• 16:45 Uhr: Lisa verlässt die Bibliothek
+                    <br>• 17:00 Uhr: Herr Müller verlässt das Gebäude
+                    <br>• 17:45 Uhr: Frau Wagner verlässt das Gebäude
+                    <br>• 18:00 Uhr: Herr Klein schließt ab und geht
+                    <br>• <span class="highlight">Frau Schmidt ist auf den Aufnahmen NICHT zu sehen!</span>
+                </p>
+            </div>
+
+            <div class="discussion-prompt">
+                <h3>💬 Diskussionszeit: 3 Minuten</h3>
+                <p><strong>Diskutiert auf Deutsch:</strong></p>
+                <ul>
+                    <li>Wessen Alibi passt nicht zu den Kameraaufnahmen?</li>
+                    <li>Warum ist Herr Kleins Fenster-Reparatur wichtig?</li>
+                    <li>Könnte jemand lügen?</li>
+                    <li>Welche neuen Verdachtsmomente gibt es?</li>
+                </ul>
+            </div>
+
+            <div class="timer" id="timer2">⏱️ <span id="timerDisplay2">3:00</span></div>
+            
+            <div class="center">
+                <button class="button" onclick="startTimer(2, 180)">⏱️ Timer starten (3 Min.)</button>
+                <button class="button" onclick="goToRound(3)">➡️ Nächste Runde</button>
+            </div>
+        </div>
+
+        <!-- Round 3 -->
+        <div id="round3" class="game-section">
+            <div class="round-indicator">🔍 RUNDE 3: Die Beweise</div>
+            
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 5: Fingerabdrücke</div>
+                <p class="story-text">
+                    Die Polizei hat Fingerabdrücke im Lehrerzimmer gesichert:
+                    <br>• Auf dem Schrank (wo der Pokal stand): <span class="highlight">Herr Klein und Frau Schmidt</span>
+                    <br>• Auf dem Fenstergriff: <span class="highlight">Herr Klein</span>
+                    <br>• Auf dem zerrissenen Papier: <span class="highlight">Frau Schmidt</span>
+                    <br>• Am Türgriff: Alle fünf Personen (normal, da alle da waren)
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 6: Ein wichtiger Anruf</div>
+                <p class="story-text">
+                    Die Bibliothekarin meldet sich: "Lisa Weber war gar nicht bis lange in der Bibliothek! 
+                    Sie hat um 16:15 Uhr ein Buch ausgeliehen und ist dann gegangen. 
+                    Ich habe sie danach nicht mehr gesehen."
+                    <br><br>
+                    Außerdem: Ein Nachbar hat gestern Abend um 18:30 Uhr jemanden aus dem Fenster des Lehrerzimmers 
+                    klettern sehen - <span class="highlight">es war dunkel, aber die Person trug eine dunkelblaue Jacke</span>.
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 7: Was trägt wer?</div>
+                <p class="story-text">
+                    Gestern trugen die Verdächtigen:
+                    <br>• Herr Müller: Rote Sportjacke
+                    <br>• Frau Schmidt: Beigen Mantel
+                    <br>• Herr Klein: <span class="highlight">Dunkelblaue Arbeitsjacke</span>
+                    <br>• Lisa Weber: <span class="highlight">Dunkelblauen Hoodie</span>
+                    <br>• Frau Wagner: Weiße Kochkleidung
+                </p>
+            </div>
+
+            <div class="discussion-prompt">
+                <h3>💬 Diskussionszeit: 4 Minuten</h3>
+                <p><strong>Diskutiert auf Deutsch:</strong></p>
+                <ul>
+                    <li>Was beweisen die Fingerabdrücke?</li>
+                    <li>Warum hat Lisa über die Bibliothek gelogen?</li>
+                    <li>Wer trug eine dunkelblaue Jacke?</li>
+                    <li>Wer hatte Gelegenheit UND Motiv?</li>
+                    <li>Könnte es zwei Täter geben?</li>
+                </ul>
+            </div>
+
+            <div class="timer" id="timer3">⏱️ <span id="timerDisplay3">4:00</span></div>
+            
+            <div class="center">
+                <button class="button" onclick="startTimer(3, 240)">⏱️ Timer starten (4 Min.)</button>
+                <button class="button" onclick="goToRound(4)">➡️ Letzte Runde!</button>
+            </div>
+        </div>
+
+        <!-- Round 4 -->
+        <div id="round4" class="game-section">
+            <div class="round-indicator">🔍 RUNDE 4: Die letzte Chance</div>
+            
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 8: Das Motiv</div>
+                <p class="story-text">
+                    Die Polizei findet heraus:
+                    <br><br>
+                    <strong>Lisa Weber</strong> wurde letzte Woche von der Schulleitung erwischt, wie sie in einem Test 
+                    geschummelt hat. Ihre Strafe: Sie darf nicht bei der Abschlussfeier den Preis als beste Schülerin 
+                    bekommen - obwohl sie sonst perfekte Noten hat. Der goldene Pokal sollte genau für diese Ehrung 
+                    verwendet werden!
+                    <br><br>
+                    <strong>Frau Schmidt</strong> ist sehr wütend auf die Schule, weil ihr Sohn (auch ein Schüler hier) 
+                    vom Fußballteam ausgeschlossen wurde. Sie hat letzte Woche laut mit der Direktorin gestritten.
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔎 Hinweis 9: Die Spur</div>
+                <p class="story-text">
+                    Der Hausmeister erinnert sich an noch etwas: "Als ich um 17:30 Uhr das Fenster reparierte, 
+                    stand der Pokal noch im Schrank. Ich habe ihn gesehen! Und Frau Schmidt war zu dem Zeitpunkt 
+                    auch im Lehrerzimmer - sie hat Kaffee getrunken."
+                    <br><br>
+                    Außerdem fand die Polizei unter dem Fenster des Lehrerzimmers im Garten einen 
+                    <span class="highlight">dunkelblauen Stoffetzen - wie von einem Hoodie!</span>
+                </p>
+            </div>
+
+            <div class="discussion-prompt">
+                <h3>💬 Diskussionszeit: 5 Minuten - FINALE DISKUSSION!</h3>
+                <p><strong>Diskutiert auf Deutsch und fasst alles zusammen:</strong></p>
+                <ul>
+                    <li>Wer hatte ein starkes Motiv?</li>
+                    <li>Wer hatte die Gelegenheit NACH 17:30 Uhr?</li>
+                    <li>Wer hat gelogen?</li>
+                    <li>Was bedeuten alle Hinweise zusammen?</li>
+                    <li>Wer ist der Täter? Warum seid ihr euch sicher?</li>
+                </ul>
+            </div>
+
+            <div class="timer" id="timer4">⏱️ <span id="timerDisplay4">5:00</span></div>
+            
+            <div class="center">
+                <button class="button" onclick="startTimer(4, 300)">⏱️ Timer starten (5 Min.)</button>
+                <button class="button" onclick="goToVoting()">🗳️ Zur Abstimmung!</button>
+            </div>
+        </div>
+
+        <!-- Voting -->
+        <div id="voting" class="game-section">
+            <h1>🗳️ Zeit für die Abstimmung!</h1>
+            <p class="subtitle">Wer hat den goldenen Pokal gestohlen?</p>
+
+            <div class="voting-section">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">
+                    <strong>Jeder Student darf EINE Stimme abgeben.</strong><br>
+                    Klickt auf die Person, die ihr für schuldig haltet!
+                </p>
+
+                <div class="suspects-grid">
+                    <div class="suspect-card" onclick="vote('mueller')">
+                        <div class="suspect-icon">👨‍🏫</div>
+                        <div class="suspect-name">Herr Müller</div>
+                        <div id="votes-mueller" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                    <div class="suspect-card" onclick="vote('schmidt')">
+                        <div class="suspect-icon">👩‍💼</div>
+                        <div class="suspect-name">Frau Schmidt</div>
+                        <div id="votes-schmidt" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                    <div class="suspect-card" onclick="vote('klein')">
+                        <div class="suspect-icon">🧑‍🔧</div>
+                        <div class="suspect-name">Herr Klein</div>
+                        <div id="votes-klein" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                    <div class="suspect-card" onclick="vote('lisa')">
+                        <div class="suspect-icon">👧</div>
+                        <div class="suspect-name">Lisa Weber</div>
+                        <div id="votes-lisa" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                    <div class="suspect-card" onclick="vote('wagner')">
+                        <div class="suspect-icon">🧑‍🍳</div>
+                        <div class="suspect-name">Frau Wagner</div>
+                        <div id="votes-wagner" style="margin-top: 10px; font-weight: bold;">Stimmen: 0</div>
+                    </div>
+                </div>
+
+                <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+                    Gesamtstimmen: <strong><span id="totalVotes">0</span> / 5</strong>
+                </p>
+            </div>
+
+            <div class="center" style="margin-top: 30px;">
+                <button class="button" onclick="showReveal()">🎭 Auflösung zeigen!</button>
+            </div>
+        </div>
+
+        <!-- Reveal -->
+        <div id="reveal" class="game-section">
+            <div class="final-reveal">
+                <h1 style="color: #333; margin-bottom: 20px;">🎉 DIE AUFLÖSUNG! 🎉</h1>
+                <div class="emoji-big">👧🔓</div>
+                <h2 style="color: #333; margin: 20px 0;">Die Täterin ist: LISA WEBER!</h2>
+            </div>
+
+            <div class="confession">
+                <h3 style="color: #764ba2; margin-bottom: 15px;">Lisas Geständnis:</h3>
+                <p class="story-text">
+                    "Es tut mir so leid... Ich war so wütend! Ich habe das ganze Jahr so hart gearbeitet, 
+                    und nur wegen einem dummen Fehler sollte ich meinen Preis nicht bekommen. 
+                    <br><br>
+                    Nachdem ich um 16:15 die Bibliothek verlassen hatte, bin ich zurück ins Lehrerzimmer geschlichen. 
+                    Ich wusste, dass Herr Klein das Fenster repariert - ich habe gehört, wie er mit jemandem darüber 
+                    gesprochen hat. Ich wartete, bis er und Frau Schmidt weg waren.
+                    <br><br>
+                    Um 17:45 Uhr, als alle weg waren, bin ich durch das offene Fenster zurück ins Lehrerzimmer geklettert - 
+                    Herr Klein hatte es nach der Reparatur nicht zugemacht! Ich nahm den Pokal und kletterte wieder raus. 
+                    Dabei habe ich meinen Hoodie an einem Nagel zerrissen.
+                    <br><br>
+                    Ich dachte, wenn der Pokal weg ist, kann die Ehrung nicht stattfinden... 
+                    Aber jetzt verstehe ich, wie falsch das war. Der Pokal ist in meinem Spind. 
+                    Bitte verzeiht mir!"
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">🔍 Die Beweise zusammengefasst:</div>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>✓ Lisa log über ihren Aufenthalt in der Bibliothek</li>
+                    <li>✓ Sie trug eine dunkelblaue Jacke (wie der Zeuge berichtete)</li>
+                    <li>✓ Der Stoffetzen vom Hoodie wurde gefunden</li>
+                    <li>✓ Sie hatte ein starkes Motiv (wollte Preis nicht verlieren)</li>
+                    <li>✓ Das Fenster war nach 17:30 offen (Herr Klein vergaß es zu schließen)</li>
+                    <li>✓ Die Tat geschah nach 18:00 Uhr - alle anderen waren schon weg</li>
+                </ul>
+            </div>
+
+            <div class="rules-box" style="background: #d4edda; border-color: #28a745;">
+                <h3 style="color: #28a745;">🎓 Was habt ihr gelernt?</h3>
+                <ul>
+                    <li><strong>Logisches Denken:</strong> Alle Hinweise zusammen ergaben das Gesamtbild</li>
+                    <li><strong>Aufmerksam zuhören:</strong> Kleine Details waren wichtig!</li>
+                    <li><strong>Deutsch sprechen:</strong> Diskussionen, Theorien, Begründungen</li>
+                    <li><strong>Teamarbeit:</strong> Gemeinsam die Lösung finden</li>
+                </ul>
+            </div>
+
+            <div class="center">
+                <button class="button" onclick="location.reload()">🔄 Neues Spiel starten</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let votes = {
+            mueller: 0,
+            schmidt: 0,
+            klein: 0,
+            lisa: 0,
+            wagner: 0
+        };
+        let totalVotesCount = 0;
+        let timers = {};
+
+        function startGame() {
+            document.getElementById('welcome').classList.remove('active');
+            document.getElementById('suspects-intro').classList.add('active');
+        }
+
+        function goToRound(roundNum) {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('round' + roundNum).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function goToVoting() {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('voting').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showReveal() {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('reveal').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function startTimer(roundNum, seconds) {
+            const timerElement = document.getElementById('timer' + roundNum);
+            const displayElement = document.getElementById('timerDisplay' + roundNum);
+            
+            // Clear existing timer if any
+            if (timers[roundNum]) {
+                clearInterval(timers[roundNum]);
+            }
+            
+            timerElement.classList.add('active');
+            let remaining = seconds;
+            
+            timers[roundNum] = setInterval(() => {
+                remaining--;
+                const mins = Math.floor(remaining / 60);
+                const secs = remaining % 60;
+                displayElement.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+                
+                if (remaining <= 0) {
+                    clearInterval(timers[roundNum]);
+                    timerElement.style.background = '#28a745';
+                    displayElement.textContent = 'Zeit ist um! ✓';
+                }
+            }, 1000);
+        }
+
+        function vote(suspect) {
+            if (totalVotesCount >= 5) {
+                alert('Alle 5 Stimmen wurden bereits abgegeben!');
+                return;
+            }
+            
+            votes[suspect]++;
+            totalVotesCount++;
+            
+            document.getElementById('votes-' + suspect).textContent = 'Stimmen: ' + votes[suspect];
+            document.getElementById('totalVotes').textContent = totalVotesCount;
+            
+            // Visual feedback
+            const card = event.currentTarget;
+            card.classList.add('selected');
+            setTimeout(() => card.classList.remove('selected'), 500);
+        }
+    </script>
+</body>
+</html>
