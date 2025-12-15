@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einstein: Eine Reise durch Raum und Zeit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .scene-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+
+        .scene-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 30px;
+        }
+
+        .visualization {
+            background: #f0f4f8;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .viz-title {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .canvas-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .choices {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 1.1em;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .choice-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .achievement {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .equation {
+            font-size: 2em;
+            font-family: 'Georgia', serif;
+            color: #667eea;
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .restart-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover {
+            background: #218838;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .light-beam {
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, yellow, transparent);
+            animation: moveLight 2s linear infinite;
+        }
+
+        @keyframes moveLight {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+
+        .spacetime-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
+            margin: 20px 0;
+        }
+
+        .grid-cell {
+            aspect-ratio: 1;
+            background: #e0e7ff;
+            border: 1px solid #a5b4fc;
+            transition: all 0.3s ease;
+        }
+
+        .grid-cell.warped {
+            background: #fef3c7;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🌟 Einstein: Eine Reise durch Raum und Zeit 🌟</h1>
+            <p>Entdecke die Geheimnisse des Universums</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-label">Wissen</div>
+                <div class="stat-value" id="knowledge">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Kreativität</div>
+                <div class="stat-value" id="creativity">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Entdeckungen</div>
+                <div class="stat-value" id="discoveries">0</div>
+            </div>
+        </div>
+
+        <div class="content" id="content">
+            <!-- Game content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const gameState = {
+            knowledge: 0,
+            creativity: 0,
+            discoveries: 0,
+            achievements: []
+        };
+
+        const scenes = {
+            start: {
+                title: "Bern, 1905 - Das Wunderjahr beginnt",
+                text: `Du bist Albert Einstein, ein junger Patentangestellter in Bern. Während deine Kollegen 
+                Patentanträge prüfen, denkst du über die fundamentalen Geheimnisse des Universums nach. 
+                Heute ist ein besonderer Tag - du hast eine revolutionäre Idee über die Natur des Lichts!
+                
+                In deinem kleinen Büro stapeln sich Papiere, aber dein Geist schweift zu den Sternen. 
+                Was möchtest du als erstes untersuchen?`,
+                choices: [
+                    {
+                        text: "📸 Das Rätsel des photoelektrischen Effekts untersuchen - warum erzeugt Licht manchmal Strom?",
+                        next: "photoelectric",
+                        stats: { knowledge: 10, creativity: 5 }
+                    },
+                    {
+                        text: "💡 Über die Natur des Lichts nachdenken - ist es Welle oder Teilchen?",
+                        next: "lightNature",
+                        stats: { knowledge: 5, creativity: 10 }
+                    },
+                    {
+                        text: "🌌 Die Bewegung von Molekülen in Flüssigkeiten analysieren (Brownsche Bewegung)",
+                        next: "brownian",
+                        stats: { knowledge: 8, creativity: 7 }
+                    }
+                ]
+            },
+
+            photoelectric: {
+                title: "Der photoelektrische Effekt",
+                text: `Du erinnerst dich an Heinrich Hertz' Beobachtung: Ultraviolettes Licht kann Elektronen 
+                aus Metalloberflächen herausschlagen. Aber die klassische Physik kann das nicht erklären!
+                
+                Du stellst dir vor, dass Licht nicht als kontinuierliche Welle existiert, sondern in kleinen 
+                Energiepaketen - Quanten oder Photonen! Je höher die Frequenz des Lichts, desto mehr Energie 
+                trägt jedes Photon.`,
+                visualization: "photoelectric",
+                info: "Diese Entdeckung brachte Einstein 1921 den Nobelpreis ein - nicht die Relativitätstheorie!",
+                equation: "E = h · ν",
+                choices: [
+                    {
+                        text: "🔬 Die Formel mathematisch entwickeln und beweisen",
+                        next: "relativityIntro",
+                        stats: { knowledge: 15, discoveries: 1 }
+                    },
+                    {
+                        text: "💭 Über die philosophischen Konsequenzen nachdenken",
+                        next: "quantum",
+                        stats: { creativity: 15, knowledge: 5 }
+                    }
+                ]
+            },
+
+            lightNature: {
+                title: "Das Doppelgesicht des Lichts",
+                text: `Die Physiker streiten seit Jahrhunderten: Ist Licht eine Welle (wie Thomas Young bewies) 
+                oder besteht es aus Teilchen (wie Newton glaubte)?
+                
+                Plötzlich erkennst du: Beide haben recht! Licht verhält sich manchmal wie eine Welle, manchmal 
+                wie Teilchen. Dies ist der Beginn der Quantenphysik - einer der größten Revolutionen der Wissenschaft.`,
+                visualization: "waveparticle",
+                info: "Dieser Welle-Teilchen-Dualismus gilt für alle Quantenobjekte, nicht nur für Licht!",
+                choices: [
+                    {
+                        text: "➡️ Zum photoelektrischen Effekt und dessen Beweis",
+                        next: "photoelectric",
+                        stats: { knowledge: 10 }
+                    },
+                    {
+                        text: "🌠 Über die Lichtgeschwindigkeit nachdenken",
+                        next: "relativityIntro",
+                        stats: { creativity: 10 }
+                    }
+                ]
+            },
+
+            brownian: {
+                title: "Die tanzenden Moleküle",
+                text: `Unter dem Mikroskop siehst du winzige Pollenkörner in Wasser. Sie bewegen sich zickzack, 
+                als würden sie tanzen! Der schottische Botaniker Robert Brown entdeckte dies 1827, aber niemand 
+                konnte es erklären.
+                
+                Du erkennst: Die Pollenkörner werden von unsichtbaren Wassermolekülen bombardiert! Dies ist der 
+                direkte Beweis, dass Atome und Moleküle wirklich existieren - viele Wissenschaftler zweifelten 
+                noch daran.`,
+                visualization: "brownian",
+                info: "Diese Arbeit überzeugte die letzten Skeptiker von der Existenz der Atome!",
+                choices: [
+                    {
+                        text: "📊 Eine mathematische Theorie entwickeln",
+                        next: "relativityIntro",
+                        stats: { knowledge: 15, discoveries: 1 }
+                    },
+                    {
+                        text: "🔬 Zum Licht zurückkehren - das ist spannender!",
+                        next: "lightNature",
+                        stats: { creativity: 5 }
+                    }
+                ]
+            },
+
+            quantum: {
+                title: "Der Beginn der Quantenrevolution",
+                text: `Deine Idee hat weitreichende Konsequenzen: Wenn Licht in Quanten kommt, ist die Energie 
+                auf atomarer Ebene nicht kontinuierlich, sondern "quantisiert" - sie kommt in bestimmten Portionen vor.
+                
+                Aber du fühlst dich unwohl mit einigen Implikationen der Quantenmechanik, die andere später 
+                entwickeln werden. "Gott würfelt nicht!" wirst du später sagen, wenn es um Quantenzufall geht.`,
+                info: "Ironischerweise war Einstein einer der Begründer der Quantenphysik, lehnte aber später Teile davon ab!",
+                choices: [
+                    {
+                        text: "🌟 Zur Relativitätstheorie übergehen - dein größtes Werk!",
+                        next: "relativityIntro",
+                        stats: { knowledge: 10, creativity: 10 }
+                    }
+                ]
+            },
+
+            relativityIntro: {
+                title: "Ein Gedankenexperiment auf einem Lichtstrahl",
+                text: `Du stellst dir vor, auf einem Lichtstrahl zu reiten. Was würdest du sehen? Würde das Licht 
+                neben dir stillstehen? Die klassische Physik sagt ja - aber das kann nicht stimmen!
+                
+                Maxwell's Gleichungen zeigen, dass Licht sich immer mit derselben Geschwindigkeit bewegt, egal 
+                wie schnell du dich bewegst. Das bedeutet: Wenn sich die Lichtgeschwindigkeit nicht ändert, 
+                müssen sich Zeit und Raum ändern!`,
+                visualization: "lightspeed",
+                equation: "c = 299.792.458 m/s",
+                info: "Die Lichtgeschwindigkeit ist die absolute Geschwindigkeitsbegrenzung des Universums!",
+                choices: [
+                    {
+                        text: "⏰ Über Zeitdilatation nachdenken - bewegte Uhren gehen langsamer",
+                        next: "timeDilation",
+                        stats: { knowledge: 15, creativity: 10 }
+                    },
+                    {
+                        text: "📏 Längenkontraktion untersuchen - bewegte Objekte werden kürzer",
+                        next: "lengthContraction",
+                        stats: { knowledge: 15, creativity: 10 }
+                    }
+                ]
+            },
+
+            timeDilation: {
+                title: "Die Zeitdilatation - Zeit ist relativ!",
+                text: `Stell dir zwei Zwillinge vor: Anna bleibt auf der Erde, Ben fliegt mit fast 
+                Lichtgeschwindigkeit durchs All. Wenn Ben zurückkommt, ist Anna viel älter als er!
+                
+                Zeit ist keine absolute Größe, die überall gleich vergeht. Je schneller du dich bewegst, 
+                desto langsamer vergeht die Zeit für dich - relativ zu jemandem, der ruht.
+                
+                Bei alltäglichen Geschwindigkeiten ist der Effekt winzig, aber bei Lichtgeschwindigkeit enorm!`,
+                visualization: "timeDilation",
+                equation: "Δt' = Δt / √(1 - v²/c²)",
+                info: "GPS-Satelliten müssen diese Zeitdilatation berücksichtigen, sonst wären sie ungenau!",
+                choices: [
+                    {
+                        text: "🚀 Die Konsequenzen für Raumfahrt verstehen",
+                        next: "spaceTravel",
+                        stats: { knowledge: 10, creativity: 15 }
+                    },
+                    {
+                        text: "💫 Zur berühmtesten Gleichung der Physik",
+                        next: "emc2",
+                        stats: { knowledge: 15, discoveries: 1 }
+                    }
+                ]
+            },
+
+            lengthContraction: {
+                title: "Längenkontraktion - Der Raum wird gestaucht",
+                text: `Ein Raumschiff fliegt mit 90% der Lichtgeschwindigkeit an dir vorbei. Für dich sieht es 
+                verkürzt aus - es wird in Flugrichtung zusammengestaucht!
+                
+                Für die Astronauten im Raumschiff ist alles normal. Aber sie sehen das Universum draußen 
+                verkürzt. Raum ist keine absolute, feste Größe - er hängt von deiner Bewegung ab!
+                
+                Je näher an Lichtgeschwindigkeit, desto stärker die Kontraktion.`,
+                visualization: "lengthContraction",
+                equation: "L' = L · √(1 - v²/c²)",
+                info: "Raum und Zeit sind miteinander verwoben - zur Raumzeit!",
+                choices: [
+                    {
+                        text: "🌌 Die Vereinigung von Raum und Zeit verstehen",
+                        next: "spacetime",
+                        stats: { knowledge: 15, creativity: 10 }
+                    },
+                    {
+                        text: "⚡ Zur berühmten E=mc² Gleichung",
+                        next: "emc2",
+                        stats: { knowledge: 10, discoveries: 1 }
+                    }
+                ]
+            },
+
+            spacetime: {
+                title: "Die Raumzeit - Eine vierdimensionale Welt",
+                text: `Hermann Minkowski, dein ehemaliger Mathematikprofessor, formuliert deine Ideen neu: 
+                Raum und Zeit sind nicht getrennt, sondern bilden eine vierdimensionale "Raumzeit"!
+                
+                "Von Stund an sollen Raum für sich und Zeit für sich völlig zu Schatten herabsinken, und nur 
+                noch eine Art Union der beiden soll Selbständigkeit bewahren," verkündet Minkowski 1908.
+                
+                Erst bist du skeptisch, aber dann erkennst du die Schönheit dieser mathematischen Formulierung.`,
+                visualization: "spacetime",
+                info: "Die Raumzeit-Idee ist fundamental für die allgemeine Relativitätstheorie!",
+                choices: [
+                    {
+                        text: "🌊 Zur Gravitation als Krümmung der Raumzeit",
+                        next: "gravity",
+                        stats: { knowledge: 20, creativity: 15, discoveries: 1 }
+                    },
+                    {
+                        text: "💥 Erst E=mc² verstehen",
+                        next: "emc2",
+                        stats: { knowledge: 15 }
+                    }
+                ]
+            },
+
+            spaceTravel: {
+                title: "Das Zwillingsparadoxon",
+                text: `Anna und Ben sind 20 Jahre alt. Ben steigt in ein Raumschiff und fliegt mit 99,5% der 
+                Lichtgeschwindigkeit zu einem 10 Lichtjahre entfernten Stern und zurück.
+                
+                Für Anna auf der Erde vergehen 20 Jahre. Aber für Ben im Raumschiff vergehen nur 2 Jahre! 
+                Anna ist nun 40, Ben erst 22.
+                
+                Dies ist kein Paradoxon, sondern Realität - Zeit vergeht wirklich unterschiedlich schnell!`,
+                visualization: "twins",
+                info: "Dieser Effekt wurde mit Atomuhren in Flugzeugen experimentell bestätigt!",
+                choices: [
+                    {
+                        text: "⚡ Zur berühmtesten Gleichung: E=mc²",
+                        next: "emc2",
+                        stats: { knowledge: 15, creativity: 10 }
+                    }
+                ]
+            },
+
+            emc2: {
+                title: "E=mc² - Masse und Energie sind eins!",
+                text: `Aus deinen Überlegungen zur Relativität folgt eine atemberaubende Erkenntnis: 
+                Masse und Energie sind zwei Formen derselben Sache!
+                
+                Eine winzige Menge Masse entspricht einer enormen Menge Energie. Das 'c²' in der Gleichung 
+                (Lichtgeschwindigkeit zum Quadrat) ist eine riesige Zahl: etwa 90.000.000.000.000.000!
+                
+                Ein Kilogramm Materie enthält die Energie von 21,5 Megatonnen TNT - mehr als die stärkste 
+                je gezündete Wasserstoffbombe!`,
+                visualization: "emc2",
+                equation: "E = mc²",
+                info: "Diese Gleichung erklärt, warum die Sonne scheint: Sie verwandelt Masse in Energie!",
+                choices: [
+                    {
+                        text: "⚛️ Die Konsequenzen für Atomenergie verstehen",
+                        next: "nuclear",
+                        stats: { knowledge: 15, creativity: 5 }
+                    },
+                    {
+                        text: "🌌 Zur allgemeinen Relativität und Gravitation",
+                        next: "gravity",
+                        stats: { knowledge: 20, creativity: 15, discoveries: 1 }
+                    }
+                ]
+            },
+
+            nuclear: {
+                title: "Die nukleare Konsequenz",
+                text: `E=mc² erklärt, woher die Energie der Sterne kommt: Kernfusion verwandelt einen winzigen 
+                Teil der Masse in Energie. Die Sonne verliert pro Sekunde 4 Millionen Tonnen Masse!
+                
+                Später wirst du einen Brief an Präsident Roosevelt schreiben und vor der Möglichkeit von 
+                Atombomben warnen. Nach Hiroshima wirst du sagen: "Hätte ich gewusst, dass die Deutschen 
+                keine Atombombe bauen können, hätte ich keinen Finger gerührt."
+                
+                Wissenschaftliche Entdeckungen können zum Guten oder Schlechten genutzt werden.`,
+                info: "Einstein war Pazifist und kämpfte später für nukleare Abrüstung.",
+                choices: [
+                    {
+                        text: "🌠 Zur Krönung: Die allgemeine Relativitätstheorie",
+                        next: "gravity",
+                        stats: { knowledge: 15, creativity: 10, discoveries: 1 }
+                    }
+                ]
+            },
+
+            gravity: {
+                title: "1915 - Die allgemeine Relativitätstheorie",
+                text: `Zehn Jahre nach deiner speziellen Relativitätstheorie hast du es geschafft: Du verstehst 
+                die Gravitation auf eine völlig neue Weise!
+                
+                Gravitation ist keine Kraft, die durch den Raum wirkt, wie Newton dachte. Stattdessen krümmen 
+                schwere Objekte die Raumzeit selbst! Planeten bewegen sich auf geraden Linien durch diese 
+                gekrümmte Raumzeit - das sieht für uns wie eine Umlaufbahn aus.
+                
+                Stell dir die Raumzeit wie ein Gummituch vor: Ein schwerer Ball (die Sonne) drückt eine Delle 
+                hinein. Kleinere Kugeln (Planeten) rollen um diese Delle herum.`,
+                visualization: "gravity",
+                equation: "Rμν - ½R·gμν = 8πG/c⁴ · Tμν",
+                info: "Diese Gleichung ist extrem komplex - sie beschreibt, wie Materie die Raumzeit krümmt!",
+                choices: [
+                    {
+                        text: "🌑 Die Vorhersage: Licht wird von der Sonne abgelenkt",
+                        next: "eclipse",
+                        stats: { knowledge: 15, creativity: 15 }
+                    },
+                    {
+                        text: "⚫ Schwarze Löcher verstehen",
+                        next: "blackholes",
+                        stats: { knowledge: 20, creativity: 10, discoveries: 1 }
+                    }
+                ]
+            },
+
+            eclipse: {
+                title: "1919 - Die Sonnenfinsternis, die dich berühmt machte",
+                text: `Deine Theorie sagt voraus: Wenn Sternenlicht nahe an der Sonne vorbeikommt, sollte es 
+                durch die Krümmung der Raumzeit abgelenkt werden. Bei einer Sonnenfinsternis können wir dies testen!
+                
+                Der britische Astronom Arthur Eddington reist nach Principe (Afrika) und Sobral (Brasilien). 
+                Bei der Finsternis am 29. Mai 1919 fotografiert er Sterne nahe der Sonne.
+                
+                Das Ergebnis: Die Sterne erscheinen verschoben, genau wie du vorhergesagt hast! 
+                Über Nacht wirst du weltberühmt. "Newton wird gestürzt!" schreiben die Zeitungen.`,
+                visualization: "eclipse",
+                info: "Dies war einer der bedeutendsten Momente in der Geschichte der Wissenschaft!",
+                choices: [
+                    {
+                        text: "🎯 Das Vermächtnis betrachten",
+                        next: "legacy",
+                        stats: { knowledge: 10, creativity: 10, discoveries: 1 }
+                    },
+                    {
+                        text: "⚫ Schwarze Löcher erforschen",
+                        next: "blackholes",
+                        stats: { knowledge: 15, creativity: 15 }
+                    }
+                ]
+            },
+
+            blackholes: {
+                title: "Schwarze Löcher - Wo die Raumzeit kollabiert",
+                text: `Karl Schwarzschild findet 1916 eine Lösung deiner Gleichungen: Wenn genug Masse auf 
+                einen kleinen Raum komprimiert wird, entsteht ein Schwarzes Loch!
+                
+                Die Raumzeit wird so stark gekrümmt, dass nicht einmal Licht entkommen kann. Am "Ereignishorizont" 
+                steht die Zeit still (aus Sicht eines außenstehenden Beobachters).
+                
+                Du bist zunächst skeptisch, ob Schwarze Löcher wirklich existieren. Aber heute wissen wir: 
+                Im Zentrum jeder Galaxie, auch unserer Milchstraße, sitzt ein supermassereiches Schwarzes Loch!`,
+                visualization: "blackhole",
+                info: "2019 wurde das erste Foto eines Schwarzen Lochs gemacht - es bestätigt deine Theorie perfekt!",
+                choices: [
+                    {
+                        text: "🌊 Gravitationswellen verstehen",
+                        next: "gravitywaves",
+                        stats: { knowledge: 20, creativity: 10, discoveries: 1 }
+                    },
+                    {
+                        text: "🎓 Dein Vermächtnis betrachten",
+                        next: "legacy",
+                        stats: { knowledge: 10, creativity: 15 }
+                    }
+                ]
+            },
+
+            gravitywaves: {
+                title: "Gravitationswellen - Wellen in der Raumzeit",
+                text: `1916 sagst du etwas Erstaunliches voraus: Wenn massive Objekte sich beschleunigen, 
+                erzeugen sie Wellen in der Raumzeit selbst - Gravitationswellen!
+                
+                Diese Wellen breiten sich mit Lichtgeschwindigkeit aus und stauchen und dehnen die Raumzeit 
+                minimal. Du selbst zweifelst, ob man sie je messen kann - sie sind so schwach!
+                
+                Aber am 14. September 2015, 100 Jahre nach deiner Theorie, gelingt es: LIGO misst 
+                Gravitationswellen von zwei verschmelzenden Schwarzen Löchern! Du hattest recht!`,
+                visualization: "gravitywaves",
+                info: "Gravitationswellen öffnen ein völlig neues Fenster zum Universum!",
+                choices: [
+                    {
+                        text: "🏆 Dein Vermächtnis und Einfluss verstehen",
+                        next: "legacy",
+                        stats: { knowledge: 15, creativity: 10, discoveries: 1 }
+                    }
+                ]
+            },
+
+            legacy: {
+                title: "Dein Vermächtnis - Ein Jahrhundert der Bestätigung",
+                text: `Albert, deine Theorien haben die Welt verändert. Fast alles, was du vorhergesagt hast, 
+                wurde bestätigt:
+                
+                ✓ Zeitdilatation (gemessen mit Atomuhren)
+                ✓ Längenkontraktion (Teilchenbeschleuniger)
+                ✓ E=mc² (Kernenergie, Massendefekt)
+                ✓ Lichtablenkung durch Gravitation (bestätigt 1919)
+                ✓ Gravitationsrotverschiebung (GPS-Satelliten)
+                ✓ Schwarze Löcher (erstmals fotografiert 2019)
+                ✓ Gravitationswellen (gemessen 2015)
+                
+                GPS, Teilchenphysik, Kosmologie - all das baut auf deinen Ideen auf. Du hast gezeigt, dass 
+                das Universum viel seltsamer und wunderbarer ist, als irgendjemand dachte.
+                
+                "Das Schönste, was wir erleben können, ist das Geheimnisvolle." - Du, Albert Einstein`,
+                visualization: "legacy",
+                choices: [
+                    {
+                        text: "🔄 Das Abenteuer noch einmal erleben",
+                        next: "start",
+                        stats: { knowledge: 0, creativity: 0, discoveries: 0 },
+                        restart: true
+                    }
+                ]
+            }
+        };
+
+        function updateStats(stats) {
+            if (stats.knowledge !== undefined) {
+                gameState.knowledge += stats.knowledge;
+                document.getElementById('knowledge').textContent = gameState.knowledge;
+            }
+            if (stats.creativity !== undefined) {
+                gameState.creativity += stats.creativity;
+                document.getElementById('creativity').textContent = gameState.creativity;
+            }
+            if (stats.discoveries !== undefined) {
+                gameState.discoveries += stats.discoveries;
+                document.getElementById('discoveries').textContent = gameState.discoveries;
+            }
+        }
+
+        function createVisualization(type) {
+            const viz = document.createElement('div');
+            viz.className = 'visualization';
+            
+            switch(type) {
+                case 'photoelectric':
+                    viz.innerHTML = `
+                        <div class="viz-title">Der photoelektrische Effekt</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="300"></canvas>
+                        </div>
+                        <p>Klicke auf die Leinwand, um Photonen zu schießen! Höhere Frequenz = mehr Energie</p>
+                    `;
+                    setTimeout(() => drawPhotoelectric(), 100);
+                    break;
+                    
+                case 'waveparticle':
+                    viz.innerHTML = `
+                        <div class="viz-title">Welle-Teilchen-Dualismus</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="300"></canvas>
+                        </div>
+                        <p>Licht verhält sich manchmal wie eine Welle, manchmal wie Teilchen!</p>
+                    `;
+                    setTimeout(() => drawWaveParticle(), 100);
+                    break;
+                    
+                case 'brownian':
+                    viz.innerHTML = `
+                        <div class="viz-title">Brownsche Bewegung</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="400"></canvas>
+                        </div>
+                        <p>Beobachte die zufällige Bewegung der Partikel!</p>
+                    `;
+                    setTimeout(() => drawBrownian(), 100);
+                    break;
+                    
+                case 'lightspeed':
+                    viz.innerHTML = `
+                        <div class="viz-title">Die konstante Lichtgeschwindigkeit</div>
+                        <div class="light-beam"></div>
+                        <p style="margin-top: 20px;">Egal wie schnell du dich bewegst - Licht bewegt sich immer mit c = 299.792.458 m/s!</p>
+                    `;
+                    break;
+                    
+                case 'timeDilation':
+                    viz.innerHTML = `
+                        <div class="viz-title">Zeitdilatation</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="300"></canvas>
+                        </div>
+                        <p>Je schneller die Bewegung, desto langsamer vergeht die Zeit!</p>
+                    `;
+                    setTimeout(() => drawTimeDilation(), 100);
+                    break;
+                    
+                case 'lengthContraction':
+                    viz.innerHTML = `
+                        <div class="viz-title">Längenkontraktion</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="300"></canvas>
+                        </div>
+                        <p>Bewegte Objekte werden in Bewegungsrichtung kürzer!</p>
+                    `;
+                    setTimeout(() => drawLengthContraction(), 100);
+                    break;
+                    
+                case 'spacetime':
+                    viz.innerHTML = `
+                        <div class="viz-title">Die vierdimensionale Raumzeit</div>
+                        <div class="spacetime-grid" id="spacetimeGrid"></div>
+                        <p>Raum und Zeit sind untrennbar miteinander verbunden!</p>
+                    `;
+                    setTimeout(() => drawSpacetime(), 100);
+                    break;
+                    
+                case 'twins':
+                    viz.innerHTML = `
+                        <div class="viz-title">Das Zwillingsparadoxon</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="300"></canvas>
+                        </div>
+                        <p>Anna (Erde) vs. Ben (Raumschiff): Wer altert schneller?</p>
+                    `;
+                    setTimeout(() => drawTwins(), 100);
+                    break;
+                    
+                case 'emc2':
+                    viz.innerHTML = `
+                        <div class="viz-title">E=mc² visualisiert</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="300"></canvas>
+                        </div>
+                        <p>Winzige Masse = Riesige Energie!</p>
+                    `;
+                    setTimeout(() => drawEmc2(), 100);
+                    break;
+                    
+                case 'gravity':
+                    viz.innerHTML = `
+                        <div class="viz-title">Gravitation = Raumzeitkrümmung</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="400"></canvas>
+                        </div>
+                        <p>Masse krümmt die Raumzeit wie ein Ball auf einem Gummituch!</p>
+                    `;
+                    setTimeout(() => drawGravity(), 100);
+                    break;
+                    
+                case 'eclipse':
+                    viz.innerHTML = `
+                        <div class="viz-title">Lichtablenkung bei der Sonnenfinsternis 1919</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="400"></canvas>
+                        </div>
+                        <p>Eddingtons Beobachtung bestätigte Einsteins Theorie!</p>
+                    `;
+                    setTimeout(() => drawEclipse(), 100);
+                    break;
+                    
+                case 'blackhole':
+                    viz.innerHTML = `
+                        <div class="viz-title">Schwarzes Loch</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="400"></canvas>
+                        </div>
+                        <p>Am Ereignishorizont wird die Raumzeit so gekrümmt, dass nichts entkommen kann!</p>
+                    `;
+                    setTimeout(() => drawBlackHole(), 100);
+                    break;
+                    
+                case 'gravitywaves':
+                    viz.innerHTML = `
+                        <div class="viz-title">Gravitationswellen</div>
+                        <div class="canvas-container">
+                            <canvas id="vizCanvas" width="600" height="300"></canvas>
+                        </div>
+                        <p>Wellen in der Raumzeit selbst!</p>
+                    `;
+                    setTimeout(() => drawGravityWaves(), 100);
+                    break;
+                    
+                case 'legacy':
+                    viz.innerHTML = `
+                        <div class="viz-title">🏆 Deine wissenschaftliche Reise 🏆</div>
+                        <div style="font-size: 1.5em; margin: 20px 0;">
+                            <p>🧠 Wissen gesammelt: ${gameState.knowledge}</p>
+                            <p>💡 Kreativität gezeigt: ${gameState.creativity}</p>
+                            <p>🔬 Entdeckungen gemacht: ${gameState.discoveries}</p>
+                        </div>
+                        <p style="font-size: 1.2em; font-style: italic; color: #667eea;">
+                            "Die Phantasie ist wichtiger als Wissen, denn Wissen ist begrenzt." - Albert Einstein
+                        </p>
+                    `;
+                    break;
+            }
+            
+            return viz;
+        }
+
+        // Visualization functions
+        function drawPhotoelectric() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Metal plate
+            ctx.fillStyle = '#888';
+            ctx.fillRect(50, 200, 200, 50);
+            ctx.fillStyle = '#333';
+            ctx.fillText('Metalloberfläche', 90, 230);
+            
+            // Draw photons coming in
+            let photonX = 0;
+            let electrons = [];
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Metal plate
+                ctx.fillStyle = '#888';
+                ctx.fillRect(50, 200, 200, 50);
+                
+                // Incoming photon
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(photonX, 150, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                photonX += 3;
+                
+                // When photon hits
+                if (photonX > 150 && electrons.length < 5) {
+                    electrons.push({ x: 150, y: 200, vx: Math.random() * 3 + 2, vy: -Math.random() * 3 - 2 });
+                    photonX = 0;
+                }
+                
+                // Draw electrons
+                ctx.fillStyle = '#00F';
+                electrons.forEach((e, i) => {
+                    ctx.beginPath();
+                    ctx.arc(e.x, e.y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    e.x += e.vx;
+                    e.y += e.vy;
+                    e.vy += 0.1; // gravity
+                    
+                    if (e.y > 300) electrons.splice(i, 1);
+                });
+                
+                ctx.fillStyle = '#333';
+                ctx.font = '14px Arial';
+                ctx.fillText('Photon (Lichtquant)', photonX + 15, 145);
+                ctx.fillText('Elektron', 160, 180);
+                
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function drawWaveParticle() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let phase = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Wave representation
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let x = 0; x < 300; x++) {
+                    const y = 75 + Math.sin((x + phase) * 0.05) * 30;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.fillStyle = '#333';
+                ctx.fillText('Als Welle', 120, 140);
+                
+                // Particle representation
+                ctx.fillStyle = '#f5576c';
+                for (let x = 0; x < 300; x += 30) {
+                    ctx.beginPath();
+                    ctx.arc(300 + x, 75 + Math.sin((x + phase) * 0.05) * 30, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#333';
+                ctx.fillText('Als Teilchen', 400, 140);
+                
+                phase += 2;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function drawBrownian() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            const particles = [];
+            for (let i = 0; i < 15; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    trail: []
+                });
+            }
+            
+            function animate() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(p => {
+                    // Random walk
+                    p.vx += (Math.random() - 0.5) * 0.5;
+                    p.vy += (Math.random() - 0.5) * 0.5;
+                    
+                    // Limit speed
+                    const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                    if (speed > 3) {
+                        p.vx = (p.vx / speed) * 3;
+                        p.vy = (p.vy / speed) * 3;
+                    }
+                    
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    
+                    // Bounce off walls
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    
+                    // Draw trail
+                    p.trail.push({ x: p.x, y: p.y });
+                    if (p.trail.length > 30) p.trail.shift();
+                    
+                    ctx.strokeStyle = 'rgba(102, 126, 234, 0.3)';
+                    ctx.beginPath();
+                    p.trail.forEach((pos, i) => {
+                        if (i === 0) ctx.moveTo(pos.x, pos.y);
+                        else ctx.lineTo(pos.x, pos.y);
+                    });
+                    ctx.stroke();
+                    
+                    // Draw particle
+                    ctx.fillStyle = '#f5576c';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function drawTimeDilation() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let time = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Earth clock
+                ctx.fillStyle = '#333';
+                ctx.fillText('Uhr auf der Erde (v=0)', 80, 30);
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(150, 100, 50, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // Clock hand (fast)
+                ctx.beginPath();
+                ctx.moveTo(150, 100);
+                ctx.lineTo(150 + Math.cos(time * 0.1) * 40, 100 + Math.sin(time * 0.1) * 40);
+                ctx.stroke();
+                
+                // Spaceship clock
+                ctx.fillStyle = '#333';
+                ctx.fillText('Uhr im Raumschiff (v≈c)', 380, 30);
+                ctx.strokeStyle = '#f5576c';
+                ctx.beginPath();
+                ctx.arc(450, 100, 50, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // Clock hand (slow)
+                ctx.beginPath();
+                ctx.moveTo(450, 100);
+                ctx.lineTo(450 + Math.cos(time * 0.03) * 40, 100 + Math.sin(time * 0.03) * 40);
+                ctx.stroke();
+                
+                // Time values
+                ctx.fillStyle = '#333';
+                ctx.fillText(`${Math.floor(time / 10)} Sekunden`, 110, 180);
+                ctx.fillText(`${Math.floor(time / 33)} Sekunden`, 410, 180);
+                
+                time++;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function drawLengthContraction() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let x = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Stationary rocket
+                ctx.fillStyle = '#333';
+                ctx.fillText('Ruhendes Raumschiff', 80, 50);
+                ctx.fillStyle = '#667eea';
+                ctx.fillRect(50, 70, 200, 60);
+                
+                // Moving rocket (contracted)
+                ctx.fillStyle = '#333';
+                ctx.fillText('Bewegtes Raumschiff (v≈c)', 330, 170);
+                const contraction = 0.4;
+                ctx.fillStyle = '#f5576c';
+                ctx.fillRect(x % 400 + 50, 190, 200 * contraction, 60);
+                
+                x += 2;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function drawSpacetime() {
+            const grid = document.getElementById('spacetimeGrid');
+            if (!grid) return;
+            
+            for (let i = 0; i < 100; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                grid.appendChild(cell);
+            }
+            
+            setInterval(() => {
+                const cells = grid.getElementsByClassName('grid-cell');
+                const randomCell = cells[Math.floor(Math.random() * cells.length)];
+                randomCell.classList.add('warped');
+                setTimeout(() => randomCell.classList.remove('warped'), 1000);
+            }, 200);
+        }
+
+        function drawTwins() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let shipX = 0;
+            let earthTime = 0;
+            let shipTime = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Earth
+                ctx.fillStyle = '#4CAF50';
+                ctx.beginPath();
+                ctx.arc(100, 150, 40, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#333';
+                ctx.fillText('Erde - Anna', 70, 210);
+                ctx.fillText(`Alter: ${Math.floor(earthTime / 10) + 20}`, 70, 230);
+                
+                // Spaceship
+                ctx.fillStyle = '#f5576c';
+                ctx.fillRect(shipX + 300, 140, 80, 30);
+                ctx.fillStyle = '#333';
+                ctx.fillText('Raumschiff - Ben', shipX + 300, 190);
+                ctx.fillText(`Alter: ${Math.floor(shipTime / 10) + 20}`, shipX + 300, 210);
+                
+                shipX = (shipX + 2) % 200;
+                earthTime += 1;
+                shipTime += 0.3; // Time dilation factor
+                
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function drawEmc2() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let scale = 1;
+            let growing = true;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Small mass
+                ctx.fillStyle = '#667eea';
+                ctx.beginPath();
+                ctx.arc(150, 150, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#333';
+                ctx.fillText('Masse (m)', 120, 190);
+                
+                // Arrow
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(180, 150);
+                ctx.lineTo(270, 150);
+                ctx.lineTo(260, 140);
+                ctx.moveTo(270, 150);
+                ctx.lineTo(260, 160);
+                ctx.stroke();
+                
+                // Large energy burst
+                ctx.fillStyle = `rgba(255, 215, 0, ${scale * 0.5})`;
+                ctx.beginPath();
+                ctx.arc(450, 150, 30 * scale, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(450, 150, 20 * scale, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#333';
+                ctx.fillText('Energie (E)', 420, 190);
+                
+                if (growing) {
+                    scale += 0.02;
+                    if (scale > 2) growing = false;
+                } else {
+                    scale -= 0.02;
+                    if (scale < 1) growing = true;
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function drawGravity() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw curved grid
+                ctx.strokeStyle = '#ddd';
+                ctx.lineWidth = 1;
+                
+                for (let y = 0; y < canvas.height; y += 30) {
+                    ctx.beginPath();
+                    for (let x = 0; x < canvas.width; x += 5) {
+                        const dx = x - 300;
+                        const dy = y - 200;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        const warp = Math.max(0, 50 - dist * 0.5);
+                        
+                        if (x === 0) ctx.moveTo(x, y + warp);
+                        else ctx.lineTo(x, y + warp);
+                    }
+                    ctx.stroke();
+                }
+                
+                for (let x = 0; x < canvas.width; x += 30) {
+                    ctx.beginPath();
+                    for (let y = 0; y < canvas.height; y += 5) {
+                        const dx = x - 300;
+                        const dy = y - 200;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        const warp = Math.max(0, 50 - dist * 0.5);
+                        
+                        if (y === 0) ctx.moveTo(x, y + warp);
+                        else ctx.lineTo(x, y + warp);
+                    }
+                    ctx.stroke();
+                }
+                
+                // Draw sun
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(300, 200, 30, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#333';
+                ctx.fillText('Sonne (krümmt die Raumzeit)', 220, 260);
+            }
+            animate();
+        }
+
+        function drawEclipse() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Star
+                ctx.fillStyle = '#FFF';
+                ctx.beginPath();
+                ctx.arc(100, 100, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#333';
+                ctx.fillText('Stern', 70, 130);
+                
+                // Light path (bent)
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(100, 100);
+                ctx.quadraticCurveTo(300, 200, 500, 100);
+                ctx.stroke();
+                
+                // Sun
+                ctx.fillStyle = '#FFA500';
+                ctx.beginPath();
+                ctx.arc(300, 200, 40, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#333';
+                ctx.fillText('Sonne', 280, 260);
+                
+                // Observer on Earth
+                ctx.fillStyle = '#4CAF50';
+                ctx.beginPath();
+                ctx.arc(500, 100, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#333';
+                ctx.fillText('Beobachter', 470, 70);
+                
+                // Dotted straight line
+                ctx.strokeStyle = '#999';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(100, 100);
+                ctx.lineTo(500, 100);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            animate();
+        }
+
+        function drawBlackHole() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let angle = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Accretion disk
+                for (let r = 60; r < 150; r += 10) {
+                    const grad = ctx.createLinearGradient(300 - r, 200, 300 + r, 200);
+                    grad.addColorStop(0, `rgba(255, ${Math.floor(200 - r)}, 0, ${0.3 + r * 0.003})`);
+                    grad.addColorStop(1, `rgba(255, ${Math.floor(200 - r)}, 0, ${0.3 + r * 0.003})`);
+                    
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = 8;
+                    ctx.beginPath();
+                    ctx.arc(300, 200, r, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                // Black hole
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(300, 200, 50, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Event horizon
+                ctx.strokeStyle = '#FFF';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.arc(300, 200, 50, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#FFF';
+                ctx.fillText('Ereignishorizont', 240, 270);
+                
+                angle += 0.02;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function drawGravityWaves() {
+            const canvas = document.getElementById('vizCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let phase = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw multiple wave fronts
+                ctx.strokeStyle = '#667eea';
+                ctx.lineWidth = 2;
+                
+                for (let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    const radius = 50 + i * 40 + phase;
+                    ctx.arc(300, 150, radius, 0, Math.PI * 2);
+                    ctx.globalAlpha = 1 - (radius / 250);
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1;
+                
+                // Source (two merging black holes)
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(285, 150, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(315, 150, 15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#333';
+                ctx.fillText('Verschmelzende Schwarze Löcher', 190, 200);
+                
+                phase = (phase + 2) % 200;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function renderScene(sceneId, isRestart = false) {
+            if (isRestart) {
+                gameState.knowledge = 0;
+                gameState.creativity = 0;
+                gameState.discoveries = 0;
+                updateStats({ knowledge: 0, creativity: 0, discoveries: 0 });
+            }
+            
+            const scene = scenes[sceneId];
+            const content = document.getElementById('content');
+            content.innerHTML = '';
+            
+            const title = document.createElement('div');
+            title.className = 'scene-title';
+            title.textContent = scene.title;
+            content.appendChild(title);
+            
+            const text = document.createElement('div');
+            text.className = 'scene-text';
+            text.textContent = scene.text;
+            content.appendChild(text);
+            
+            if (scene.visualization) {
+                content.appendChild(createVisualization(scene.visualization));
+            }
+            
+            if (scene.equation) {
+                const eq = document.createElement('div');
+                eq.className = 'equation';
+                eq.textContent = scene.equation;
+                content.appendChild(eq);
+            }
+            
+            if (scene.info) {
+                const info = document.createElement('div');
+                info.className = 'info-box';
+                info.innerHTML = `<strong>💡 Wusstest du?</strong><br>${scene.info}`;
+                content.appendChild(info);
+            }
+            
+            const choices = document.createElement('div');
+            choices.className = 'choices';
+            
+            scene.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = choice.text;
+                btn.onclick = () => {
+                    if (choice.stats) {
+                        updateStats(choice.stats);
+                    }
+                    renderScene(choice.next, choice.restart);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                choices.appendChild(btn);
+            });
+            
+            content.appendChild(choices);
+        }
+
+        // Start the game
+        renderScene('start');
+    </script>
+</body>
+</html>
