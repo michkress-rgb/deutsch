@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Workshop: Diskursiver Essay (A Level) – Vom Hamburger zum Abwägen-Profi</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a33;
+      --panel2:#0f1730;
+      --card:#151f3f;
+      --text:#e9eeff;
+      --muted:#aab6ff;
+      --soft:#22315f;
+      --accent:#7aa2ff;
+      --accent2:#a7ffcb;
+      --warn:#ffd47a;
+      --danger:#ff7aa8;
+      --ok:#7affb7;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 15% 10%, rgba(122,162,255,.25), transparent 60%),
+        radial-gradient(800px 450px at 85% 25%, rgba(167,255,203,.18), transparent 60%),
+        radial-gradient(900px 520px at 55% 90%, rgba(255,212,122,.12), transparent 60%),
+        linear-gradient(180deg, #070b16, var(--bg));
+      min-height:100vh;
+    }
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(10px);
+      background: rgba(11,16,32,.65);
+      border-bottom: 1px solid rgba(170,182,255,.18);
+    }
+    .topbar{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      min-width: 240px;
+    }
+    .logo{
+      width:38px;height:38px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(122,162,255,.9), rgba(167,255,203,.7));
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-30%;
+      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.65), transparent 50%);
+      transform: rotate(18deg);
+    }
+    .brand h1{
+      font-size:16px; line-height:1.2; margin:0;
+    }
+    .brand p{
+      margin:2px 0 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .hud{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      background: rgba(18,26,51,.75);
+      border: 1px solid rgba(170,182,255,.18);
+      border-radius: 999px;
+      padding:8px 10px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.18);
+      font-size:12px;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .pill strong{font-weight:700}
+    .bar{
+      width:160px; height:10px; border-radius:999px;
+      background: rgba(170,182,255,.16);
+      overflow:hidden;
+      border:1px solid rgba(170,182,255,.12);
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(122,162,255,.95), rgba(167,255,203,.85));
+      transition: width .25s ease;
+    }
+    .btn{
+      cursor:pointer;
+      border:none;
+      border-radius: 12px;
+      padding:10px 12px;
+      background: linear-gradient(135deg, rgba(122,162,255,.95), rgba(122,162,255,.65));
+      color:#081024;
+      font-weight:700;
+      box-shadow: var(--shadow);
+      transition: transform .06s ease, filter .2s ease;
+    }
+    .btn:hover{ filter: brightness(1.07); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.secondary{
+      background: rgba(18,26,51,.8);
+      color: var(--text);
+      border:1px solid rgba(170,182,255,.18);
+      box-shadow:none;
+    }
+    .btn.ghost{
+      background: transparent;
+      color: var(--muted);
+      border:1px dashed rgba(170,182,255,.22);
+      box-shadow:none;
+    }
+
+    .layout{
+      max-width:1200px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:16px;
+      padding:16px;
+    }
+    @media (max-width: 980px){
+      .layout{ grid-template-columns:1fr; }
+      .brand{ min-width:auto; }
+      .hud{ justify-content:flex-start; }
+    }
+
+    aside{
+      background: rgba(18,26,51,.55);
+      border: 1px solid rgba(170,182,255,.16);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .navhead{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(170,182,255,.14);
+      background: linear-gradient(180deg, rgba(21,31,63,.7), rgba(18,26,51,.2));
+    }
+    .navhead h2{ margin:0; font-size:14px; }
+    .navhead p{
+      margin:6px 0 0;
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.35;
+    }
+    .navlist{ padding:10px; display:flex; flex-direction:column; gap:8px; }
+    .navitem{
+      text-align:left;
+      padding:12px 12px;
+      border-radius: 14px;
+      background: rgba(15,23,48,.6);
+      border: 1px solid rgba(170,182,255,.14);
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+    .navitem:hover{
+      transform: translateY(-1px);
+      border-color: rgba(122,162,255,.45);
+      background: rgba(21,31,63,.62);
+    }
+    .navitem.active{
+      background: linear-gradient(135deg, rgba(122,162,255,.25), rgba(167,255,203,.12));
+      border-color: rgba(122,162,255,.55);
+    }
+    .navitem .t{
+      font-weight:800;
+      font-size:13px;
+      margin:0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .navitem .d{
+      margin:6px 0 0;
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.35;
+    }
+    .tag{
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(170,182,255,.18);
+      color: var(--muted);
+      background: rgba(18,26,51,.55);
+      white-space:nowrap;
+    }
+    .tag.ok{ border-color: rgba(122,255,183,.35); color: rgba(122,255,183,.95); }
+    .tag.lock{ border-style:dashed; opacity:.9; }
+    .tag.new{ border-color: rgba(255,212,122,.35); color: rgba(255,212,122,.95); }
+
+    main{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .card{
+      background: rgba(18,26,51,.55);
+      border: 1px solid rgba(170,182,255,.16);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardhead{
+      padding:16px 16px 12px;
+      border-bottom:1px solid rgba(170,182,255,.14);
+      background: linear-gradient(180deg, rgba(21,31,63,.7), rgba(18,26,51,.2));
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .cardhead h2{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.2px;
+    }
+    .cardhead p{
+      margin:6px 0 0;
+      color: var(--muted);
+      font-size:13px;
+      line-height:1.4;
+      max-width: 72ch;
+    }
+    .cardbody{ padding:16px; }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns:1fr; } }
+
+    .box{
+      background: rgba(15,23,48,.55);
+      border:1px solid rgba(170,182,255,.14);
+      border-radius: 14px;
+      padding:14px;
+    }
+    .box h3{ margin:0 0 8px; font-size:14px; }
+    .box p{ margin:6px 0 0; color: var(--muted); font-size:13px; line-height:1.45; }
+    .box ul{ margin:8px 0 0 18px; color: var(--muted); font-size:13px; line-height:1.5;}
+    .kpi{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+    }
+    .kpi .mini{
+      flex:1;
+      min-width: 160px;
+      background: rgba(21,31,63,.55);
+      border:1px solid rgba(170,182,255,.14);
+      border-radius:14px;
+      padding:10px 12px;
+    }
+    .mini .label{ font-size:11px; color: var(--muted); }
+    .mini .value{ font-weight:900; font-size:14px; margin-top:4px; }
+
+    .hr{ height:1px; background: rgba(170,182,255,.14); margin:14px 0; }
+    .callout{
+      border-left:4px solid rgba(122,162,255,.8);
+      background: rgba(122,162,255,.10);
+      padding:12px 12px 12px 12px;
+      border-radius: 12px;
+      color: var(--text);
+    }
+    .callout.warn{ border-left-color: rgba(255,212,122,.85); background: rgba(255,212,122,.10); }
+    .callout.ok{ border-left-color: rgba(122,255,183,.75); background: rgba(122,255,183,.10); }
+    .callout.danger{ border-left-color: rgba(255,122,168,.8); background: rgba(255,122,168,.10); }
+
+    .quiz{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .q{
+      background: rgba(21,31,63,.55);
+      border:1px solid rgba(170,182,255,.14);
+      border-radius:14px;
+      padding:12px;
+    }
+    .q h4{ margin:0 0 8px; font-size:14px; }
+    .opts{ display:grid; gap:8px; }
+    .opt{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px 10px;
+      border-radius: 12px;
+      border:1px solid rgba(170,182,255,.14);
+      background: rgba(15,23,48,.55);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(122,162,255,.45); }
+    .opt input{ margin-top:2px; }
+    .opt.correct{ border-color: rgba(122,255,183,.55); background: rgba(122,255,183,.10); }
+    .opt.wrong{ border-color: rgba(255,122,168,.55); background: rgba(255,122,168,.10); }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .field{
+      width:100%;
+      background: rgba(15,23,48,.55);
+      border: 1px solid rgba(170,182,255,.14);
+      border-radius: 14px;
+      padding:10px 12px;
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    textarea.field{ min-height:120px; resize:vertical; }
+
+    .draglist{
+      display:grid; gap:8px;
+    }
+    .dragitem{
+      user-select:none;
+      background: rgba(15,23,48,.55);
+      border:1px solid rgba(170,182,255,.14);
+      border-radius: 14px;
+      padding:10px 12px;
+      cursor:grab;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .dragitem:active{ cursor:grabbing; }
+    .dragitem small{
+      font-family: var(--mono);
+      color: rgba(170,182,255,.85);
+      opacity:.9;
+    }
+    .toast{
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 100;
+      background: rgba(18,26,51,.92);
+      border:1px solid rgba(170,182,255,.18);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding:12px 12px;
+      min-width: 260px;
+      max-width: 360px;
+      display:none;
+    }
+    .toast.show{ display:block; animation: pop .16s ease; }
+    @keyframes pop{ from{ transform: translateY(8px); opacity:.2;} to{ transform: translateY(0); opacity:1;} }
+    .toast .title{ font-weight:900; margin:0 0 6px; font-size:13px;}
+    .toast .msg{ margin:0; color:var(--muted); font-size:12px; line-height:1.35;}
+
+    .badges{
+      display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;
+    }
+    .badge{
+      font-size:12px;
+      padding:8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(170,182,255,.18);
+      background: rgba(15,23,48,.55);
+      color: var(--muted);
+    }
+    .badge.earned{
+      border-color: rgba(167,255,203,.45);
+      color: rgba(167,255,203,.95);
+      background: rgba(167,255,203,.10);
+    }
+
+    .timer{
+      font-family: var(--mono);
+      font-size: 14px;
+      padding:8px 10px;
+      border-radius: 12px;
+      border:1px solid rgba(170,182,255,.18);
+      background: rgba(15,23,48,.55);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .muted{ color: var(--muted); }
+    .small{ font-size:12px; color: var(--muted); }
+    .mono{ font-family: var(--mono); }
+    .footer{
+      padding: 10px 16px 18px;
+      color: rgba(170,182,255,.72);
+      font-size:12px;
+      line-height:1.4;
+      text-align:center;
+    }
+    a{ color: rgba(122,162,255,.95); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Diskursiver Essay – Workshop (A Level)</h1>
+        <p>Vom „Hamburger“ zum Abwägen: Argumentieren, strukturieren, schreiben, überarbeiten.</p>
+      </div>
+    </div>
+
+    <div class="hud">
+      <div class="pill" title="Dein Level steigt mit XP.">
+        <span>Level</span> <strong id="level">1</strong>
+      </div>
+      <div class="pill" title="XP bekommst du für Quests, Tests, Outlines und Schreibpraxis.">
+        <span>XP</span> <strong id="xp">0</strong>
+      </div>
+      <div class="pill" title="Fortschritt über alle Module">
+        <span>Fortschritt</span>
+        <div class="bar" aria-label="Fortschrittsbalken"><div id="progressBar"></div></div>
+        <strong id="progressText">0%</strong>
+      </div>
+      <button class="btn secondary" id="btnReset" title="Setzt Fortschritt nur auf diesem Gerät zurück.">Reset</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="navhead">
+      <h2>Mission-Map</h2>
+      <p>Arbeite die Module nacheinander durch. Du kannst jederzeit zurückspringen – aber manche Badges bekommst du nur, wenn du die Quests wirklich machst.</p>
+      <div class="badges" id="badgeRow"></div>
+    </div>
+    <div class="navlist" id="nav"></div>
+  </aside>
+
+  <main>
+    <section class="card" id="contentCard">
+      <div class="cardhead">
+        <div>
+          <h2 id="title">Willkommen</h2>
+          <p id="subtitle">Du lernst hier, wie ein diskursiver Essay funktioniert – und wie du vom „Hamburger“-Schema zu einer reifen Abwägung kommst (A-Level-Stil).</p>
+        </div>
+        <div class="row">
+          <button class="btn" id="btnComplete">Quest abschließen (+XP)</button>
+          <button class="btn ghost" id="btnNotes">Notizen öffnen</button>
+        </div>
+      </div>
+      <div class="cardbody" id="body"></div>
+      <div class="footer">
+        Tipp: Schreib in ganzen Sätzen. Ziel ist nicht „viel Text“, sondern <strong>klare Logik + überzeugende Abwägung + gutes Deutsch</strong>.
+      </div>
+    </section>
+
+    <section class="card" id="notesCard" style="display:none;">
+      <div class="cardhead">
+        <div>
+          <h2>Deine Notizen (werden lokal gespeichert)</h2>
+          <p>Nutze das als „Denkspeicher“: Satzanfänge, Konnektoren, Mini-Beispiele, typische Fehler, eigene Strategien.</p>
+        </div>
+        <div class="row">
+          <button class="btn secondary" id="btnCloseNotes">Schließen</button>
+        </div>
+      </div>
+      <div class="cardbody">
+        <textarea class="field" id="notes" placeholder="Schreibe hier deine Notizen..."></textarea>
+        <div class="small" style="margin-top:8px;">
+          Hinweis: Gespeichert im Browser (localStorage). Wenn du den Browser-Cache löschst, sind die Notizen weg.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <p class="title" id="toastTitle">Update</p>
+  <p class="msg" id="toastMsg">…</p>
+</div>
+
+<script>
+/* ===========================
+   Zustand + Speicherung
+=========================== */
+const STORE_KEY = "discursiveWorkshop_v1";
+const defaultState = {
+  xp: 0,
+  completed: {},   // moduleId: true
+  badges: {},      // badgeId: true
+  notes: "",
+  drafts: {},      // draftId: text
+  quizWins: {},    // quizId: true
+  dragWins: {},    // dragId: true
+};
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return structuredClone(defaultState);
+    const parsed = JSON.parse(raw);
+    return { ...structuredClone(defaultState), ...parsed };
+  }catch(e){
+    return structuredClone(defaultState);
+  }
+}
+function saveState(){
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  updateHUD();
+}
+function resetState(){
+  state = structuredClone(defaultState);
+  saveState();
+  toast("Reset", "Fortschritt zurückgesetzt. (Nur auf diesem Gerät.)");
+  renderNav();
+  renderModule(modules[0].id);
+}
+
+/* ===========================
+   XP / Level / Badges
+=========================== */
+function levelFromXP(xp){
+  // weich: schneller Start, später langsamer
+  // Level 1: 0–149, L2: 150–349, L3: 350–599, ...
+  let level = 1;
+  let threshold = 150;
+  let remaining = xp;
+  while(remaining >= threshold){
+    remaining -= threshold;
+    level++;
+    threshold = Math.min(450, threshold + 50);
+  }
+  return level;
+}
+function progressToNext(xp){
+  let level = 1;
+  let threshold = 150;
+  let remaining = xp;
+  while(remaining >= threshold){
+    remaining -= threshold;
+    level++;
+    threshold = Math.min(450, threshold + 50);
+  }
+  return { level, remaining, threshold, pct: Math.floor((remaining/threshold)*100) };
+}
+function addXP(amount, reason){
+  const beforeLevel = levelFromXP(state.xp);
+  state.xp += amount;
+  const afterLevel = levelFromXP(state.xp);
+  saveState();
+  toast("XP +"+amount, reason || "Gute Arbeit.");
+  if(afterLevel > beforeLevel){
+    toast("Level Up!", "Du bist jetzt Level " + afterLevel + ".");
+  }
+}
+function earnBadge(id, label, reason){
+  if(state.badges[id]) return;
+  state.badges[id] = true;
+  saveState();
+  toast("Badge erhalten: " + label, reason || "Neue Fähigkeit freigeschaltet.");
+  renderBadges();
+}
+function badgeLabel(id){
+  return badges.find(b => b.id===id)?.label || id;
+}
+
+/* ===========================
+   UI Helpers
+=========================== */
+function $(id){ return document.getElementById(id); }
+
+function toast(title, msg){
+  const el = $("toast");
+  $("toastTitle").textContent = title;
+  $("toastMsg").textContent = msg;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=> el.classList.remove("show"), 2600);
+}
+
+function escapeHTML(s){
+  return (s||"").replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+/* ===========================
+   Inhalt: Module, Badges
+=========================== */
+const badges = [
+  { id:"these_schmied", label:"These-Schmied" },
+  { id:"konnektor_koenig", label:"Konnektor-König" },
+  { id:"gegenargument_guru", label:"Gegenargument-Guru" },
+  { id:"register_profi", label:"Register-Profi" },
+  { id:"outline_architekt", label:"Outline-Architekt" },
+  { id:"klausurmodus", label:"Final-Boss: Klausurmodus" },
+];
+
+const modules = [
+  {
+    id:"start",
+    title:"Start: Was ist ein diskursiver Essay?",
+    subtitle:"Du erkennst Ziel, Ton und „Abwäge-Logik“ – und warum das nicht einfach ein Hamburger ist.",
+    tag:"NEW",
+    render: () => `
+      <div class="grid">
+        <div class="box">
+          <h3>Der Kern</h3>
+          <p>Ein <strong>diskursiver Essay</strong> entwickelt eine Frage oder Behauptung <strong>argumentativ</strong> und <strong>abwägend</strong>:
+          Du zeigst mehrere Perspektiven, prüfst ihre Stärke und kommst zu einem begründeten Urteil.</p>
+          <ul>
+            <li><strong>nicht</strong>: nur Meinung + 3 Gründe</li>
+            <li><strong>sondern</strong>: Gründe + Gegenargumente + Einordnung + Ergebnis</li>
+          </ul>
+          <div class="callout ok" style="margin-top:10px;">
+            Mini-Formel: <strong>Behauptung → Begründung → Beispiel/Beleg → Einordnung → (Gegenperspektive) → Urteil</strong>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Hamburger vs. Diskurs</h3>
+          <p>Der Hamburger hilft beim Anfang. Aber fürs A-Level brauchst du <strong>mehr</strong>:</p>
+          <ul>
+            <li>stärkere <strong>Vernetzung</strong> der Absätze (Kohärenz)</li>
+            <li><strong>Qualität</strong> der Argumente (nicht nur Anzahl)</li>
+            <li><strong>Gegenargument</strong> als Stärke – nicht als „Pflichtsatz“</li>
+            <li><strong>Nuance</strong>: „Es kommt darauf an …“ (aber sauber begründet)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="box">
+        <h3>Prüfungsdenken (Kurzversion)</h3>
+        <p>In Cambridge-typischen Markierungen gilt (vereinfacht): <strong>positive Bewertung</strong> (Punkte für das, was gelingt),
+        <strong>ganze Punkte</strong> und Beurteilung nach den geforderten Kriterien. Das heißt: Du gewinnst nicht durch „Tricks“, sondern durch
+        <strong>klaren Aufgabenbezug, Logik, Sprache und Struktur</strong>.</p>
+        <p class="small">Merksatz: <span class="mono">Klar + logisch + sprachlich kontrolliert + abwägend</span> schlägt <span class="mono">lang + laut + chaotisch</span>.</p>
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderQuiz({
+        id:"quiz_start",
+        title:"Warm-up-Quiz: Diskursiv oder Hamburger?",
+        questions:[
+          {
+            q:"Welche Aussage passt am besten zum diskursiven Essay?",
+            options:[
+              { t:"Ich schreibe meine Meinung und wiederhole sie am Ende.", ok:false },
+              { t:"Ich prüfe mehrere Perspektiven, bewerte sie und komme zu einem begründeten Urteil.", ok:true },
+              { t:"Ich erzähle eine Geschichte mit Wendepunkt und Pointe.", ok:false },
+              { t:"Ich beschreibe ein Bild sehr detailliert.", ok:false },
+            ]
+          },
+          {
+            q:"Was macht ein Gegenargument im diskursiven Essay?",
+            options:[
+              { t:"Es schwächt meinen Text – deshalb nur kurz erwähnen.", ok:false },
+              { t:"Es zeigt, dass ich differenziert denke; ich entkräfte oder integriere es sinnvoll.", ok:true },
+              { t:"Es ersetzt meine eigene Position.", ok:false },
+              { t:"Es ist nur Deko für mehr Wörter.", ok:false },
+            ]
+          }
+        ],
+        rewardXP: 80,
+        rewardBadge: null
+      })}
+    `
+  },
+
+  {
+    id:"upgrade",
+    title:"Upgrade: Vom Hamburger zum Abwägen",
+    subtitle:"Du baust aus dem 5-Absatz-Schema eine flexible Argumentationsarchitektur.",
+    tag:"LOCK",
+    render: () => `
+      <div class="grid">
+        <div class="box">
+          <h3>Der Hamburger (Basis)</h3>
+          <ul>
+            <li>Einleitung</li>
+            <li>Argument 1</li>
+            <li>Argument 2</li>
+            <li>Argument 3</li>
+            <li>Schluss</li>
+          </ul>
+          <p>Gut für: Ordnung, Sicherheit, Einstieg.</p>
+        </div>
+        <div class="box">
+          <h3>Diskursiver Essay (A-Level-tauglich)</h3>
+          <ul>
+            <li><strong>Einleitung</strong>: Problem + Leitfrage + (Position als Arbeitsthese)</li>
+            <li><strong>Argumentationsgang</strong>: Pro/Contra <em>oder</em> thematisch (Kriterien)</li>
+            <li><strong>Abwägung</strong>: Gewichtung („stärker/schwächer, weil…“)</li>
+            <li><strong>Schluss</strong>: Urteil + Konsequenz/Präzisierung</li>
+          </ul>
+          <p>Wichtig: Du darfst 3, 4 oder 5 Hauptabsätze haben – entscheidend ist <strong>Logik</strong>.</p>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="callout warn">
+        <strong>Die häufigste 12.-Klasse-Falle:</strong> „Pro-Absatz, Contra-Absatz, Fertig.“
+        Diskursiv heißt nicht: zwei Listen. Diskursiv heißt: <strong>prüfen und bewerten</strong>.
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderDragOrder({
+        id:"drag_structure",
+        title:"Drag-Quest: Bringe die Teile in eine sinnvolle Reihenfolge",
+        items:[
+          "Einleitung: Thema einführen + Leitfrage",
+          "Kriterium/Argument A: Begründung + Beispiel + Einordnung",
+          "Gegenperspektive zu A: Stärke prüfen + Antwort",
+          "Kriterium/Argument B: Begründung + Beispiel + Einordnung",
+          "Abwägung: Welche Seite wiegt warum stärker?",
+          "Schluss: Urteil + Konsequenz/nuanciertes Fazit"
+        ],
+        correctOrder:[0,1,2,3,4,5],
+        rewardXP: 120,
+        onWin: () => earnBadge("these_schmied","These-Schmied","Du hast die Grundarchitektur im Griff.")
+      })}
+    `
+  },
+
+  {
+    id:"bausteine",
+    title:"Bausteine: Argumente, Belege, Einordnung",
+    subtitle:"Du lernst, wie ein Argument „prüfungsfest“ wird (nicht nur Behauptung).",
+    tag:"LOCK",
+    render: () => `
+      <div class="grid">
+        <div class="box">
+          <h3>Das 4-E-Modell (super praktisch)</h3>
+          <ul>
+            <li><strong>These</strong> (Was behaupte ich?)</li>
+            <li><strong>Erklärung</strong> (Warum gilt das?)</li>
+            <li><strong>Example/Beleg</strong> (Woran sieht man es?)</li>
+            <li><strong>Einordnung</strong> (Wie wichtig ist es? Für wen? Unter welchen Bedingungen?)</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>„Abwägen“-Sätze</h3>
+          <ul>
+            <li><span class="mono">Zwar …, doch …</span></li>
+            <li><span class="mono">Einerseits … andererseits …</span></li>
+            <li><span class="mono">Entscheidend ist jedoch …</span></li>
+            <li><span class="mono">Das überzeugt nur, wenn …</span></li>
+            <li><span class="mono">Im Vergleich dazu wiegt … stärker, weil …</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderKonnektorTrainer()}
+
+      <div class="hr"></div>
+
+      ${renderMiniTaskArgumentUpgrade()}
+    `
+  },
+
+  {
+    id:"sprache",
+    title:"Sprache: Register, Konnektoren, Stilkontrolle",
+    subtitle:"Du klingst erwachsen: präzise, neutral, argumentativ – nicht wie ein Kommentar-Thread.",
+    tag:"LOCK",
+    render: () => `
+      <div class="grid">
+        <div class="box">
+          <h3>Register (Ton)</h3>
+          <p><strong>Diskursiv = sachlich, nicht langweilig.</strong> Du darfst klar positionieren, aber ohne Krawall.</p>
+          <ul>
+            <li>statt <span class="mono">„Ich finde voll krass…“</span> → <span class="mono">„Es lässt sich argumentieren, dass…“</span></li>
+            <li>statt <span class="mono">„alle wissen doch…“</span> → <span class="mono">„Viele gehen davon aus, dass…“</span></li>
+            <li>statt <span class="mono">„das ist immer so“</span> → <span class="mono">„In vielen Fällen zeigt sich…“</span></li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>Stil-Booster (mit Vorsicht)</h3>
+          <ul>
+            <li><strong>Nominalstil</strong> punktuell: <span class="mono">„Die Zunahme der…“</span></li>
+            <li><strong>Passiv</strong> sparsam: <span class="mono">„Es wird oft behauptet…“</span></li>
+            <li><strong>Konjunktiv II</strong> für Bedingungen: <span class="mono">„Das wäre nur dann sinnvoll, wenn…“</span></li>
+            <li><strong>Vergleich</strong>: <span class="mono">„Im Gegensatz dazu…“</span></li>
+          </ul>
+          <div class="callout ok" style="margin-top:10px;">
+            Ziel: <strong>verständlich</strong> + <strong>präzise</strong> + <strong>vernetzt</strong>.
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderRegisterQuiz()}
+
+      <div class="hr"></div>
+
+      <div class="callout warn">
+        <strong>Fehler, die Punkte kosten:</strong> unklare Bezüge („das“, „dies“ ohne Substantiv), Sprünge ohne Konnektor,
+        Behauptungen ohne Beispiel, und „Abwägung“ ohne echte Gewichtung.
+      </div>
+    `
+  },
+
+  {
+    id:"planung",
+    title:"Planung: Outline-Builder (A-Level-tauglich)",
+    subtitle:"Du baust in 10–12 Minuten einen Plan, der dich durch 40–45 Minuten Schreiben trägt.",
+    tag:"LOCK",
+    render: () => `
+      <div class="grid">
+        <div class="box">
+          <h3>Warum Planung hier alles ist</h3>
+          <p>Im diskursiven Essay ist die <strong>Struktur</strong> dein Sicherheitsgurt. Ein guter Plan verhindert:</p>
+          <ul>
+            <li>Wiederholungen</li>
+            <li>Argumente ohne Richtung</li>
+            <li>ein schwaches Fazit</li>
+          </ul>
+          <p class="small">Ziel: <strong>Leitfrage</strong> → <strong>2–3 Kriterien</strong> → je Kriterium Pro+Contra → <strong>Gewichtung</strong>.</p>
+        </div>
+        <div class="box">
+          <h3>Quest-Regel</h3>
+          <p>Wenn du den Outline-Builder sauber ausfüllst, bekommst du den Badge <strong>Outline-Architekt</strong>.</p>
+          <p class="small mono">Tipp: Nutze „Kriterien“ statt nur „Pro/Contra“. Beispiel Kriterien: Gerechtigkeit, Praktikabilität, Nebenfolgen, Kosten, Freiheit, Gesundheit.</p>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderOutlineBuilder()}
+
+      <div class="hr"></div>
+
+      <div class="callout ok">
+        <strong>Gold-Standard-Satz fürs Fazit:</strong> „In der Gesamtabwägung überwiegt …, weil …; dennoch bleibt … problematisch, weshalb …“
+      </div>
+    `
+  },
+
+  {
+    id:"schreiben",
+    title:"Schreibtraining: Timer + Prompt-Generator",
+    subtitle:"Du schreibst unter Bedingungen – aber mit Leitplanken, damit es nicht chaotisch wird.",
+    tag:"LOCK",
+    render: () => `
+      <div class="grid">
+        <div class="box">
+          <h3>Schreibstrategie (40–45 Min.)</h3>
+          <ul>
+            <li>10–12 Min: Plan (Outline)</li>
+            <li>25–28 Min: Schreiben (Einleitung + Hauptteil + Abwägung)</li>
+            <li>5 Min: Überarbeiten (Konnektoren, Artikel/Endungen, Bezüge)</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>Prompts (typisch diskursiv)</h3>
+          <p>Diese Thesen sind bewusst „diskutierbar“ – perfekt für Abwägung:</p>
+          <ul>
+            <li>„Soziale Medien sollten für Jugendliche unter 16 verboten werden.“</li>
+            <li>„Traditionen sind wichtiger als Innovation.“</li>
+            <li>„Kostenloser Nahverkehr ist die beste Klimaschutzmaßnahme.“</li>
+            <li>„Künstliche Intelligenz macht Bildung gerechter.“</li>
+            <li>„Computer­spiele sind Zeitverschwendung.“</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderTimedWriting()}
+
+      <div class="hr"></div>
+
+      <div class="callout warn">
+        <strong>Regel:</strong> Wenn du dich festfährst, schreibe einen Abwäge-Satz und wechsle das Kriterium:
+        <span class="mono">„Entscheidend ist jedoch …“</span> / <span class="mono">„Unter der Bedingung, dass …“</span>.
+      </div>
+    `
+  },
+
+  {
+    id:"ueberarbeiten",
+    title:"Überarbeiten: Checklisten + Fehlerjagd",
+    subtitle:"Du lernst, in 4 Minuten echte Qualität zu retten.",
+    tag:"LOCK",
+    render: () => `
+      <div class="grid">
+        <div class="box">
+          <h3>4-Minuten-Check (realistisch)</h3>
+          <ul>
+            <li><strong>1 Min</strong>: Einleitung – Leitfrage klar? Position/Arbeits­these sichtbar?</li>
+            <li><strong>1 Min</strong>: Hauptteil – jeder Absatz hat These + Erklärung + Beispiel + Einordnung?</li>
+            <li><strong>1 Min</strong>: Konnektoren – Übergänge sauber? („daher“, „hingegen“, „folglich“)</li>
+            <li><strong>1 Min</strong>: Grammatik-Hotspots – Verbklammer, Kasus nach Präpositionen, Artikel/Endungen</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>Cambridge-Mindset</h3>
+          <p>Du wirst für das belohnt, was du <strong>klar und korrekt</strong> zeigst – nicht für „Mut zur Verwirrung“.</p>
+          <p class="small">Merke: <span class="mono">Kohärenz + Kontrolle</span> = Punkte.</p>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderErrorHunt()}
+    `
+  },
+
+  {
+    id:"boss",
+    title:"Final-Boss: Klausurmodus (Selbstbewertung)",
+    subtitle:"Eine komplette Simulation mit Raster, Reflexion und Upgrade-Plan.",
+    tag:"LOCK",
+    render: () => `
+      <div class="callout ok">
+        <strong>Jetzt wird’s ernst:</strong> Du machst eine Mini-Simulation und bewertest dich mit einem klaren Raster.
+        Wenn du sie abschließt, bekommst du den Badge <strong>Final-Boss: Klausurmodus</strong>.
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="grid">
+        <div class="box">
+          <h3>Mini-Simulation (30–35 Min.)</h3>
+          <ol class="muted">
+            <li>Wähle einen Prompt.</li>
+            <li>Schreibe 220–320 Wörter.</li>
+            <li>Überarbeite 4 Minuten.</li>
+            <li>Bewerte dich mit dem Raster rechts.</li>
+          </ol>
+          <p class="small">Tipp: Nutze deinen Outline-Builder aus dem Planungs-Modul.</p>
+        </div>
+
+        <div class="box">
+          <h3>Selbst-Raster (0–4 pro Bereich)</h3>
+          <ul>
+            <li><strong>Aufgabenbezug</strong>: Leitfrage/These klar, wirklich diskutiert</li>
+            <li><strong>Logik</strong>: klare Linie, Abwägung, Gewichtung</li>
+            <li><strong>Belege/Beispiele</strong>: konkret, passend, nicht erfunden „statistisch“</li>
+            <li><strong>Sprache</strong>: Register, Konnektoren, Satzbau, Genauigkeit</li>
+            <li><strong>Struktur</strong>: Absätze, Übergänge, starkes Fazit</li>
+          </ul>
+          <div class="small">Summe /20 notieren – und 1 konkretes Upgrade-Ziel formulieren.</div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderBossChallenge()}
+    `
+  },
+];
+
+/* Unlock-Logik: linear (einfach + robust) */
+function isUnlocked(moduleId){
+  const idx = modules.findIndex(m => m.id===moduleId);
+  if(idx<=0) return true;
+  const prev = modules[idx-1].id;
+  return !!state.completed[prev];
+}
+
+/* ===========================
+   Renderer: Navigation + Inhalte
+=========================== */
+let currentModuleId = modules[0].id;
+
+function renderBadges(){
+  const row = $("badgeRow");
+  row.innerHTML = "";
+  for(const b of badges){
+    const span = document.createElement("span");
+    const earned = !!state.badges[b.id];
+    span.className = "badge" + (earned ? " earned":"");
+    span.textContent = earned ? ("✓ " + b.label) : b.label;
+    row.appendChild(span);
+  }
+}
+
+function renderNav(){
+  const nav = $("nav");
+  nav.innerHTML = "";
+  for(const m of modules){
+    const unlocked = isUnlocked(m.id);
+    const done = !!state.completed[m.id];
+    const item = document.createElement("div");
+    item.className = "navitem" + (m.id===currentModuleId ? " active":"");
+    item.innerHTML = `
+      <p class="t">
+        <span>${escapeHTML(m.title)}</span>
+        ${done ? `<span class="tag ok">FERTIG</span>` : unlocked ? `<span class="tag new">QUEST</span>` : `<span class="tag lock">LOCK</span>`}
+      </p>
+      <p class="d">${escapeHTML(m.subtitle)}</p>
+    `;
+    item.addEventListener("click", ()=>{
+      if(!unlocked){
+        toast("Gesperrt", "Schließe zuerst das vorherige Modul ab.");
+        return;
+      }
+      renderModule(m.id);
+    });
+    nav.appendChild(item);
+  }
+}
+
+function renderModule(id){
+  currentModuleId = id;
+  const m = modules.find(x=>x.id===id);
+  $("title").textContent = m.title;
+  $("subtitle").textContent = m.subtitle;
+
+  $("body").innerHTML = m.render();
+
+  $("btnComplete").onclick = ()=>{
+    if(state.completed[id]){
+      toast("Schon erledigt", "Dieses Modul ist bereits abgeschlossen.");
+      return;
+    }
+    // Minimal-Check: einige Module verlangen, dass eine Kernaufgabe gewonnen wurde:
+    if(id==="upgrade" && !state.dragWins["drag_structure"]){
+      toast("Noch nicht", "Erst die Drag-Quest gewinnen, dann abschließen.");
+      return;
+    }
+    if(id==="bausteine" && !state.quizWins["quiz_konnektoren"]){
+      toast("Noch nicht", "Erst den Konnektoren-Trainer-Check bestehen.");
+      return;
+    }
+    if(id==="planung" && !state.badges["outline_architekt"]){
+      toast("Noch nicht", "Erst den Outline-Builder ausfüllen und generieren.");
+      return;
+    }
+    if(id==="boss" && !state.quizWins["boss_done"]){
+      toast("Noch nicht", "Erst die Klausurmodus-Challenge abschließen.");
+      return;
+    }
+
+    state.completed[id] = true;
+    saveState();
+    addXP(90, "Modul abgeschlossen: " + m.title);
+    // Unlock-Bonus
+    if(id==="sprache") earnBadge("register_profi","Register-Profi","Du klingst kontrolliert und diskursiv.");
+    renderNav();
+  };
+
+  $("btnNotes").onclick = ()=>{
+    $("notesCard").style.display = "";
+    $("notes").value = state.notes || "";
+    $("notes").focus();
+  };
+
+  renderNav();
+  updateHUD();
+}
+
+function updateHUD(){
+  $("xp").textContent = state.xp;
+  const pr = progressToNext(state.xp);
+  $("level").textContent = pr.level;
+
+  const doneCount = modules.filter(m => state.completed[m.id]).length;
+  const pct = Math.floor((doneCount / modules.length) * 100);
+  $("progressBar").style.width = pct + "%";
+  $("progressText").textContent = pct + "%";
+
+  renderBadges();
+}
+
+/* ===========================
+   Quiz Renderer
+=========================== */
+function renderQuiz({id, title, questions, rewardXP=60, rewardBadge=null}){
+  const done = !!state.quizWins[id];
+  const btnText = done ? "Schon bestanden" : "Auswerten";
+  const lockInfo = done ? `<span class="tag ok">BESTANDEN</span>` : `<span class="tag new">QUIZ</span>`;
+  const qHtml = questions.map((qq, qi)=>`
+    <div class="q" data-qi="${qi}">
+      <h4>${escapeHTML(qq.q)}</h4>
+      <div class="opts">
+        ${qq.options.map((op, oi)=>`
+          <label class="opt">
+            <input type="radio" name="${id}_${qi}" value="${oi}">
+            <span>${escapeHTML(op.t)}</span>
+          </label>
+        `).join("")}
+      </div>
+      <div class="small muted" style="margin-top:8px; display:none;" data-feedback></div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="box">
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <h3 style="margin:0;">${escapeHTML(title)}</h3>
+          <div class="small">Bestehe das Quiz für XP. Du kannst es wiederholen, aber XP gibt’s nur beim ersten Bestehen.</div>
+        </div>
+        ${lockInfo}
+      </div>
+      <div class="hr"></div>
+      <div class="quiz" id="${id}">
+        ${qHtml}
+      </div>
+      <div class="row" style="margin-top:12px;">
+        <button class="btn secondary" onclick="gradeQuiz('${id}', ${rewardXP}, ${rewardBadge ? `'${rewardBadge.id}'` : "null"}, ${rewardBadge ? `'${rewardBadge.label}'` : "null"})">${btnText}</button>
+      </div>
+    </div>
+  `;
+}
+
+window.gradeQuiz = function(quizId, rewardXP, badgeId, badgeLabel){
+  const root = document.getElementById(quizId);
+  if(!root) return;
+  // Find questions config from rendered DOM: we stored ok flags in modules; easiest:
+  // We'll reconstruct by reading a hidden dataset? Not available. So we grade via hardcoded map:
+  // We'll use per-quiz answer keys:
+  const keys = {
+    quiz_start: [1,1],
+    quiz_register: [2,2,1],
+    quiz_boss: [0,2,1,2]
+  };
+  const key = keys[quizId];
+  if(!key){
+    toast("Fehler", "Quiz-Schlüssel fehlt.");
+    return;
+  }
+  let score = 0;
+  key.forEach((correctIndex, qi)=>{
+    const chosen = root.querySelector(`input[name="${quizId}_${qi}"]:checked`);
+    const qEl = root.querySelector(`.q[data-qi="${qi}"]`);
+    const feedback = qEl.querySelector(`[data-feedback]`);
+    const opts = Array.from(qEl.querySelectorAll(".opt"));
+    opts.forEach(o => o.classList.remove("correct","wrong"));
+    if(!chosen){
+      feedback.style.display = "";
+      feedback.textContent = "Keine Antwort gewählt.";
+      return;
+    }
+    const ci = parseInt(chosen.value, 10);
+    opts[correctIndex].classList.add("correct");
+    if(ci !== correctIndex) opts[ci].classList.add("wrong");
+    if(ci === correctIndex){
+      score++;
+      feedback.style.display = "none";
+      feedback.textContent = "";
+    }else{
+      feedback.style.display = "";
+      feedback.textContent = "Noch nicht. Schau dir an, warum die grüne Option stärker ist.";
+    }
+  });
+
+  const passed = score === key.length;
+  if(passed){
+    if(!state.quizWins[quizId]){
+      state.quizWins[quizId] = true;
+      saveState();
+      addXP(rewardXP, `Quiz bestanden (${score}/${key.length}).`);
+      if(badgeId && badgeLabel) earnBadge(badgeId, badgeLabel, "Du hast diese Fähigkeit nachweisbar gezeigt.");
+    }else{
+      toast("Bestanden", `(${score}/${key.length}) – du hast es schon vorher geschafft.`);
+    }
+  }else{
+    toast("Fast!", `Du hast ${score}/${key.length}. Verbessere und versuch’s nochmal.`);
+  }
+};
+
+/* ===========================
+   Drag Order Quest
+=========================== */
+function renderDragOrder({id, title, items, correctOrder, rewardXP=100, onWin=null}){
+  // Shuffle items for display:
+  const shuffled = items.map((t,i)=>({t,i})).sort(()=>Math.random()-0.5);
+
+  // Include a hidden store of correct indices
+  window.__dragConfigs = window.__dragConfigs || {};
+  window.__dragConfigs[id] = { items, correctOrder, rewardXP };
+
+  const done = !!state.dragWins[id];
+
+  return `
+    <div class="box">
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <h3 style="margin:0;">${escapeHTML(title)}</h3>
+          <div class="small">Ziehe die Bausteine in die richtige Reihenfolge. (Auf Desktop per Drag & Drop; auf Handy: Pfeile.)</div>
+        </div>
+        ${done ? `<span class="tag ok">BESTANDEN</span>` : `<span class="tag new">DRAG</span>`}
+      </div>
+      <div class="hr"></div>
+
+      <div class="draglist" id="${id}" aria-label="Drag and drop list">
+        ${shuffled.map((x, idx)=>`
+          <div class="dragitem" draggable="true" data-idx="${x.i}">
+            <span>${escapeHTML(x.t)}</span>
+            <span class="row">
+              <button class="btn ghost" onclick="moveDrag('${id}', ${idx}, -1)" title="Nach oben">↑</button>
+              <button class="btn ghost" onclick="moveDrag('${id}', ${idx}, 1)" title="Nach unten">↓</button>
+              <small>#${x.i+1}</small>
+            </span>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn secondary" onclick="checkDrag('${id}')">Überprüfen</button>
+      </div>
+    </div>
+  `;
+}
+
+window.moveDrag = function(listId, visualIndex, delta){
+  const list = document.getElementById(listId);
+  const items = Array.from(list.querySelectorAll(".dragitem"));
+  const target = items[visualIndex];
+  const newIndex = visualIndex + delta;
+  if(newIndex < 0 || newIndex >= items.length) return;
+  if(delta < 0){
+    list.insertBefore(target, items[newIndex]);
+  }else{
+    list.insertBefore(items[newIndex], target);
+  }
+};
+
+function enableDnD(listId){
+  const list = document.getElementById(listId);
+  if(!list) return;
+  let dragEl = null;
+
+  list.addEventListener("dragstart", (e)=>{
+    const item = e.target.closest(".dragitem");
+    if(!item) return;
+    dragEl = item;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", item.dataset.idx);
+  });
+
+  list.addEventListener("dragover", (e)=>{
+    e.preventDefault();
+    const over = e.target.closest(".dragitem");
+    if(!over || over === dragEl) return;
+    const rect = over.getBoundingClientRect();
+    const after = (e.clientY - rect.top) > rect.height/2;
+    if(after){
+      list.insertBefore(dragEl, over.nextSibling);
+    }else{
+      list.insertBefore(dragEl, over);
+    }
+  });
+
+  list.addEventListener("drop", (e)=>{ e.preventDefault(); dragEl = null; });
+}
+
+window.checkDrag = function(listId){
+  const cfg = window.__dragConfigs?.[listId];
+  const list = document.getElementById(listId);
+  if(!cfg || !list) return;
+
+  const current = Array.from(list.querySelectorAll(".dragitem")).map(el => parseInt(el.dataset.idx,10));
+  const ok = current.every((val, pos) => val === cfg.correctOrder[pos]);
+
+  if(ok){
+    if(!state.dragWins[listId]){
+      state.dragWins[listId] = true;
+      saveState();
+      addXP(cfg.rewardXP, "Drag-Quest gewonnen: Struktur sitzt.");
+    }else{
+      toast("Sitzt!", "Drag-Quest war schon bestanden.");
+    }
+  }else{
+    toast("Noch nicht", "Reihenfolge noch nicht überzeugend. Denke: Einleitung → Kriterien → Gegenperspektive → Abwägung → Schluss.");
+  }
+};
+
+/* ===========================
+   Konnektor Trainer
+=========================== */
+function renderKonnektorTrainer(){
+  // simple key-based exercise (one right answer)
+  // Users must get 3/4 correct to pass.
+  window.__konnektor = {
+    items:[
+      { s:"_____ viele Vorteile genannt werden, muss man auch die Nebenfolgen betrachten.", a:"Obwohl" },
+      { s:"Einerseits spart man Geld, _____ entstehen neue soziale Ungleichheiten.", a:"andererseits" },
+      { s:"Die Maßnahme wirkt kurzfristig, _____ sie langfristig kaum nachhaltig ist.", a:"jedoch" },
+      { s:"_____ klarer Regeln bleibt die Umsetzung in der Praxis schwierig.", a:"Trotz" },
+    ]
+  };
+
+  const done = !!state.quizWins["quiz_konnektoren"];
+
+  return `
+    <div class="box">
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <h3 style="margin:0;">Konnektoren-Trainer (Abwägung sichtbar machen)</h3>
+          <div class="small">Setze die passenden Konnektoren ein. Bestehe (mind. 3/4 korrekt) für XP.</div>
+        </div>
+        ${done ? `<span class="tag ok">BESTANDEN</span>` : `<span class="tag new">SKILL</span>`}
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="grid">
+        <div class="box">
+          <h3>Wortbank</h3>
+          <p class="mono">obwohl · dennoch · hingegen · daher · folglich · zudem · allerdings · trotz · andererseits · jedoch</p>
+          <p class="small">Tipp: Nutze „trotz“ + Genitiv/Dat. („trotz des… / trotz der…“).</p>
+        </div>
+        <div class="box">
+          <h3>Einsetzen</h3>
+          <div id="konnektorArea"></div>
+          <div class="row" style="margin-top:10px;">
+            <button class="btn secondary" onclick="gradeKonnektoren()">Überprüfen</button>
+          </div>
+          <div class="small muted" id="konnektorFeedback" style="margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function mountKonnektorTrainer(){
+  const area = document.getElementById("konnektorArea");
+  if(!area) return;
+  const items = window.__konnektor.items;
+  area.innerHTML = items.map((it, i)=>`
+    <div class="q">
+      <h4>${escapeHTML(it.s)}</h4>
+      <select class="field" data-k="${i}">
+        <option value="">— auswählen —</option>
+        <option>Obwohl</option>
+        <option>andererseits</option>
+        <option>jedoch</option>
+        <option>Trotz</option>
+        <option>dennoch</option>
+        <option>hingegen</option>
+        <option>daher</option>
+        <option>zudem</option>
+        <option>allerdings</option>
+        <option>folglich</option>
+      </select>
+    </div>
+  `).join("");
+}
+window.gradeKonnektoren = function(){
+  const area = document.getElementById("konnektorArea");
+  const fb = document.getElementById("konnektorFeedback");
+  if(!area || !fb) return;
+  const items = window.__konnektor.items;
+  let correct = 0;
+  items.forEach((it, i)=>{
+    const sel = area.querySelector(`select[data-k="${i}"]`);
+    const val = (sel.value||"").trim();
+    if(val === it.a) correct++;
+  });
+  fb.textContent = `Ergebnis: ${correct}/${items.length} korrekt.`;
+  if(correct >= 3){
+    if(!state.quizWins["quiz_konnektoren"]){
+      state.quizWins["quiz_konnektoren"] = true;
+      saveState();
+      addXP(110, "Konnektoren-Trainer bestanden.");
+      earnBadge("konnektor_koenig","Konnektor-König","Du machst Abwägung sprachlich sichtbar.");
+    }else{
+      toast("Bestanden", "Schon vorher bestanden.");
+    }
+  }else{
+    toast("Noch nicht", "Mindestens 3/4. Lies die Sätze laut: Welcher Konnektor passt logisch?");
+  }
+};
+
+/* ===========================
+   Argument Upgrade Task
+=========================== */
+function renderMiniTaskArgumentUpgrade(){
+  const id = "arg_upgrade";
+  const saved = state.drafts[id] || "";
+  return `
+    <div class="box">
+      <h3>Mini-Quest: Aus Behauptung wird Argument</h3>
+      <p>Schreibe aus der Behauptung unten einen „prüfungsfesten“ Absatz (4-E-Modell). Mindestlänge: 80 Wörter.</p>
+      <div class="callout danger" style="margin-top:10px;">
+        Behauptung: <strong>„Ein Verbot von sozialen Medien für Jugendliche löst viele Probleme.“</strong>
+      </div>
+
+      <div class="hr"></div>
+
+      <textarea class="field" id="draft_${id}" placeholder="Dein Absatz (These → Erklärung → Beispiel → Einordnung)…">${escapeHTML(saved)}</textarea>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn secondary" onclick="saveDraft('${id}')">Speichern</button>
+        <button class="btn" onclick="checkArgUpgrade()">Überprüfen (+XP)</button>
+      </div>
+      <div class="small muted" id="argUpgradeFeedback" style="margin-top:8px;"></div>
+    </div>
+  `;
+}
+window.saveDraft = function(draftId){
+  const el = document.getElementById("draft_"+draftId);
+  if(!el) return;
+  state.drafts[draftId] = el.value || "";
+  saveState();
+  toast("Gespeichert", "Entwurf gespeichert.");
+};
+
+window.checkArgUpgrade = function(){
+  const el = document.getElementById("draft_arg_upgrade");
+  const fb = document.getElementById("argUpgradeFeedback");
+  if(!el || !fb) return;
+  const text = (el.value||"").trim();
+  const wc = text ? text.split(/\s+/).length : 0;
+
+  // simple heuristics: length + presence of a connector or example marker
+  const hasExample = /zum Beispiel|beispielsweise|etwa|konkret/i.test(text);
+  const hasEinordnung = /kommt darauf an|unter der Bedingung|entscheidend|in der Praxis|langfristig|kurzfristig/i.test(text);
+  const hasBecause = /weil|denn|da|deshalb|daher/i.test(text);
+
+  const score = [wc>=80, hasExample, hasEinordnung, hasBecause].filter(Boolean).length;
+  fb.textContent = `Check: ${score}/4 Kriterien erfüllt (Wörter: ${wc}).`;
+
+  if(score >= 3){
+    if(!state.quizWins["arg_upgrade_ok"]){
+      state.quizWins["arg_upgrade_ok"] = true;
+      saveState();
+      addXP(130, "Starker Absatz: Behauptung → Argument.");
+      earnBadge("gegenargument_guru","Gegenargument-Guru","Du argumentierst mit Einordnung statt nur mit Meinung.");
+    }else{
+      toast("Sehr gut", "Diese Quest war schon erfolgreich.");
+    }
+  }else{
+    toast("Noch ausbaufähig", "Baue ein konkretes Beispiel und eine Einordnung ein (Bedingungen / Gewichtung).");
+  }
+};
+
+/* ===========================
+   Register Quiz
+=========================== */
+function renderRegisterQuiz(){
+  return renderQuiz({
+    id:"quiz_register",
+    title:"Register-Check: Welche Formulierung klingt diskursiv?",
+    questions:[
+      {
+        q:"Wähle die beste diskursive Formulierung:",
+        options:[
+          {t:"Das ist total schlimm und jeder merkt das.", ok:false},
+          {t:"Man kann doch nicht ernsthaft glauben, dass das funktioniert.", ok:false},
+          {t:"Es lässt sich begründet behaupten, dass diese Maßnahme problematische Nebenfolgen hat.", ok:true},
+          {t:"Wer das anders sieht, hat einfach keine Ahnung.", ok:false},
+        ]
+      },
+      {
+        q:"Was ist ein guter „Abwäge-Starter“?",
+        options:[
+          {t:"Ganz ehrlich: Nein.", ok:false},
+          {t:"Das ist Quatsch.", ok:false},
+          {t:"Zwar spricht einiges dafür, jedoch ist zu berücksichtigen, dass…", ok:true},
+          {t:"LOL.", ok:false},
+        ]
+      },
+      {
+        q:"Welche Variante ist präziser und kontrollierter?",
+        options:[
+          {t:"Alle Jugendlichen sind süchtig.", ok:false},
+          {t:"Viele Jugendliche nutzen Medien, aber das ist halt so.", ok:false},
+          {t:"In einem Teil der Fälle kann intensive Nutzung zu Konzentrationsproblemen beitragen.", ok:true},
+          {t:"Niemand lernt mehr richtig.", ok:false},
+        ]
+      }
+    ],
+    rewardXP: 90,
+    rewardBadge: {id:"register_profi", label:"Register-Profi"}
+  });
+}
+
+/* ===========================
+   Outline Builder
+=========================== */
+function renderOutlineBuilder(){
+  const id = "outline";
+  const saved = state.drafts[id] ? JSON.parse(state.drafts[id]) : {
+    prompt:"Soziale Medien sollten für Jugendliche unter 16 verboten werden.",
+    leitfrage:"Sollte der Staat soziale Medien für Jugendliche unter 16 verbieten?",
+    arbeitsthese:"Ein generelles Verbot wäre nur begrenzt sinnvoll; wirksamer wären klare Schutzregeln und Medienbildung.",
+    kriterium1:"Gesundheit & Konzentration",
+    pro1:"Ein Verbot könnte problematische Dauer-Nutzung reduzieren.",
+    contra1:"Ein Verbot kann Ausweichverhalten fördern und Symptome statt Ursachen bekämpfen.",
+    kriterium2:"Freiheit & Verantwortung",
+    pro2:"Jugendschutz rechtfertigt Eingriffe, wenn Schaden plausibel ist.",
+    contra2:"Zu starke Eingriffe schwächen Selbstverantwortung und sind schwer durchsetzbar.",
+    kriterium3:"Praktikabilität (Umsetzbarkeit)",
+    pro3:"Klare Altersgrenze ist leicht verständlich.",
+    contra3:"Technisch/sozial schwer zu kontrollieren; Gefahr ungleicher Durchsetzung."
+  };
+
+  return `
+    <div class="box">
+      <h3>Outline-Builder</h3>
+      <p>Fülle die Felder aus. Klicke dann auf <strong>Outline generieren</strong> – du bekommst einen fertig strukturierten Plan.</p>
+
+      <div class="hr"></div>
+
+      <div class="grid">
+        <div class="box">
+          <h3>Aufgabe</h3>
+          <label class="small">Prompt/These</label>
+          <input class="field" id="ol_prompt" value="${escapeHTML(saved.prompt)}"/>
+          <label class="small">Leitfrage</label>
+          <input class="field" id="ol_leitfrage" value="${escapeHTML(saved.leitfrage)}"/>
+          <label class="small">Arbeitsthese (dein vorläufiges Urteil)</label>
+          <input class="field" id="ol_these" value="${escapeHTML(saved.arbeitsthese)}"/>
+          <div class="small muted" style="margin-top:8px;">Tipp: „Arbeitsthese“ darf nuanciert sein („unter Bedingungen…“).</div>
+        </div>
+
+        <div class="box">
+          <h3>Kriterien (jeweils Pro + Contra)</h3>
+
+          <label class="small">Kriterium 1</label>
+          <input class="field" id="ol_k1" value="${escapeHTML(saved.kriterium1)}"/>
+          <input class="field" id="ol_p1" placeholder="Pro-Argument" value="${escapeHTML(saved.pro1)}"/>
+          <input class="field" id="ol_c1" placeholder="Contra-Argument" value="${escapeHTML(saved.contra1)}"/>
+
+          <div class="hr"></div>
+
+          <label class="small">Kriterium 2</label>
+          <input class="field" id="ol_k2" value="${escapeHTML(saved.kriterium2)}"/>
+          <input class="field" id="ol_p2" placeholder="Pro-Argument" value="${escapeHTML(saved.pro2)}"/>
+          <input class="field" id="ol_c2" placeholder="Contra-Argument" value="${escapeHTML(saved.contra2)}"/>
+
+          <div class="hr"></div>
+
+          <label class="small">Kriterium 3</label>
+          <input class="field" id="ol_k3" value="${escapeHTML(saved.kriterium3)}"/>
+          <input class="field" id="ol_p3" placeholder="Pro-Argument" value="${escapeHTML(saved.pro3)}"/>
+          <input class="field" id="ol_c3" placeholder="Contra-Argument" value="${escapeHTML(saved.contra3)}"/>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn secondary" onclick="saveOutline()">Speichern</button>
+        <button class="btn" onclick="generateOutline()">Outline generieren (+XP)</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <label class="small">Generierter Plan (kopieren erlaubt)</label>
+      <textarea class="field" id="ol_out" placeholder="Hier erscheint dein generierter Plan…"></textarea>
+      <div class="small muted" style="margin-top:8px;">Quest: Wenn du einen vollständigen Plan generierst, bekommst du den Badge <strong>Outline-Architekt</strong>.</div>
+    </div>
+  `;
+}
+
+window.saveOutline = function(){
+  const data = readOutlineForm();
+  state.drafts["outline"] = JSON.stringify(data);
+  saveState();
+  toast("Gespeichert", "Outline-Felder gespeichert.");
+};
+
+function readOutlineForm(){
+  const g = (id)=> (document.getElementById(id)?.value || "").trim();
+  return {
+    prompt: g("ol_prompt"),
+    leitfrage: g("ol_leitfrage"),
+    arbeitsthese: g("ol_these"),
+    kriterium1: g("ol_k1"), pro1: g("ol_p1"), contra1: g("ol_c1"),
+    kriterium2: g("ol_k2"), pro2: g("ol_p2"), contra2: g("ol_c2"),
+    kriterium3: g("ol_k3"), pro3: g("ol_p3"), contra3: g("ol_c3"),
+  };
+}
+
+window.generateOutline = function(){
+  const d = readOutlineForm();
+  const out = document.getElementById("ol_out");
+  if(!out) return;
+
+  const must = ["leitfrage","arbeitsthese","kriterium1","pro1","contra1","kriterium2","pro2","contra2"].every(k => (d[k]||"").length>0);
+  if(!must){
+    toast("Noch nicht", "Fülle mindestens Leitfrage, Arbeitsthese und zwei Kriterien mit Pro+Contra aus.");
+    return;
+  }
+
+  const plan = `
+EINLEITUNG
+- Thema kurz kontextualisieren: „${d.prompt || "—"}“
+- Leitfrage: ${d.leitfrage}
+- Arbeitsthese: ${d.arbeitsthese}
+
+HAUPTTEIL (Kriterium-basiert)
+1) Kriterium: ${d.kriterium1}
+   - Pro: ${d.pro1}
+   - Contra/Gegenperspektive: ${d.contra1}
+   - Einordnung: Welche Seite wirkt hier stärker – und warum?
+
+2) Kriterium: ${d.kriterium2}
+   - Pro: ${d.pro2}
+   - Contra/Gegenperspektive: ${d.contra2}
+   - Einordnung: Bedingungen / Nebenfolgen / Vergleich
+
+3) Kriterium: ${d.kriterium3}
+   - Pro: ${d.pro3}
+   - Contra/Gegenperspektive: ${d.contra3}
+   - Einordnung: Umsetzbarkeit / Fairness / Risiken
+
+ABWÄGUNG + SCHLUSS
+- Gesamtgewichtung: Was überwiegt? (mind. 2 Gründe nennen)
+- Fazit-Satz: „In der Gesamtabwägung …, weil …; dennoch …, weshalb …“
+- (Optional) Konsequenz: Was wäre eine realistische Alternative / Kompromisslösung?
+`.trim();
+
+  out.value = plan;
+
+  // Reward once
+  if(!state.quizWins["outline_generated"]){
+    state.quizWins["outline_generated"] = true;
+    addXP(160, "Outline generiert: Du hast eine echte Schreib-Route.");
+    earnBadge("outline_architekt","Outline-Architekt","Du kannst Planung in Struktur übersetzen.");
+    saveOutline();
+  }else{
+    toast("Outline", "Plan aktualisiert (XP gibt es nur beim ersten Mal).");
+  }
+};
+
+/* ===========================
+   Timed Writing
+=========================== */
+function renderTimedWriting(){
+  const draftId = "timed_draft";
+  const saved = state.drafts[draftId] || "";
+
+  return `
+    <div class="box">
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <h3 style="margin:0;">Timer-Schreiben</h3>
+          <div class="small">Wähle Prompt + Dauer. Text wird automatisch gespeichert.</div>
+        </div>
+        <div class="timer" id="timer">⏱ 00:00</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="grid">
+        <div class="box">
+          <h3>Prompt wählen</h3>
+          <select class="field" id="tw_prompt">
+            <option>Soziale Medien sollten für Jugendliche unter 16 verboten werden.</option>
+            <option>Traditionen sind wichtiger als Innovation.</option>
+            <option>Kostenloser Nahverkehr ist die beste Klimaschutzmaßnahme.</option>
+            <option>Künstliche Intelligenz macht Bildung gerechter.</option>
+            <option>Computer­spiele sind Zeitverschwendung.</option>
+          </select>
+
+          <label class="small" style="display:block; margin-top:10px;">Dauer</label>
+          <select class="field" id="tw_minutes">
+            <option value="20">20 Minuten (Sprint)</option>
+            <option value="30">30 Minuten (Mini-Klausur)</option>
+            <option value="40" selected>40 Minuten (Standard)</option>
+            <option value="45">45 Minuten (mit Überarbeiten)</option>
+          </select>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn secondary" onclick="startTimer()">Start</button>
+            <button class="btn ghost" onclick="stopTimer()">Stop</button>
+            <button class="btn ghost" onclick="saveDraft('${draftId}')">Speichern</button>
+          </div>
+
+          <div class="small muted" style="margin-top:10px;">
+            Mini-Ziel: 220–320 Wörter. Baue mind. <strong>2 Abwäge-Sätze</strong> ein (zwar/jedoch; einerseits/andererseits; entscheidend ist…).
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Schreiben</h3>
+          <textarea class="field" id="draft_${draftId}" placeholder="Schreibe hier deinen diskursiven Essay…">${escapeHTML(saved)}</textarea>
+          <div class="small muted" style="margin-top:8px;">Autosave: alle 10 Sekunden, solange du tippst.</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+let timerInterval = null;
+let timerEnd = null;
+
+window.startTimer = function(){
+  stopTimer();
+  const mins = parseInt(document.getElementById("tw_minutes").value,10);
+  timerEnd = Date.now() + mins*60*1000;
+  toast("Timer läuft", mins + " Minuten. Schreib los.");
+  timerInterval = setInterval(tick, 200);
+  tick();
+};
+window.stopTimer = function(){
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+  timerEnd = null;
+  $("timer").textContent = "⏱ 00:00";
+};
+
+function tick(){
+  if(!timerEnd) return;
+  const left = timerEnd - Date.now();
+  const ms = Math.max(0, left);
+  const totalSec = Math.floor(ms/1000);
+  const mm = String(Math.floor(totalSec/60)).padStart(2,"0");
+  const ss = String(totalSec%60).padStart(2,"0");
+  $("timer").textContent = `⏱ ${mm}:${ss}`;
+  if(left<=0){
+    stopTimer();
+    toast("Zeit!", "Stop. Jetzt 4 Minuten überarbeiten (Konnektoren, Bezüge, Endungen).");
+    addXP(60, "Timer-Session abgeschlossen.");
+  }
+}
+
+/* Autosave typing */
+document.addEventListener("input", (e)=>{
+  if(!(e.target && e.target.id && e.target.id.startsWith("draft_"))) return;
+  const draftId = e.target.id.replace("draft_","");
+  clearTimeout(window.__autosaveT);
+  window.__autosaveT = setTimeout(()=>{
+    state.drafts[draftId] = e.target.value || "";
+    saveState();
+  }, 500);
+});
+
+/* ===========================
+   Error Hunt
+=========================== */
+function renderErrorHunt(){
+  const id = "errorhunt";
+  const passage = `
+Viele sagen, soziale Medien sind grundsätzlich schlecht. Das stimmt aber nicht immer, weil es kommt darauf an.
+Ein Verbot wäre gut, weil Jugendliche dann weniger am Handy sind. Andererseits würde das viele Probleme lösen,
+denn Jugendliche würden dann automatisch glücklicher sein. Außerdem kann man sehen, dass alle anderen Länder
+das auch machen sollten. Im Fazit denke ich, dass man es einfach verbieten muss.`.trim();
+
+  return `
+    <div class="box">
+      <h3>Fehlerjagd: Finde 6 Verbesserungen</h3>
+      <p>Markiere (in Gedanken) und schreibe darunter eine bessere Version (120–160 Wörter): klarer, diskursiver, mit Abwägung.</p>
+      <div class="callout danger" style="margin-top:10px;">
+        <div class="mono" style="white-space:pre-wrap;">${escapeHTML(passage)}</div>
+      </div>
+      <div class="hr"></div>
+      <textarea class="field" id="draft_${id}" placeholder="Deine verbesserte Version…">${escapeHTML(state.drafts[id]||"")}</textarea>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn secondary" onclick="saveDraft('${id}')">Speichern</button>
+        <button class="btn" onclick="gradeErrorHunt()">Check (+XP)</button>
+      </div>
+      <div class="small muted" id="ehFeedback" style="margin-top:8px;"></div>
+    </div>
+  `;
+}
+window.gradeErrorHunt = function(){
+  const el = document.getElementById("draft_errorhunt");
+  const fb = document.getElementById("ehFeedback");
+  if(!el || !fb) return;
+  const t = (el.value||"").trim();
+  const wc = t ? t.split(/\s+/).length : 0;
+  const hasAbwaeg = /zwar|jedoch|dennoch|andererseits|hingegen|in der Gesamtabwägung|entscheidend/i.test(t);
+  const hasExample = /zum Beispiel|beispielsweise|konkret|etwa/i.test(t);
+  const lessAbsolut = !(/alle|immer|grundsätzlich|automatisch/i.test(t)); // rough
+  const score = [wc>=120, hasAbwaeg, hasExample, lessAbsolut].filter(Boolean).length;
+  fb.textContent = `Check: ${score}/4 (Wörter: ${wc}).`;
+  if(score>=3){
+    if(!state.quizWins["errorhunt_ok"]){
+      state.quizWins["errorhunt_ok"]=true;
+      saveState();
+      addXP(140, "Überarbeiten-Skill: sichtbar verbessert.");
+    }else{
+      toast("Stabil", "Schon vorher erfolgreich.");
+    }
+  }else{
+    toast("Mehr Diskurs!", "Baue Abwägung + ein konkretes Beispiel ein und vermeide absolute Wörter.");
+  }
+};
+
+/* ===========================
+   Boss Challenge
+=========================== */
+function renderBossChallenge(){
+  const id="boss_text";
+  return `
+    <div class="box">
+      <h3>Klausurmodus-Challenge</h3>
+      <p>Wähle Prompt, schreibe 220–320 Wörter, dann beantworte die Reflexionsfragen.</p>
+
+      <div class="grid">
+        <div class="box">
+          <h3>Prompt</h3>
+          <select class="field" id="boss_prompt">
+            <option>Künstliche Intelligenz macht Bildung gerechter.</option>
+            <option>Kostenloser Nahverkehr ist die beste Klimaschutzmaßnahme.</option>
+            <option>Traditionen sind wichtiger als Innovation.</option>
+            <option>Soziale Medien sollten für Jugendliche unter 16 verboten werden.</option>
+          </select>
+
+          <label class="small" style="display:block; margin-top:10px;">Dein Text</label>
+          <textarea class="field" id="draft_${id}" placeholder="Dein vollständiger diskursiver Essay…">${escapeHTML(state.drafts[id]||"")}</textarea>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn secondary" onclick="saveDraft('${id}')">Speichern</button>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Reflexion (kurz, aber konkret)</h3>
+          <label class="small">1) Welche zwei Kriterien waren die stärksten?</label>
+          <input class="field" id="boss_r1" value="${escapeHTML(state.drafts['boss_r1']||"")}"/>
+          <label class="small" style="margin-top:8px;">2) Welches Gegenargument hast du wirklich „bearbeitet“?</label>
+          <input class="field" id="boss_r2" value="${escapeHTML(state.drafts['boss_r2']||"")}"/>
+          <label class="small" style="margin-top:8px;">3) Dein Upgrade-Ziel (1 Satz):</label>
+          <input class="field" id="boss_r3" value="${escapeHTML(state.drafts['boss_r3']||"")}"/>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn" onclick="finishBoss()">Challenge abschließen</button>
+          </div>
+
+          <div class="small muted" id="bossFeedback" style="margin-top:8px;"></div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      ${renderQuiz({
+        id:"quiz_boss",
+        title:"Mini-Check: Habe ich wirklich abgewogen?",
+        questions:[
+          { q:"Ein diskursives Fazit sollte …",
+            options:[
+              {t:"nur die eigene Meinung wiederholen.", ok:true},
+              {t:"eine neue Information einführen, die vorher nicht vorkam.", ok:false},
+              {t:"die Argumente gewichten und ein begründetes Urteil formulieren.", ok:false},
+              {t:"provokant enden, damit es spannend ist.", ok:false},
+            ]
+          },
+          { q:"Ein starkes Gegenargument wird …",
+            options:[
+              {t:"ignoriert, um die Linie nicht zu stören.", ok:false},
+              {t:"so formuliert, dass es lächerlich klingt.", ok:false},
+              {t:"fair dargestellt und dann geprüft/relativiert oder integriert.", ok:true},
+              {t:"als eigener Schluss benutzt.", ok:false},
+            ]
+          },
+          { q:"Welche Formulierung ist am diskursivsten?",
+            options:[
+              {t:"Das ist halt so.", ok:false},
+              {t:"In vielen Fällen trifft dies zu; dennoch sind Kontext und Nebenfolgen zu berücksichtigen.", ok:true},
+              {t:"Wer das anders sieht, liegt falsch.", ok:false},
+              {t:"Punkt.", ok:false},
+            ]
+          },
+          { q:"Was macht Struktur im diskursiven Essay?",
+            options:[
+              {t:"Sie ist egal, solange man viel schreibt.", ok:false},
+              {t:"Sie ist nur für schwache Schreiber.", ok:false},
+              {t:"Sie macht die Abwägung nachvollziehbar und lenkt den Leser durch Kriterien.", ok:true},
+              {t:"Sie ersetzt Beispiele.", ok:false},
+            ]
+          }
+        ],
+        rewardXP: 0,
+        rewardBadge: null
+      })}
+    </div>
+  `;
+}
+
+window.finishBoss = function(){
+  const text = (document.getElementById("draft_boss_text")?.value || "").trim();
+  const r1 = (document.getElementById("boss_r1")?.value || "").trim();
+  const r2 = (document.getElementById("boss_r2")?.value || "").trim();
+  const r3 = (document.getElementById("boss_r3")?.value || "").trim();
+  const fb = document.getElementById("bossFeedback");
+  const wc = text ? text.split(/\s+/).length : 0;
+
+  state.drafts["boss_r1"] = r1;
+  state.drafts["boss_r2"] = r2;
+  state.drafts["boss_r3"] = r3;
+  saveState();
+
+  if(wc < 200){
+    fb.textContent = "Dein Text ist noch zu kurz (unter 200 Wörter). Schreibe etwas mehr und baue Abwägung ein.";
+    toast("Noch nicht", "Ziel: 220–320 Wörter.");
+    return;
+  }
+  if(!r1 || !r2 || !r3){
+    fb.textContent = "Bitte alle drei Reflexionsfelder ausfüllen (kurz reicht).";
+    toast("Fast", "Reflexion fehlt noch.");
+    return;
+  }
+
+  // Mark challenge done (separat vom Quiz)
+  if(!state.quizWins["boss_done"]){
+    state.quizWins["boss_done"] = true;
+    saveState();
+    addXP(220, "Klausurmodus abgeschlossen: Text + Reflexion.");
+    earnBadge("klausurmodus","Final-Boss: Klausurmodus","Du hast eine komplette Abgabe simuliert.");
+  }else{
+    toast("Erledigt", "Challenge war schon abgeschlossen.");
+  }
+  fb.textContent = "Challenge erfüllt. Jetzt: Modul abschließen (oben rechts).";
+};
+
+/* ===========================
+   Bootstrapping: Mount + Events
+=========================== */
+$("btnReset").addEventListener("click", resetState);
+
+$("btnCloseNotes").addEventListener("click", ()=>{
+  state.notes = $("notes").value || "";
+  saveState();
+  $("notesCard").style.display = "none";
+  toast("Notizen", "Gespeichert.");
+});
+
+$("notes").addEventListener("input", ()=>{
+  state.notes = $("notes").value || "";
+  saveState();
+});
+
+/* After each module render: attach special handlers */
+const originalRenderModule = renderModule;
+renderModule = function(id){
+  originalRenderModule(id);
+
+  // enable DnD for the known drag list, if present
+  ["drag_structure"].forEach(enableDnD);
+
+  // mount konnektor trainer if present
+  mountKonnektorTrainer();
+};
+
+/* Initial render */
+renderBadges();
+renderNav();
+renderModule(modules[0].id);
+updateHUD();
+</script>
+</body>
+</html>
