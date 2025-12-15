@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Der mysteriöse Diebstahl - Ein Detektivspiel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .subtitle {
+            color: #764ba2;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .scene {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .story-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            line-height: 1.9;
+            font-size: 1.15em;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .story-box strong {
+            color: #764ba2;
+            font-size: 1.1em;
+        }
+
+        .story-box em {
+            color: #667eea;
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        .clue-box {
+            background: #fff9e6;
+            border-left: 5px solid #ffa500;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .clue-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #ff8c00;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .clue-title::before {
+            content: "🔍";
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .suspect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .suspect-card {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .suspect-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .suspect-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #ffa500;
+        }
+
+        .suspect-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .suspect-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .suspect-role {
+            font-size: 1em;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .choices {
+            display: grid;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .choice-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .notebook {
+            background: #f0f4f8;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .notebook h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+        }
+
+        .notebook h3::before {
+            content: "📓";
+            margin-right: 10px;
+        }
+
+        .notebook-item {
+            background: white;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffa500;
+            font-size: 1.05em;
+        }
+
+        .progress {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .evidence-found {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #155724;
+            font-weight: bold;
+            text-align: center;
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .final-reveal {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .final-reveal h2 {
+            font-size: 2.5em;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .emoji-big {
+            font-size: 6em;
+            margin: 20px 0;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 10px;
+            font-weight: bold;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .warning-box h3 {
+            color: #ff8c00;
+            margin-bottom: 10px;
+        }
+
+        .timer {
+            background: #ff5252;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .timer.active {
+            display: block;
+            animation: pulse 1s ease infinite;
+        }
+
+        .character-sheet {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .character-sheet h4 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .character-sheet p {
+            line-height: 1.7;
+            color: #555;
+            margin: 8px 0;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 20px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .vote-counter {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🕵️ Der mysteriöse Diebstahl 🕵️</h1>
+            <div class="subtitle">Ein interaktives Detektivspiel</div>
+        </div>
+
+        <!-- Scene 1: Introduction -->
+        <div id="scene1" class="scene active">
+            <div class="progress">Kapitel 1 von 5: Der Vorfall</div>
+            
+            <div class="story-box">
+                Es ist <strong>Freitag, 30. Juni</strong>, der letzte Schultag vor den Sommerferien. 
+                Du bist in der <em>Klasse 8B</em> und schreibst gerade deine letzte Klassenarbeit für dieses Jahr.
+                <br><br>
+                Plötzlich hörst du Schritte auf dem Flur. Die Tür öffnet sich, und <strong>Frau Schmidt</strong>, 
+                die Schulleiterin, kommt herein. Ihr Gesicht ist sehr ernst.
+                <br><br>
+                „Entschuldigung, dass ich störe," sagt sie. „Aber etwas Wichtiges ist passiert. 
+                Der <em>goldene Schulpokal</em>, den wir seit 50 Jahren haben, ist aus der Vitrine im Foyer verschwunden! 
+                Außerdem fehlen <strong>500 Euro</strong> aus der Klassenkasse im Lehrerzimmer!"
+                <br><br>
+                Die ganze Klasse ist schockiert. Der Pokal ist das wertvollste Stück der Schule – 
+                ein Geschenk von der ersten Abiturklasse im Jahr 1973!
+                <br><br>
+                Frau Schmidt fährt fort: „Die Polizei wurde informiert, aber bis sie da ist, möchte ich, 
+                dass niemand das Schulgebäude verlässt. Wir müssen herausfinden, wer das getan hat!"
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">Wichtige Information</div>
+                <p><strong>Zeit des Diebstahls:</strong> Zwischen 10:00 und 11:30 Uhr (während der großen Pause und der dritten Stunde)</p>
+                <p><strong>Was fehlt:</strong> Der goldene Schulpokal (Wert: unbezahlbar) und 500 Euro in bar</p>
+                <p><strong>Ort:</strong> Vitrine im Foyer (Pokal) und Lehrerzimmer (Geld)</p>
+            </div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(2)">
+                    🔍 „Wir müssen sofort mit den Ermittlungen beginnen!"
+                </button>
+                <button class="choice-btn" onclick="goToScene(2)">
+                    💭 „Das ist sehr ernst. Wer hätte so etwas tun können?"
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 2: The Suspects -->
+        <div id="scene2" class="scene">
+            <div class="progress">Kapitel 2 von 5: Die Verdächtigen</div>
+            
+            <div class="story-box">
+                Frau Schmidt versammelt alle in der Aula. „Ich möchte, dass ihr mir helft, 
+                dieses Rätsel zu lösen," sagt sie. „Mehrere Personen hatten heute Morgen Zugang 
+                zu beiden Orten. Hier sind die Hauptverdächtigen:"
+            </div>
+
+            <div class="suspect-grid">
+                <div class="suspect-card" onclick="showCharacter('boris')">
+                    <div class="suspect-icon">👨‍🎓</div>
+                    <div class="suspect-name">Boris Müller</div>
+                    <div class="suspect-role">Schüler, Klasse 10A</div>
+                </div>
+
+                <div class="suspect-card" onclick="showCharacter('lisa')">
+                    <div class="suspect-icon">👩‍🎓</div>
+                    <div class="suspect-name">Lisa Wagner</div>
+                    <div class="suspect-role">Schülerin, Klasse 9B</div>
+                </div>
+
+                <div class="suspect-card" onclick="showCharacter('herr_klein')">
+                    <div class="suspect-icon">👨‍🏫</div>
+                    <div class="suspect-name">Herr Klein</div>
+                    <div class="suspect-role">Hausmeister</div>
+                </div>
+
+                <div class="suspect-card" onclick="showCharacter('frau_meyer')">
+                    <div class="suspect-icon">👩‍💼</div>
+                    <div class="suspect-name">Frau Meyer</div>
+                    <div class="suspect-role">Sekretärin</div>
+                </div>
+            </div>
+
+            <div id="character-info"></div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(3)">
+                    🔎 Weiter zu den Beweisen und Hinweisen
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 3: Clues Round 1 -->
+        <div id="scene3" class="scene">
+            <div class="progress">Kapitel 3 von 5: Die ersten Hinweise</div>
+            
+            <div class="story-box">
+                Du und deine Mitschüler beginnen, Hinweise zu sammeln. Jeder teilt sich auf und sucht nach Beweisen.
+                <br><br>
+                Nach 30 Minuten trefft ihr euch wieder und besprecht, was ihr gefunden habt:
+            </div>
+
+            <div class="notebook">
+                <h3>Hinweis 1: Die Vitrine</h3>
+                <div class="notebook-item">
+                    🔓 Die Vitrine war <strong>nicht aufgebrochen</strong>. Sie wurde mit einem Schlüssel geöffnet.
+                    Nur drei Personen haben Schlüssel: Frau Schmidt (Schulleiterin), Herr Klein (Hausmeister), 
+                    und Frau Meyer (Sekretärin).
+                </div>
+            </div>
+
+            <div class="notebook">
+                <h3>Hinweis 2: Fingerabdrücke</h3>
+                <div class="notebook-item">
+                    👆 Auf der Vitrine wurden mehrere Fingerabdrücke gefunden. 
+                    Die Polizei sagt, dass die Abdrücke von <em>Boris Müller</em> stammen!
+                </div>
+            </div>
+
+            <div class="notebook">
+                <h3>Hinweis 3: Zeugenaussage von Frau Meyer</h3>
+                <div class="notebook-item">
+                    🗣️ „Um 10:15 Uhr sah ich <strong>Lisa Wagner</strong> im Foyer. 
+                    Sie stand vor der Vitrine und schaute sich den Pokal sehr genau an. 
+                    Als sie mich sah, ging sie schnell weg."
+                </div>
+            </div>
+
+            <div class="notebook">
+                <h3>Hinweis 4: Der Hausmeister</h3>
+                <div class="notebook-item">
+                    🔧 Herr Klein sagt: „Ich war von 9:45 bis 11:00 Uhr im Keller, 
+                    um die Heizung zu reparieren. Zwei andere Lehrer haben mich dort gesehen. 
+                    Ich kann nicht der Dieb sein!"
+                </div>
+            </div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(4)">
+                    📱 Mehr Beweise sammeln
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 4: More Clues -->
+        <div id="scene4" class="scene">
+            <div class="progress">Kapitel 4 von 5: Weitere Ermittlungen</div>
+            
+            <div class="story-box">
+                Ihr ermittelt weiter. Plötzlich findet dein bester Freund <strong>James</strong> 
+                etwas Wichtiges hinter der Turnhalle:
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">Wichtiger Fund!</div>
+                <p>
+                    Eine <strong>blaue Tasche</strong> mit einem Reißverschluss! 
+                    Darin: <em>450 Euro</em> in verschiedenen Scheinen, ein Schulschlüssel, 
+                    und ein Zettel mit der Aufschrift „Für die Reise nach Berlin".
+                </p>
+            </div>
+
+            <div class="notebook">
+                <h3>Hinweis 5: Die Klassenkasse</h3>
+                <div class="notebook-item">
+                    💰 Im Lehrerzimmer findet ihr heraus: Die Klassenkasse der 10A (Boris' Klasse) 
+                    sollte eigentlich 500 Euro für eine Klassenfahrt nach Berlin enthalten. 
+                    Boris war der <em>Kassenverantwortliche</em>!
+                </div>
+            </div>
+
+            <div class="notebook">
+                <h3>Hinweis 6: Lisas Alibi</h3>
+                <div class="notebook-item">
+                    ⏰ Lisa sagt: „Ja, ich war am Morgen vor der Vitrine. Aber ich habe nur den Pokal bewundert! 
+                    Um 10:30 Uhr war ich im Kunstunterricht – Frau Becker kann das bestätigen!"
+                    <br><br>
+                    Ihr fragt Frau Becker. Sie bestätigt: „Ja, Lisa war ab 10:25 Uhr im Kunstunterricht. 
+                    Sie hat die ganze Stunde gemalt."
+                </div>
+            </div>
+
+            <div class="notebook">
+                <h3>Hinweis 7: Boris' Spind</h3>
+                <div class="notebook-item">
+                    🎒 Frau Schmidt öffnet (mit Erlaubnis) Boris' Spind. 
+                    Darin findet ihr: Ein Foto von Boris mit dem Pokal (von letztem Jahr, 
+                    als seine Klasse einen Sportwettbewerb gewann), alte Schulbücher, 
+                    aber <strong>keinen Pokal und kein Geld</strong>.
+                </div>
+            </div>
+
+            <div class="notebook">
+                <h3>Hinweis 8: Frau Meyers Geständnis</h3>
+                <div class="notebook-item">
+                    😰 Frau Meyer wird nervös. „Okay, ich muss etwas gestehen... 
+                    Heute Morgen habe ich meinen <em>Vitrinenschlüssel verloren</em>! 
+                    Ich weiß nicht wo. Vielleicht in der großen Pause auf dem Pausenhof?"
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Wichtige Frage</h3>
+                <p>
+                    Die Tasche mit dem Geld gehört Boris – sein Name steht innen drin! 
+                    Aber wo ist der Pokal? Und warum fehlen 50 Euro?
+                </p>
+            </div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(5)">
+                    🎯 Ich glaube, ich weiß, wer es war!
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 5: Final Accusation -->
+        <div id="scene5" class="scene">
+            <div class="progress">Kapitel 5 von 5: Die Anklage</div>
+            
+            <div class="story-box">
+                Alle versammeln sich wieder in der Aula. Frau Schmidt sagt: 
+                „Ihr habt alle Hinweise gesammelt. Jetzt müsst ihr entscheiden: <strong>Wer ist der Dieb?</strong>"
+                <br><br>
+                <em>Denkt gut nach! Alle Hinweise zusammen ergeben die Lösung!</em>
+            </div>
+
+            <div class="warning-box">
+                <h3>🤔 Zusammenfassung der Fakten</h3>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>✓ Boris' Fingerabdrücke sind auf der Vitrine</li>
+                    <li>✓ Lisa stand vor der Vitrine, hat aber ein Alibi ab 10:25 Uhr</li>
+                    <li>✓ Herr Klein war im Keller (bestätigt)</li>
+                    <li>✓ Frau Meyer hat ihren Schlüssel verloren</li>
+                    <li>✓ 450 Euro wurden in Boris' Tasche gefunden</li>
+                    <li>✓ Der Pokal ist immer noch verschwunden</li>
+                    <li>✓ Boris war Kassenverantwortlicher seiner Klasse</li>
+                </ul>
+            </div>
+
+            <h3 style="text-align: center; color: #667eea; margin: 30px 0; font-size: 1.5em;">
+                Wer hat den Pokal gestohlen und das Geld genommen?
+            </h3>
+
+            <div class="suspect-grid">
+                <div class="suspect-card" onclick="makeAccusation('boris')">
+                    <div class="suspect-icon">👨‍🎓</div>
+                    <div class="suspect-name">Boris Müller</div>
+                    <div class="vote-counter" id="votes-boris">Stimmen: 0</div>
+                </div>
+
+                <div class="suspect-card" onclick="makeAccusation('lisa')">
+                    <div class="suspect-icon">👩‍🎓</div>
+                    <div class="suspect-name">Lisa Wagner</div>
+                    <div class="vote-counter" id="votes-lisa">Stimmen: 0</div>
+                </div>
+
+                <div class="suspect-card" onclick="makeAccusation('herr_klein')">
+                    <div class="suspect-icon">👨‍🏫</div>
+                    <div class="suspect-name">Herr Klein</div>
+                    <div class="vote-counter" id="votes-herr_klein">Stimmen: 0</div>
+                </div>
+
+                <div class="suspect-card" onclick="makeAccusation('frau_meyer')">
+                    <div class="suspect-icon">👩‍💼</div>
+                    <div class="suspect-name">Frau Meyer</div>
+                    <div class="vote-counter" id="votes-frau_meyer">Stimmen: 0</div>
+                </div>
+            </div>
+
+            <div class="choices" style="margin-top: 40px;">
+                <button class="choice-btn" onclick="showReveal()">
+                    🎭 Die Auflösung zeigen!
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 6: Reveal -->
+        <div id="scene6" class="scene">
+            <div class="final-reveal">
+                <h1>🎉 DIE AUFLÖSUNG! 🎉</h1>
+                <div class="emoji-big">👨‍🎓🔍</div>
+                <h2>Der Täter ist: BORIS MÜLLER!</h2>
+            </div>
+
+            <div class="story-box">
+                <h3 style="color: #667eea; margin-bottom: 15px;">Boris' Geständnis:</h3>
+                <p style="line-height: 1.8;">
+                    „Ja, ich habe es getan. Es tut mir so leid!"
+                    <br><br>
+                    „Ich war <em>Kassenverantwortlicher</em> für unsere Klassenfahrt. 
+                    Aber letzten Monat habe ich aus Versehen 50 Euro verloren – 
+                    sie sind mir aus der Tasche gefallen!
+                    <br><br>
+                    Ich hatte Angst, es jemandem zu sagen. Ich dachte, alle würden mich für unverantwortlich halten. 
+                    Also nahm ich heute Morgen das Geld aus der Schulkasse im Lehrerzimmer, 
+                    um die fehlenden 50 Euro zu ersetzen.
+                    <br><br>
+                    Als ich im Foyer war, sah ich <strong>Frau Meyers Schlüssel</strong> auf dem Boden liegen! 
+                    Er musste ihr aus der Tasche gefallen sein. Ich... ich hatte eine dumme Idee.
+                    <br><br>
+                    Ich dachte: 'Wenn ich den Pokal nehme und ihn später wieder zurückbringe, 
+                    wird jeder denken, es gab einen echten Dieb, und niemand wird nach dem Geld fragen!'
+                    <br><br>
+                    Ich öffnete die Vitrine mit dem Schlüssel und nahm den Pokal. 
+                    Meine Fingerabdrücke blieben zurück, weil ich keine Handschuhe trug.
+                    <br><br>
+                    Der Pokal ist <em>sicher versteckt</em> – in meinem Schrank zu Hause. 
+                    Ich wollte ihn am Montag zurückbringen. Ich wollte ihn nicht wirklich stehlen! 
+                    Ich wollte nur... Zeit gewinnen.
+                    <br><br>
+                    Es tut mir so leid. Das war so dumm von mir."
+                </p>
+            </div>
+
+            <div class="clue-box">
+                <div class="clue-title">Die Beweise erklärt</div>
+                <ul style="margin-left: 20px; line-height: 1.8; margin-top: 10px;">
+                    <li><strong>Boris' Fingerabdrücke:</strong> Er hatte den Pokal ohne Handschuhe genommen</li>
+                    <li><strong>Die 450 Euro in seiner Tasche:</strong> 
+                        Das Geld aus der Klassenkasse (500€) minus die 50€, die er verloren hatte</li>
+                    <li><strong>Frau Meyers verlorener Schlüssel:</strong> 
+                        Boris fand ihn und benutzte ihn, um die Vitrine zu öffnen</li>
+                    <li><strong>Lisa vor der Vitrine:</strong> 
+                        Sie war unschuldig – sie bewunderte nur den Pokal und hatte ein Alibi</li>
+                    <li><strong>Herr Klein im Keller:</strong> 
+                        Er hatte ein perfektes Alibi – andere sahen ihn dort</li>
+                    <li><strong>Der fehlende Pokal:</strong> 
+                        Versteckt in Boris' Schrank zu Hause (wurde später zurückgegeben)</li>
+                </ul>
+            </div>
+
+            <div class="success-message">
+                <p>🎓 <strong>Was können wir lernen?</strong></p>
+                <p style="margin-top: 15px;">
+                    Boris machte einen Fehler (das Geld verlieren), aber sein Versuch, 
+                    ihn zu vertuschen, machte alles viel schlimmer! 
+                    <br><br>
+                    Die beste Lösung wäre gewesen, <em>ehrlich zu sein</em> und um Hilfe zu bitten. 
+                    Fehler passieren jedem – aber Unehrlichkeit macht sie nur größer!
+                </p>
+            </div>
+
+            <div class="notebook">
+                <h3>Das Ende der Geschichte</h3>
+                <div class="notebook-item">
+                    Boris gab den Pokal zurück und entschuldigte sich bei der ganzen Schule. 
+                    Er musste zur Strafe drei Wochen lang nach der Schule beim Aufräumen helfen.
+                    <br><br>
+                    Seine Klasse verstand seinen Fehler und half ihm, die 50 Euro zusammen zu sammeln. 
+                    Die Klassenfahrt nach Berlin konnte stattfinden!
+                    <br><br>
+                    Boris lernte: <strong>Ehrlichkeit ist immer der beste Weg</strong> – 
+                    auch wenn es schwer ist, einen Fehler zuzugeben.
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="restart-btn" onclick="location.reload()">
+                    🔄 Nochmal spielen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let votes = {
+            boris: 0,
+            lisa: 0,
+            herr_klein: 0,
+            frau_meyer: 0
+        };
+
+        const characterInfo = {
+            boris: {
+                name: "Boris Müller",
+                icon: "👨‍🎓",
+                role: "Schüler, Klasse 10A",
+                info: `
+                    <div class="character-sheet">
+                        <h4>👨‍🎓 Boris Müller - Klasse 10A</h4>
+                        <p><strong>Alter:</strong> 16 Jahre</p>
+                        <p><strong>Besonderheit:</strong> Kassenverantwortlicher für die Klassenfahrt nach Berlin</p>
+                        <p><strong>Charakter:</strong> Normalerweise zuverlässig und beliebt bei Mitschülern</p>
+                        <p><strong>Heute Morgen:</strong> War allein im Foyer um 10:15 Uhr (während der großen Pause)</p>
+                    </div>
+                `
+            },
+            lisa: {
+                name: "Lisa Wagner",
+                icon: "👩‍🎓",
+                role: "Schülerin, Klasse 9B",
+                info: `
+                    <div class="character-sheet">
+                        <h4>👩‍🎓 Lisa Wagner - Klasse 9B</h4>
+                        <p><strong>Alter:</strong> 15 Jahre</p>
+                        <p><strong>Besonderheit:</strong> Liebt Kunst und Geschichte, interessiert sich für alte Schultraditionen</p>
+                        <p><strong>Charakter:</strong> Ruhig, neugierig, manchmal etwas schüchtern</p>
+                        <p><strong>Heute Morgen:</strong> Stand um 10:15 Uhr vor der Vitrine und betrachtete den Pokal</p>
+                    </div>
+                `
+            },
+            herr_klein: {
+                name: "Herr Klein",
+                icon: "👨‍🏫",
+                role: "Hausmeister",
+                info: `
+                    <div class="character-sheet">
+                        <h4>👨‍🏫 Herr Klein - Hausmeister</h4>
+                        <p><strong>Alter:</strong> 52 Jahre</p>
+                        <p><strong>Besonderheit:</strong> Arbeitet seit 20 Jahren an der Schule, kennt jede Ecke</p>
+                        <p><strong>Charakter:</strong> Freundlich, hilfsbereit, mag die Schüler sehr</p>
+                        <p><strong>Heute Morgen:</strong> Reparierte von 9:45 bis 11:00 Uhr die Heizung im Keller</p>
+                    </div>
+                `
+            },
+            frau_meyer: {
+                name: "Frau Meyer",
+                icon: "👩‍💼",
+                role: "Sekretärin",
+                info: `
+                    <div class="character-sheet">
+                        <h4>👩‍💼 Frau Meyer - Sekretärin</h4>
+                        <p><strong>Alter:</strong> 45 Jahre</p>
+                        <p><strong>Besonderheit:</strong> Verwaltet alle Schlüssel und wichtigen Dokumente</p>
+                        <p><strong>Charakter:</strong> Organisiert, manchmal etwas vergesslich</p>
+                        <p><strong>Heute Morgen:</strong> War im Sekretariat, hat aber Lisa vor der Vitrine gesehen</p>
+                    </div>
+                `
+            }
+        };
+
+        function goToScene(sceneNumber) {
+            document.querySelectorAll('.scene').forEach(scene => {
+                scene.classList.remove('active');
+            });
+            document.getElementById('scene' + sceneNumber).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showCharacter(character) {
+            const infoDiv = document.getElementById('character-info');
+            infoDiv.innerHTML = characterInfo[character].info;
+            infoDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function makeAccusation(suspect) {
+            votes[suspect]++;
+            document.getElementById('votes-' + suspect).textContent = 'Stimmen: ' + votes[suspect];
+            
+            // Visual feedback
+            event.currentTarget.classList.add('selected');
+            setTimeout(() => {
+                event.currentTarget.classList.remove('selected');
+            }, 500);
+        }
+
+        function showReveal() {
+            goToScene(6);
+        }
+    </script>
+</body>
+</html>
