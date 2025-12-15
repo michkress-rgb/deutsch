@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Der geklaute Tresor - Ein Detektivspiel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .warning-sign {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            background: #ffd700;
+            border: 5px solid #ff0000;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            animation: pulse 2s ease infinite;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .game-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #ff6b6b;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #ff6b6b;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .subtitle {
+            color: #c44569;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .scene {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .story-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+            border: 3px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            line-height: 1.9;
+            font-size: 1.15em;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .story-box strong {
+            color: #c44569;
+            font-size: 1.1em;
+        }
+
+        .story-box em {
+            color: #ff6b6b;
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        .progress {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c44569 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .suspect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .suspect-card {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .suspect-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+        }
+
+        .suspect-card.selected {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c44569 100%);
+            color: white;
+            border-color: #ffd700;
+        }
+
+        .suspect-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .suspect-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .suspect-role {
+            font-size: 1em;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .evidence-box {
+            background: #fff3cd;
+            border: 3px solid #ffc107;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .evidence-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ff8c00;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .evidence-title::before {
+            content: "🔍";
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .evidence-item {
+            background: white;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ff6b6b;
+            line-height: 1.7;
+        }
+
+        .chat-box {
+            background: #e8f5e9;
+            border: 3px solid #4caf50;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .chat-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header::before {
+            content: "💬";
+            font-size: 1.4em;
+            margin-right: 10px;
+        }
+
+        .chat-message {
+            background: white;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 18px;
+            max-width: 80%;
+        }
+
+        .chat-message.sent {
+            background: #dcf8c6;
+            margin-left: auto;
+        }
+
+        .chat-message .sender {
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .camera-footage {
+            background: #263238;
+            color: white;
+            border: 4px solid #37474f;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .camera-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4caf50;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4caf50;
+            padding-bottom: 10px;
+        }
+
+        .camera-entry {
+            background: #37474f;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .timestamp {
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .interrogation-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 3px solid #2196f3;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .interrogation-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #1565c0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .interrogation-header::before {
+            content: "🎤";
+            font-size: 1.4em;
+            margin-right: 10px;
+        }
+
+        .question {
+            background: white;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .question strong {
+            color: #1565c0;
+        }
+
+        .answer {
+            background: #f5f5f5;
+            padding: 12px 15px;
+            margin: 10px 0 20px 30px;
+            border-radius: 8px;
+            border-left: 4px solid #ff6b6b;
+            font-style: italic;
+        }
+
+        .choices {
+            display: grid;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c44569 100%);
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .choice-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .vote-counter {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 5px;
+            font-weight: bold;
+        }
+
+        .final-reveal {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .final-reveal h2 {
+            font-size: 2.5em;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .emoji-big {
+            font-size: 6em;
+            margin: 20px 0;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 10px;
+            font-weight: bold;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 3px solid #ffc107;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .warning-box h3 {
+            color: #ff8c00;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 20px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-sign">⚠️</div>
+
+    <div class="game-container">
+        <div class="header">
+            <h1>🔐 Der geklaute Tresor 🔐</h1>
+            <div class="subtitle">Ein Detektivspiel</div>
+        </div>
+
+        <!-- Scene 1: Introduction -->
+        <div id="scene1" class="scene active">
+            <div class="progress">Kapitel 1 von 6: Der Vorfall</div>
+            
+            <div class="story-box">
+                Es ist <strong>Donnerstag, 16:00 Uhr</strong>, direkt nach Schulschluss. 
+                Die meisten Schüler sind schon nach Hause gegangen.
+                <br><br>
+                Du bist noch in der Schule, weil du auf deinen Vater wartest, der dich abholen will. 
+                Du sitzt in der Bibliothek und machst Hausaufgaben.
+                <br><br>
+                Plötzlich hörst du Schritte auf dem Flur. Dann ein lautes <em>"KLIRR!"</em> – 
+                als ob Glas zerbricht. Du gehst vorsichtig zur Tür und schaust hinaus.
+                <br><br>
+                Im Sekretariat siehst du <strong>Frau Meier</strong>, die Schulleiterin. 
+                Sie steht vor einem offenen Schrank und ruft erschrocken: 
+                „<em>Der Tresor ist weg! Jemand hat ihn gestohlen!</em>"
+                <br><br>
+                In dem Tresor war das gesamte <strong>Schulgeld</strong> für die Klassenfahrten – 
+                insgesamt <em>2.500 Euro</em>!
+            </div>
+
+            <div class="warning-box">
+                <h3>🚨 WICHTIGE INFORMATIONEN</h3>
+                <p><strong>Zeit des Diebstahls:</strong> Zwischen 15:30 und 16:00 Uhr</p>
+                <p><strong>Was fehlt:</strong> Der komplette Geldtresor (klein, schwarz, etwa 30 cm groß)</p>
+                <p><strong>Wer war noch in der Schule:</strong> Nur wenige Personen!</p>
+            </div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(2)">
+                    🔍 „Ich muss helfen! Wer könnte das gewesen sein?"
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 2: Suspects -->
+        <div id="scene2" class="scene">
+            <div class="progress">Kapitel 2 von 6: Die Verdächtigen</div>
+            
+            <div class="story-box">
+                Frau Meier ist sehr aufgeregt. „Wir müssen schnell handeln!" sagt sie. 
+                „Die Polizei ist schon unterwegs, aber vielleicht können wir schon Hinweise finden!"
+                <br><br>
+                Sie zeigt dir eine Liste: „Diese Personen waren heute nach 15:30 Uhr noch in der Schule. 
+                Eine von ihnen <em>muss</em> es gewesen sein!"
+            </div>
+
+            <div class="suspect-grid">
+                <div class="suspect-card" onclick="showSuspectInfo('meier')">
+                    <div class="suspect-icon">👩‍💼</div>
+                    <div class="suspect-name">Frau Meier</div>
+                    <div class="suspect-role">Schulleiterin</div>
+                </div>
+
+                <div class="suspect-card" onclick="showSuspectInfo('jannes')">
+                    <div class="suspect-icon">👨‍🏫</div>
+                    <div class="suspect-name">Herr Jannes</div>
+                    <div class="suspect-role">Lehrer, Klasse 5</div>
+                </div>
+
+                <div class="suspect-card" onclick="showSuspectInfo('alexander')">
+                    <div class="suspect-icon">👦</div>
+                    <div class="suspect-name">Alexander</div>
+                    <div class="suspect-role">Schüler, Klasse 5</div>
+                </div>
+
+                <div class="suspect-card" onclick="showSuspectInfo('milla')">
+                    <div class="suspect-icon">👧</div>
+                    <div class="suspect-name">Milla</div>
+                    <div class="suspect-role">Neue Schülerin, Klasse 3</div>
+                </div>
+
+                <div class="suspect-card" onclick="showSuspectInfo('unknown')">
+                    <div class="suspect-icon">❓</div>
+                    <div class="suspect-name">Unbekannte Person?</div>
+                    <div class="suspect-role">Jemand von außen?</div>
+                </div>
+            </div>
+
+            <div id="suspect-details"></div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(3)">
+                    📹 Die Sicherheitskameras überprüfen
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 3: Camera Footage -->
+        <div id="scene3" class="scene">
+            <div class="progress">Kapitel 3 von 6: Kamera-Aufnahmen</div>
+            
+            <div class="story-box">
+                Ihr geht zum Sicherheitsraum. Die Schule hat drei Kameras: 
+                eine am <em>Haupteingang</em>, eine im <em>Flur</em>, und eine auf dem <em>Schulhof</em>.
+                <br><br>
+                Frau Meier spult die Aufnahmen zurück. „Schaut genau hin!" sagt sie.
+            </div>
+
+            <div class="camera-footage">
+                <div class="camera-header">📹 SICHERHEITSKAMERA - AUFNAHMEN</div>
+                
+                <div class="camera-entry">
+                    <span class="timestamp">[15:35 Uhr]</span>
+                    <span>KAMERA 1 (Haupteingang): Alexander verlässt das Schulgebäude mit seinem Rucksack</span>
+                </div>
+
+                <div class="camera-entry">
+                    <span class="timestamp">[15:42 Uhr]</span>
+                    <span>KAMERA 2 (Flur): Herr Jannes geht ins Lehrerzimmer, trägt eine Sporttasche</span>
+                </div>
+
+                <div class="camera-entry">
+                    <span class="timestamp">[15:48 Uhr]</span>
+                    <span>KAMERA 1 (Haupteingang): Eine Person mit Kapuze kommt ins Gebäude – Gesicht nicht erkennbar!</span>
+                </div>
+
+                <div class="camera-entry">
+                    <span class="timestamp">[15:55 Uhr]</span>
+                    <span>KAMERA 2 (Flur): Milla geht Richtung Sekretariat, trägt einen großen Rucksack</span>
+                </div>
+
+                <div class="camera-entry">
+                    <span class="timestamp">[15:58 Uhr]</span>
+                    <span>KAMERA 3 (Schulhof): Ein Lieferwagen hält kurz am Hintereingang, fährt dann wieder weg</span>
+                </div>
+
+                <div class="camera-entry">
+                    <span class="timestamp">[16:02 Uhr]</span>
+                    <span>KAMERA 1 (Haupteingang): Die Person mit Kapuze verlässt das Gebäude – sehr schnell!</span>
+                </div>
+            </div>
+
+            <div class="evidence-box">
+                <div class="evidence-title">Wichtige Beobachtung!</div>
+                <div class="evidence-item">
+                    <strong>⏰ Der Tresor war um 15:30 Uhr noch da</strong> (Frau Meier hat ihn gesehen), 
+                    aber um 16:00 Uhr war er verschwunden!
+                </div>
+                <div class="evidence-item">
+                    <strong>❓ Wer war die Person mit Kapuze?</strong> Das Gesicht ist auf den Kameras nicht zu sehen!
+                </div>
+            </div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(4)">
+                    💬 Chat-Nachrichten überprüfen
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 4: Chat Messages -->
+        <div id="scene4" class="scene">
+            <div class="progress">Kapitel 4 von 6: Verdächtige Chat-Nachrichten</div>
+            
+            <div class="story-box">
+                Herr Jannes gibt euch sein Handy. „Ich habe heute seltsame Nachrichten bekommen," sagt er. 
+                „Vielleicht helfen sie weiter!"
+            </div>
+
+            <div class="chat-box">
+                <div class="chat-header">WhatsApp - Gruppe "Klassenfahrt 5. Klasse"</div>
+                
+                <div class="chat-message">
+                    <div class="sender">Alexander (14:30 Uhr)</div>
+                    <div>Herr Jannes, ich habe mein Geld für die Klassenfahrt vergessen 😢 Kann ich es morgen bringen?</div>
+                </div>
+
+                <div class="chat-message sent">
+                    <div class="sender">Herr Jannes (14:32 Uhr)</div>
+                    <div>Kein Problem, Alexander! Bring es morgen mit 👍</div>
+                </div>
+
+                <div class="chat-message">
+                    <div class="sender">Alexander (15:40 Uhr)</div>
+                    <div>Danke! Ich bin gerade zuhause angekommen. Bis morgen! 👋</div>
+                </div>
+            </div>
+
+            <div class="chat-box">
+                <div class="chat-header">WhatsApp - Einzelchat mit unbekannter Nummer</div>
+                
+                <div class="chat-message">
+                    <div class="sender">Unbekannt (15:50 Uhr)</div>
+                    <div>Hallo, ich bin Millas Mutter. Milla hat ihre Jacke in der Schule vergessen. Ist noch jemand da?</div>
+                </div>
+
+                <div class="chat-message sent">
+                    <div class="sender">Herr Jannes (15:52 Uhr)</div>
+                    <div>Ja, ich bin noch hier. Die Tür ist offen.</div>
+                </div>
+
+                <div class="chat-message">
+                    <div class="sender">Unbekannt (15:54 Uhr)</div>
+                    <div>Danke! Milla kommt gleich vorbei 🙏</div>
+                </div>
+            </div>
+
+            <div class="evidence-box">
+                <div class="evidence-title">Was wir jetzt wissen:</div>
+                <div class="evidence-item">
+                    ✓ Alexander war um 15:40 Uhr schon zuhause (hat eine Nachricht geschickt)
+                </div>
+                <div class="evidence-item">
+                    ✓ Milla kam um ca. 15:55 Uhr in die Schule (passt zur Kamera-Aufnahme)
+                </div>
+                <div class="evidence-item">
+                    ❓ Aber wer war die Person mit Kapuze um 15:48 Uhr?
+                </div>
+            </div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(5)">
+                    🎤 Die Verhöre beginnen
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 5: Interrogations -->
+        <div id="scene5" class="scene">
+            <div class="progress">Kapitel 5 von 6: Die Verhöre</div>
+            
+            <div class="story-box">
+                Die Polizei ist da! Alle Verdächtigen werden einzeln befragt. 
+                Du darfst bei den Verhören dabei sein und zuhören.
+            </div>
+
+            <div class="interrogation-box">
+                <div class="interrogation-header">Verhör: Frau Meier</div>
+                
+                <div class="question">
+                    <strong>Polizist:</strong> Wo waren Sie zwischen 15:30 und 16:00 Uhr?
+                </div>
+                <div class="answer">
+                    <strong>Frau Meier:</strong> Ich war in meinem Büro und habe E-Mails beantwortet. 
+                    Um 15:30 Uhr habe ich den Tresor das letzte Mal gesehen.
+                </div>
+
+                <div class="question">
+                    <strong>Polizist:</strong> Haben Sie etwas Ungewöhnliches gehört?
+                </div>
+                <div class="answer">
+                    <strong>Frau Meier:</strong> Nein, nichts. Erst als ich um 16:00 Uhr ins Sekretariat ging, 
+                    bemerkte ich, dass der Tresor weg war!
+                </div>
+            </div>
+
+            <div class="interrogation-box">
+                <div class="interrogation-header">Verhör: Herr Jannes</div>
+                
+                <div class="question">
+                    <strong>Polizist:</strong> Was war in Ihrer Sporttasche?
+                </div>
+                <div class="answer">
+                    <strong>Herr Jannes:</strong> Meine Sportsachen! Ich war beim Fußballtraining. 
+                    Ich kam nur zurück, um meine Unterrichtsmaterialien zu holen.
+                </div>
+
+                <div class="question">
+                    <strong>Polizist:</strong> Haben Sie jemanden im Gebäude gesehen?
+                </div>
+                <div class="answer">
+                    <strong>Herr Jannes:</strong> Nein, ich war nur kurz im Lehrerzimmer. 
+                    Dann bin ich direkt wieder gegangen. <em>[LÜGE – er war länger da!]</em>
+                </div>
+            </div>
+
+            <div class="interrogation-box">
+                <div class="interrogation-header">Verhör: Alexander</div>
+                
+                <div class="question">
+                    <strong>Polizist:</strong> Wann haben Sie die Schule verlassen?
+                </div>
+                <div class="answer">
+                    <strong>Alexander:</strong> Um 15:35 Uhr! Ich bin direkt nach Hause gefahren. 
+                    Um 15:40 Uhr habe ich Herrn Jannes eine Nachricht geschickt – von zuhause!
+                </div>
+
+                <div class="question">
+                    <strong>Polizist:</strong> Kann das jemand bestätigen?
+                </div>
+                <div class="answer">
+                    <strong>Alexander:</strong> Ja! Meine Mutter war zuhause und hat mich gesehen!
+                </div>
+            </div>
+
+            <div class="interrogation-box">
+                <div class="interrogation-header">Verhör: Milla</div>
+                
+                <div class="question">
+                    <strong>Polizist:</strong> Warum kamen Sie zurück zur Schule?
+                </div>
+                <div class="answer">
+                    <strong>Milla:</strong> Ich habe meine Jacke vergessen! Meine Mama hat Herrn Jannes geschrieben. 
+                    <em>[LÜGE – es war NICHT ihre Mutter!]</em>
+                </div>
+
+                <div class="question">
+                    <strong>Polizist:</strong> Was war in Ihrem großen Rucksack?
+                </div>
+                <div class="answer">
+                    <strong>Milla:</strong> Nur... nur meine Schulsachen und... meine Jacke... 
+                    <em>[Sie wird sehr nervös!]</em>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>🚨 WICHTIGE ENTDECKUNG!</h3>
+                <p>Die Polizei hat Millas "Mutter" angerufen. <strong>Sie hat niemals eine Nachricht geschickt!</strong></p>
+                <p>Die Nachricht kam von einer anderen Nummer – <em>aber von wem?</em></p>
+            </div>
+
+            <div class="choices">
+                <button class="choice-btn" onclick="goToScene(6)">
+                    🎯 Jetzt abstimmen: Wer ist schuldig?
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 6: Accusation -->
+        <div id="scene6" class="scene">
+            <div class="progress">Kapitel 6 von 6: Die Anklage</div>
+            
+            <div class="story-box">
+                Jetzt musst du entscheiden! Alle Beweise liegen vor dir. <strong>Wer hat den Tresor gestohlen?</strong>
+            </div>
+
+            <div class="warning-box">
+                <h3>🔍 Alle Hinweise im Überblick:</h3>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>⏰ Diebstahl zwischen 15:30 und 16:00 Uhr</li>
+                    <li>📹 Person mit Kapuze kam um 15:48 Uhr, ging um 16:02 Uhr</li>
+                    <li>👦 Alexander war nachweislich um 15:40 Uhr zuhause</li>
+                    <li>👨‍🏫 Herr Jannes hat gelogen – er war länger in der Schule</li>
+                    <li>👧 Milla kam um 15:55 Uhr mit großem Rucksack</li>
+                    <li>💬 Die "Mutter"-Nachricht war NICHT von Millas echter Mutter!</li>
+                    <li>🚐 Ein Lieferwagen hielt um 15:58 Uhr am Hintereingang</li>
+                </ul>
+            </div>
+
+            <h3 style="text-align: center; color: #ff6b6b; margin: 30px 0; font-size: 1.5em;">
+                Wer hat den Tresor gestohlen?
+            </h3>
+
+            <div class="suspect-grid">
+                <div class="suspect-card" onclick="vote('meier')">
+                    <div class="suspect-icon">👩‍💼</div>
+                    <div class="suspect-name">Frau Meier</div>
+                    <div class="vote-counter" id="vote-meier">Stimmen: 0</div>
+                </div>
+
+                <div class="suspect-card" onclick="vote('jannes')">
+                    <div class="suspect-icon">👨‍🏫</div>
+                    <div class="suspect-name">Herr Jannes</div>
+                    <div class="vote-counter" id="vote-jannes">Stimmen: 0</div>
+                </div>
+
+                <div class="suspect-card" onclick="vote('alexander')">
+                    <div class="suspect-icon">👦</div>
+                    <div class="suspect-name">Alexander</div>
+                    <div class="vote-counter" id="vote-alexander">Stimmen: 0</div>
+                </div>
+
+                <div class="suspect-card" onclick="vote('milla')">
+                    <div class="suspect-icon">👧</div>
+                    <div class="suspect-name">Milla</div>
+                    <div class="vote-counter" id="vote-milla">Stimmen: 0</div>
+                </div>
+
+                <div class="suspect-card" onclick="vote('unknown')">
+                    <div class="suspect-icon">❓</div>
+                    <div class="suspect-name">Unbekannte Person</div>
+                    <div class="vote-counter" id="vote-unknown">Stimmen: 0</div>
+                </div>
+            </div>
+
+            <div class="choices" style="margin-top: 40px;">
+                <button class="choice-btn" onclick="showReveal()">
+                    🎭 Die Auflösung zeigen!
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 7: Revelation -->
+        <div id="scene7" class="scene">
+            <div class="final-reveal">
+                <h1>🎉 DIE AUFLÖSUNG! 🎉</h1>
+                <div class="emoji-big">👧🔓</div>
+                <h2>Die Täterin ist: MILLA!</h2>
+                <p style="font-size: 1.2em; margin-top: 20px;">(Und ihr älterer Bruder als Komplize!)</p>
+            </div>
+
+            <div class="story-box">
+                <h3 style="color: #ff6b6b; margin-bottom: 15px;">Millas Geständnis:</h3>
+                <p style="line-height: 1.9;">
+                    „Es tut mir so leid... Ich wollte nicht, dass es so weit kommt!"
+                    <br><br>
+                    „Meine Familie hat große <em>Geldprobleme</em>. Mein älterer Bruder Tom (17 Jahre) 
+                    hat keine Arbeit gefunden und brauchte dringend Geld.
+                    <br><br>
+                    Er hatte die Idee: 'Wenn du als neue Schülerin zurück zur Schule gehst, 
+                    wird niemand etwas vermuten!' Also schrieb er von einem fremden Handy die Nachricht 
+                    an Herrn Jannes – als wäre er unsere Mutter.
+                    <br><br>
+                    <strong>Der Plan war so:</strong>
+                    <br>
+                    1️⃣ Tom kam um 15:48 Uhr mit <em>Kapuze</em> ins Gebäude (die Person auf der Kamera!)
+                    <br>
+                    2️⃣ Ich kam um 15:55 Uhr 'offiziell' meine Jacke holen
+                    <br>
+                    3️⃣ Tom nahm den Tresor aus dem Sekretariat (niemand war da!)
+                    <br>
+                    4️⃣ Ich lenkte Herrn Jannes ab, indem ich ihn nach meiner Jacke fragte
+                    <br>
+                    5️⃣ Tom brachte den Tresor zu meinem großen Rucksack
+                    <br>
+                    6️⃣ Ich verließ die Schule mit dem Tresor im Rucksack
+                    <br>
+                    7️⃣ Tom verließ das Gebäude um 16:02 Uhr (wieder auf Kamera zu sehen)
+                    <br>
+                    8️⃣ Der <strong>Lieferwagen</strong> war unser Vater – er wartete am Hintereingang, 
+                    um uns abzuholen!
+                    <br><br>
+                    Wir dachten, niemand würde es sofort bemerken. Wir dachten, wir hätten mehr Zeit...
+                    <br><br>
+                    Aber ihr wart zu clever! Ihr habt alle Hinweise richtig zusammengesetzt!"
+                </p>
+            </div>
+
+            <div class="evidence-box">
+                <div class="evidence-title">So wurden sie überführt:</div>
+                <ul style="margin-left: 20px; line-height: 1.8; margin-top: 10px;">
+                    <li><strong>✓ Die Person mit Kapuze:</strong> Das war Millas Bruder Tom!</li>
+                    <li><strong>✓ Die falsche "Mutter"-Nachricht:</strong> Tom schrieb sie, um eine Ausrede zu schaffen</li>
+                    <li><strong>✓ Millas großer Rucksack:</strong> Groß genug für den kleinen Tresor!</li>
+                    <li><strong>✓ Der Lieferwagen:</strong> Das war ihr Vater, der sie abholen sollte</li>
+                    <li><strong>✓ Zeitablauf passt perfekt:</strong> Tom rein → Tom stiehlt → in Rucksack → Milla raus → Tom raus</li>
+                    <li><strong>✓ Alexanders Alibi:</strong> Er war unschuldig – nachweislich zuhause!</li>
+                    <li><strong>✓ Herr Jannes' Lüge:</strong> Er war länger da, aber hat nichts gestohlen – 
+                    er schämte sich nur, dass er nicht besser aufgepasst hatte</li>
+                </ul>
+            </div>
+
+            <div class="success-box">
+                <p>🎓 <strong>Was ist jetzt passiert?</strong></p>
+                <p style="margin-top: 15px; line-height: 1.7;">
+                    Milla und ihr Bruder gaben das Geld vollständig zurück. 
+                    Der Tresor wurde in ihrem Haus gefunden – das Geld war noch da!
+                    <br><br>
+                    Weil Milla noch so jung ist (nur 9 Jahre) und unter dem Druck ihres Bruders stand, 
+                    kam sie nicht ins Gefängnis. Aber sie muss:
+                    <br>
+                    • Zur Jugendberatung gehen
+                    <br>
+                    • Bei der Schule mithelfen (Aufräumen, Garten pflegen)
+                    <br>
+                    • Einen Brief an alle Schüler schreiben und sich entschuldigen
+                    <br><br>
+                    Ihr Bruder Tom muss Sozialstunden leisten.
+                    <br><br>
+                    <strong>Die wichtigste Lektion:</strong> Auch wenn die Familie Geldprobleme hat – 
+                    <em>Stehlen ist niemals die Lösung!</em> Es gibt immer bessere Wege, Hilfe zu bekommen.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h3>💡 Was können wir alle lernen?</h3>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>🔍 <strong>Genau hinschauen:</strong> Alle kleinen Hinweise sind wichtig!</li>
+                    <li>⏰ <strong>Zeitabläufe prüfen:</strong> Wer war wann wo?</li>
+                    <li>💬 <strong>Aussagen überprüfen:</strong> Stimmt alles, was gesagt wird?</li>
+                    <li>🤝 <strong>Bei Problemen Hilfe suchen:</strong> Nicht zu kriminellen Mitteln greifen!</li>
+                    <li>❤️ <strong>Mitgefühl haben:</strong> Milla handelte aus Verzweiflung – das macht es nicht richtig, 
+                    aber wir verstehen, warum sie es tat</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="restart-btn" onclick="location.reload()">
+                    🔄 Nochmal spielen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let votes = {
+            meier: 0,
+            jannes: 0,
+            alexander: 0,
+            milla: 0,
+            unknown: 0
+        };
+
+        const suspectDetails = {
+            meier: `
+                <div class="evidence-box">
+                    <div class="evidence-title">👩‍💼 Frau Meier - Schulleiterin</div>
+                    <div class="evidence-item">
+                        <strong>Alter:</strong> 48 Jahre
+                        <br><strong>Position:</strong> Schulleiterin seit 10 Jahren
+                        <br><strong>Zugang:</strong> Hat alle Schlüssel, inklusive zum Tresor
+                        <br><strong>Motiv?</strong> Unklar – sie verdient gut und ist sehr respektiert
+                        <br><strong>Verhalten:</strong> Wirkte sehr schockiert über den Diebstahl
+                    </div>
+                </div>
+            `,
+            jannes: `
+                <div class="evidence-box">
+                    <div class="evidence-title">👨‍🏫 Herr Jannes - Lehrer</div>
+                    <div class="evidence-item">
+                        <strong>Alter:</strong> 35 Jahre
+                        <br><strong>Position:</strong> Klassenlehrer der 5. Klasse
+                        <br><strong>Zugang:</strong> Kennt die Schule gut, war an diesem Tag länger da
+                        <br><strong>Motiv?</strong> Plant eine teure Hochzeit nächsten Monat
+                        <br><strong>Verdächtig:</strong> Er hat gelogen über die Zeit, die er in der Schule war!
+                    </div>
+                </div>
+            `,
+            alexander: `
+                <div class="evidence-box">
+                    <div class="evidence-title">👦 Alexander - Schüler</div>
+                    <div class="evidence-item">
+                        <strong>Alter:</strong> 11 Jahre, Klasse 5
+                        <br><strong>Zugang:</strong> Kennt die Schule gut
+                        <br><strong>Motiv?</strong> Hatte sein Geld für die Klassenfahrt "vergessen"
+                        <br><strong>Alibi:</strong> War nachweislich um 15:40 Uhr zuhause (Nachricht + Mutter)
+                        <br><strong>Auf Kamera:</strong> Verließ die Schule um 15:35 Uhr
+                    </div>
+                </div>
+            `,
+            milla: `
+                <div class="evidence-box">
+                    <div class="evidence-title">👧 Milla - Neue Schülerin</div>
+                    <div class="evidence-item">
+                        <strong>Alter:</strong> 9 Jahre, Klasse 3
+                        <br><strong>Besonderheit:</strong> Erst seit 2 Wochen an der Schule
+                        <br><strong>Familie:</strong> Hat finanzielle Probleme, älterer Bruder arbeitslos
+                        <br><strong>Verdächtig:</strong> Kam mit sehr großem Rucksack zurück zur Schule
+                        <br><strong>Sehr verdächtig:</strong> Die "Mutter"-Nachricht war NICHT von ihrer echten Mutter!
+                    </div>
+                </div>
+            `,
+            unknown: `
+                <div class="evidence-box">
+                    <div class="evidence-title">❓ Unbekannte Person</div>
+                    <div class="evidence-item">
+                        <strong>Theorie:</strong> Vielleicht war es jemand von außen?
+                        <br><strong>Hinweis:</strong> Eine Person mit Kapuze kam um 15:48 Uhr ins Gebäude
+                        <br><strong>Problem:</strong> Wie kam diese Person hinein? Die Tür war verschlossen!
+                        <br><strong>Verdächtig:</strong> Der Lieferwagen am Hintereingang um 15:58 Uhr
+                        <br><strong>Frage:</strong> Arbeitet diese Person mit jemandem aus der Schule zusammen?
+                    </div>
+                </div>
+            `
+        };
+
+        function goToScene(num) {
+            document.querySelectorAll('.scene').forEach(scene => scene.classList.remove('active'));
+            document.getElementById('scene' + num).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showSuspectInfo(suspect) {
+            document.getElementById('suspect-details').innerHTML = suspectDetails[suspect];
+            document.getElementById('suspect-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function vote(suspect) {
+            votes[suspect]++;
+            document.getElementById('vote-' + suspect).textContent = 'Stimmen: ' + votes[suspect];
+            
+            event.currentTarget.classList.add('selected');
+            setTimeout(() => event.currentTarget.classList.remove('selected'), 500);
+        }
+
+        function showReveal() {
+            goToScene(7);
+        }
+    </script>
+</body>
+</html>
