@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einstein-Mord: Das Rätsel von 1955</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #d4af37;
+        }
+
+        h1 {
+            color: #d4af37;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #c0c0c0;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+
+        .intro-screen, .game-screen, .solution-screen {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+
+        .intro-text {
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .suspect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .suspect-card {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .suspect-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(212,175,55,0.3);
+        }
+
+        .suspect-card.selected {
+            border-color: #4CAF50;
+            background: rgba(76,175,80,0.1);
+        }
+
+        .suspect-card.eliminated {
+            opacity: 0.5;
+            border-color: #f44336;
+        }
+
+        .suspect-name {
+            font-size: 1.4em;
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .suspect-info {
+            color: #c0c0c0;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid #555;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            color: #e0e0e0;
+        }
+
+        .tab:hover {
+            border-color: #d4af37;
+            background: rgba(212,175,55,0.2);
+        }
+
+        .tab.active {
+            background: #d4af37;
+            color: #1a1a2e;
+            border-color: #d4af37;
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(0,0,0,0.3);
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .clue-item, .statement-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #d4af37;
+            border-radius: 5px;
+        }
+
+        .clue-title {
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: #d4af37;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            background: #f0c040;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212,175,55,0.4);
+        }
+
+        .btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .evidence-board {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid #d4af37;
+            border-radius: 5px;
+        }
+
+        .timeline-time {
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .note-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid #555;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin: 15px 0;
+            resize: vertical;
+        }
+
+        .accusation-form {
+            background: rgba(139,0,0,0.2);
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #8B0000;
+            margin: 20px 0;
+        }
+
+        .accusation-warning {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid #555;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1em;
+            margin: 10px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .failure {
+            color: #f44336;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .cipher-box {
+            background: rgba(0,0,0,0.6);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            text-align: center;
+            margin: 15px 0;
+            border: 2px dashed #d4af37;
+        }
+
+        .interrogation-panel {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .question-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: #e0e0e0;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s;
+        }
+
+        .question-btn:hover {
+            background: rgba(212,175,55,0.2);
+            border-color: #d4af37;
+        }
+
+        .answer {
+            background: rgba(212,175,55,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #d4af37;
+        }
+
+        .progress-bar {
+            background: rgba(0,0,0,0.5);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #d4af37, #f0c040);
+            height: 100%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚗️ Einstein-Mord: Das Rätsel von 1955 🔍</h1>
+            <div class="subtitle">Ein wissenschaftliches Mystery-Spiel</div>
+        </div>
+
+        <div id="introScreen" class="intro-screen">
+            <div class="intro-text">
+                <h2 style="color: #d4af37; margin-bottom: 20px;">Princeton, New Jersey – 18. April 1955</h2>
+                <p style="margin-bottom: 15px;">
+                    Die Welt trauert um Albert Einstein, das wissenschaftliche Genie, das am frühen Morgen verstorben ist. 
+                    Offiziell wird von einem Aortenaneurysma gesprochen – doch Sie, Detective, wurden diskret hinzugezogen.
+                </p>
+                <p style="margin-bottom: 15px;">
+                    Ihre Aufgabe: Untersuchen Sie die letzten Stunden vor Einsteins Tod. Sechs Personen aus seinem engsten 
+                    Umkreis hatten Zugang zu seinem Büro in der Nacht vor seinem Tod. Jeder hatte ein Motiv. Jeder hat 
+                    etwas zu verbergen.
+                </p>
+                <p style="margin-bottom: 15px; font-weight: bold; color: #ff6b6b;">
+                    ⚠️ Achtung: Dies ist kein einfaches Rätsel. Sie müssen Hinweise kombinieren, Widersprüche aufdecken, 
+                    verschlüsselte Nachrichten entschlüsseln und logisch deduzieren. Vorschnelle Anklagen führen zum Scheitern.
+                </p>
+                <p style="font-style: italic; color: #c0c0c0;">
+                    "Die wichtigsten Werkzeuge des Wissenschaftlers: Mathematik, Skepsis und Kaffee." – Notiz in Einsteins Labor
+                </p>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" onclick="startGame()">🔍 Ermittlung beginnen</button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%;">Ermittlungsfortschritt: 0%</div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('overview')">📋 Übersicht</button>
+                <button class="tab" onclick="showTab('suspects')">👥 Verdächtige</button>
+                <button class="tab" onclick="showTab('evidence')">🔬 Beweise</button>
+                <button class="tab" onclick="showTab('timeline')">⏰ Zeitlinie</button>
+                <button class="tab" onclick="showTab('interrogation')">💬 Verhöre</button>
+                <button class="tab" onclick="showTab('notes')">📝 Notizen</button>
+                <button class="tab" onclick="showTab('accusation')">⚖️ Anklage</button>
+            </div>
+
+            <div id="overviewContent" class="content-section active">
+                <h2 style="color: #d4af37; margin-bottom: 20px;">Der Fall: Einstein-Mord</h2>
+                <div class="evidence-board">
+                    <h3 style="color: #d4af37; margin-bottom: 15px;">📍 Tatort: Einsteins Privatbüro, Mercer Street 112</h3>
+                    <p style="margin-bottom: 15px;">
+                        <strong>Todeszeitpunkt:</strong> Zwischen 01:15 und 01:45 Uhr, 18. April 1955<br>
+                        <strong>Todesursache (offiziell):</strong> Geplatztes Aortenaneurysma<br>
+                        <strong>Todesursache (Ihre Theorie):</strong> Zu ermitteln
+                    </p>
+                    <div class="clue-item">
+                        <div class="clue-title">🔍 Erste Beobachtungen</div>
+                        <p>• Einstein wurde in seinem Büro gefunden, an seinem Schreibtisch sitzend</p>
+                        <p>• Eine umgeworfene Kaffeetasse neben ihm (Inhalt: kalter Kaffee)</p>
+                        <p>• Sein letztes Manuskript lag aufgeschlagen vor ihm – Seite 17</p>
+                        <p>• Das Fenster war einen Spaltbreit geöffnet (ungewöhnlich für April)</p>
+                        <p>• Sein Füller lag auf dem Boden, nicht auf dem Schreibtisch</p>
+                    </div>
+                    <div class="clue-item">
+                        <div class="clue-title">📄 Gefundene Gegenstände</div>
+                        <p>• Ein zerrissener Brief im Papierkorb (teilweise rekonstruierbar)</p>
+                        <p>• Drei verschiedene Zigarettenstummel im Aschenbecher (Einstein rauchte Pfeife)</p>
+                        <p>• Eine Stoppuhr, angehalten bei 01:23:17</p>
+                        <p>• Einsteins Notizblock mit kryptischen Zahlenreihen</p>
+                        <p>• Ein leeres Medikamentenfläschchen ohne Etikett</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="suspectsContent" class="content-section">
+                <h2 style="color: #d4af37; margin-bottom: 20px;">Die sechs Verdächtigen</h2>
+                <div class="suspect-grid">
+                    <div class="suspect-card" onclick="selectSuspect('tinus')">
+                        <div class="suspect-name">🧪 Tinus Vermeer</div>
+                        <div class="suspect-info">
+                            <strong>Rolle:</strong> Laborassistent<br>
+                            <strong>Alter:</strong> 28 Jahre<br>
+                            <strong>Alibi:</strong> Behauptet, um 23:30 Uhr nach Hause gegangen zu sein<br>
+                            <strong>Motiv:</strong> Einstein lehnte seine Doktorarbeit zweimal ab
+                        </div>
+                    </div>
+                    <div class="suspect-card" onclick="selectSuspect('malte')">
+                        <div class="suspect-name">📚 Malte Schneider</div>
+                        <div class="suspect-info">
+                            <strong>Rolle:</strong> Bibliothekar und Archivar<br>
+                            <strong>Alter:</strong> 45 Jahre<br>
+                            <strong>Alibi:</strong> War angeblich die ganze Nacht im Archiv<br>
+                            <strong>Motiv:</strong> Einstein wollte sensible Dokumente veröffentlichen
+                        </div>
+                    </div>
+                    <div class="suspect-card" onclick="selectSuspect('marie')">
+                        <div class="suspect-name">⚕️ Marie Dubois</div>
+                        <div class="suspect-info">
+                            <strong>Rolle:</strong> Einsteins Privatkrankenschwester<br>
+                            <strong>Alter:</strong> 34 Jahre<br>
+                            <strong>Alibi:</strong> Kam um 00:45 Uhr zur Routinekontrolle<br>
+                            <strong>Motiv:</strong> Erbstreites mit Einsteins Familie
+                        </div>
+                    </div>
+                    <div class="suspect-card" onclick="selectSuspect('simon')">
+                        <div class="suspect-name">🔭 Simon Hartmann</div>
+                        <div class="suspect-info">
+                            <strong>Rolle:</strong> Rivalisierender Physiker<br>
+                            <strong>Alter:</strong> 52 Jahre<br>
+                            <strong>Alibi:</strong> Behauptet, in seinem Hotel gewesen zu sein<br>
+                            <strong>Motiv:</strong> Einstein hatte seine Unified-Field-Theorie gestohlen?
+                        </div>
+                    </div>
+                    <div class="suspect-card" onclick="selectSuspect('nicolas')">
+                        <div class="suspect-name">💼 Nicolas Westbrook</div>
+                        <div class="suspect-info">
+                            <strong>Rolle:</strong> Einsteins Anwalt<br>
+                            <strong>Alter:</strong> 61 Jahre<br>
+                            <strong>Alibi:</strong> Arbeitete bis 02:00 Uhr in seiner Kanzlei<br>
+                            <strong>Motiv:</strong> Einstein wollte sein Testament ändern
+                        </div>
+                    </div>
+                    <div class="suspect-card" onclick="selectSuspect('luis')">
+                        <div class="suspect-name">🎨 Luis Fernández</div>
+                        <div class="suspect-info">
+                            <strong>Rolle:</strong> Hausmeister und Gärtner<br>
+                            <strong>Alter:</strong> 38 Jahre<br>
+                            <strong>Alibi:</strong> Machte Nachtschicht, prüfte alle Räume<br>
+                            <strong>Motiv:</strong> Einstein entdeckte, dass er Geld unterschlagen hatte
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="evidenceContent" class="content-section">
+                <h2 style="color: #d4af37; margin-bottom: 20px;">🔬 Beweismittelanalyse</h2>
+                
+                <div class="clue-item">
+                    <div class="clue-title">🧪 Forensische Analyse: Kaffeetasse</div>
+                    <p><strong>Substanzanalyse:</strong> Spuren von Digitalis (Fingerhut-Giftstoff) nachgewiesen – eine tödliche Dosis bei Herzkranken</p>
+                    <p><strong>Fingerabdrücke:</strong> Drei verschiedene Abdrucksätze gefunden</p>
+                    <p><strong>Wichtig:</strong> Digitalis verursacht Symptome, die einem Herzversagen ähneln</p>
+                </div>
+
+                <div class="clue-item">
+                    <div class="clue-title">🚬 Die drei Zigarettenstummel</div>
+                    <p><strong>Zigarette A:</strong> Marke "Lucky Strike" – amerikanische Zigarette, DNA-Spuren männlich</p>
+                    <p><strong>Zigarette B:</strong> Marke "Gauloises" – französische Zigarette, DNA-Spuren weiblich</p>
+                    <p><strong>Zigarette C:</strong> Marke "Roth-Händle" – deutsche Zigarette, DNA-Spuren männlich</p>
+                    <p><strong>Zeitschätzung:</strong> Alle innerhalb der letzten 3 Stunden vor dem Tod geraucht</p>
+                </div>
+
+                <div class="clue-item">
+                    <div class="clue-title">📝 Der zerrissene Brief (rekonstruiert)</div>
+                    <p style="font-style: italic; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px;">
+                        "...kann nicht länger schweigen. Die Wahrheit über '42 muss... 
+                        ...Dokumente im Archiv beweisen... 
+                        ...wenn du es veröffentlichst, werden Köpfe rollen... 
+                        ...treffen uns Mitternacht, du weißt wo... 
+                        ...letzte Warnung..."
+                    </p>
+                    <p><strong>Handschrift:</strong> Wurde als Malte Schneiders Schrift identifiziert</p>
+                </div>
+
+                <div class="clue-item">
+                    <div class="clue-title">⏱️ Die Stoppuhr – 01:23:17</div>
+                    <p>Diese Präzisionsstoppuhr gehörte Einstein. Warum wurde sie genau zu diesem Zeitpunkt angehalten?</p>
+                    <p><strong>Theorie 1:</strong> Einstein stoppte sie selbst in seinen letzten Momenten</p>
+                    <p><strong>Theorie 2:</strong> Der Täter stoppte sie, um die genaue Tatzeit zu verschleiern</p>
+                    <p><strong>Theorie 3:</strong> Es war Teil eines Experiments</p>
+                </div>
+
+                <div class="clue-item">
+                    <div class="clue-title">🔢 Einsteins letzter Notizbucheintrag</div>
+                    <div class="cipher-box">
+                        20-9-14-21-19<br>
+                        13-1-18-9-5<br>
+                        12-21-9-19<br>
+                        23-5-9-19-19
+                    </div>
+                    <p><strong>Hinweis:</strong> Einstein liebte einfache Substitutionschiffren. A=1, B=2, C=3...</p>
+                    <button class="btn" onclick="decipherCode()">🔓 Entschlüsseln</button>
+                    <div id="cipherResult" style="margin-top: 15px;"></div>
+                </div>
+
+                <div class="clue-item">
+                    <div class="clue-title">💊 Das mysteriöse Medikamentenfläschchen</div>
+                    <p><strong>Inhalt (Rückstände):</strong> Digitalis-Präparat</p>
+                    <p><strong>Ursprung:</strong> Aus der Apotheke von Dr. Hartmann</p>
+                    <p><strong>Problem:</strong> Das Fläschchen war ursprünglich für Herzpatienten bestimmt, aber Einstein nahm keine solchen Medikamente</p>
+                    <p><strong>Fingerabdrücke:</strong> Wurden abgewischt – professionelle Arbeit</p>
+                </div>
+
+                <div class="clue-item">
+                    <div class="clue-title">🚪 Sicherheitsprotokolle – Wer war wann im Gebäude?</div>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-time">23:15 Uhr</div>
+                            Tinus Vermeer verlässt das Labor (Aussage: ging nach Hause)
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">23:45 Uhr</div>
+                            Luis Fernández beginnt Nachtschicht, gesehen im Ostflügel
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">00:30 Uhr</div>
+                            Unbekannte Person betritt durch Seiteneingang (Schlüssel benutzt)
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">00:45 Uhr</div>
+                            Marie Dubois kommt zur Routinekontrolle (dokumentiert)
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">01:10 Uhr</div>
+                            Luis sieht Licht in Einsteins Büro, hört Stimmen (mindestens zwei Personen)
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">01:23 Uhr</div>
+                            Stoppuhr wird angehalten (Bedeutung unklar)
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">01:50 Uhr</div>
+                            Marie findet Einstein – ruft sofort Hilfe
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="timelineContent" class="content-section">
+                <h2 style="color: #d4af37; margin-bottom: 20px;">⏰ Detaillierte Zeitlinie des 17./18. April</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">17:30 Uhr (17. April)</div>
+                        <strong>Einstein</strong> empfängt Simon Hartmann zu hitziger Diskussion über Feldtheorie. Kollegen hören laute Stimmen. Hartmann verlässt wütend das Büro um 18:15.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">19:00 Uhr</div>
+                        <strong>Malte Schneider</strong> bringt Einstein angeforderte Archivdokumente aus 1942. Gespräch dauert 45 Minuten. Malte wirkt nervös.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">20:30 Uhr</div>
+                        <strong>Nicolas Westbrook</strong> (Anwalt) kommt zu Routinebesuch. Besprechung des Testaments. Verlässt Büro um 21:00.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">21:30 Uhr</div>
+                        <strong>Marie Dubois</strong> gibt Einstein abendliche Medikamente (reguläre Behandlung). Einstein wirkt "zerstreut aber freundlich".
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">22:00 Uhr</div>
+                        <strong>Tinus Vermeer</strong> hilft Einstein bei Laboraufräumarbeiten. Einstein kritisiert erneut Tinus' Forschungsarbeit. Tinus verlässt verstört das Labor.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">23:15 Uhr</div>
+                        Tinus wird am Hauptausgang gesehen (Sicherheitskamera). Behauptet, nach Hause gegangen zu sein.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">23:45 Uhr</div>
+                        <strong>Luis Fernández</strong> beginnt Nachtschicht. Kontrolliert systematisch alle Gebäudeteile.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:00 Uhr (18. April)</div>
+                        Luis hört jemanden im Archivbereich. Geht nachsehen, findet niemanden, aber eine offene Schublade.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:30 Uhr</div>
+                        <strong>Seiteneingang-Alarm:</strong> Jemand mit Schlüssel betritt Gebäude (nicht identifiziert). Luis ist zu dem Zeitpunkt im Keller.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:45 Uhr</div>
+                        <strong>Marie Dubois</strong> kommt zu außerplanmäßiger Kontrolle (Einstein hatte angerufen, klagte über Unwohlsein). Findet Einstein "angespannt aber bei Bewusstsein".
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">01:00 Uhr</div>
+                        Marie bereitet Einstein Kaffee zu (auf sein Verlangen). Verlässt das Büro um 01:05, geht in den Pausenraum.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">01:10 Uhr</div>
+                        Luis hört zwei Stimmen aus Einsteins Büro – eine männlich, eine weiblich. Beide sprechen Deutsch. Klopft nicht an (Respekt vor Privatsphäre).
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">01:23:17 Uhr</div>
+                        <strong>Die Stoppuhr wird angehalten.</strong> Bedeutung unbekannt.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">01:35 Uhr</div>
+                        Luis geht zurück zu Einsteins Büro – Licht brennt noch, aber absolute Stille.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">01:50 Uhr</div>
+                        <strong>Marie kehrt zurück</strong> für Nachkontrolle. Findet Einstein leblos am Schreibtisch. Ruft sofort Notarzt.
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">02:05 Uhr</div>
+                        Notarzt erklärt Einstein für tot. Offizielle Todesursache: Herzversagen durch Aortenaneurysma.
+                    </div>
+                </div>
+
+                <div class="clue-item" style="margin-top: 30px;">
+                    <div class="clue-title">🤔 Zeitliche Widersprüche</div>
+                    <p>• Tinus behauptet, um 23:15 nach Hause gegangen zu sein – aber sein Auto wurde erst um 02:30 vom Parkplatz gesehen fahrend</p>
+                    <p>• Marie sagt, sie habe Einstein um 01:05 verlassen – aber warum kam sie genau 45 Minuten später zurück?</p>
+                    <p>• Die unbekannte Person um 00:30 hatte einen Schlüssel – wer außer den sechs Verdächtigen hatte Zugang?</p>
+                    <p>• Simon Hartmann behauptet, in seinem Hotel gewesen zu sein – aber das Hotel liegt nur 5 Gehminuten entfernt</p>
+                </div>
+            </div>
+
+            <div id="interrogationContent" class="content-section">
+                <h2 style="color: #d4af37; margin-bottom: 20px;">💬 Verhörprotokolle</h2>
+                <p style="margin-bottom: 20px; color: #c0c0c0;">Klicken Sie auf die Fragen, um die Antworten der Verdächtigen zu hören.</p>
+
+                <div class="interrogation-panel">
+                    <h3 style="color: #d4af37; margin-bottom: 15px;">🧪 Tinus Vermeer</h3>
+                    <button class="question-btn" onclick="showAnswer('tinus1')">Wo waren Sie zwischen 23:30 und 02:00 Uhr?</button>
+                    <div id="tinus1" class="answer hidden">
+                        "Ich bin nach Hause gefahren, direkt nach meiner Schicht um 23:15. Ich war frustriert wegen Einsteins Kritik und wollte nur noch nach Hause. Mein Auto? Oh... ich hatte vergessen, dass ich zu Fuß gekommen war. Bin dann mit dem Bus zurück, um es zu holen. Sehr spät nachts."
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('tinus2')">Einstein hat Ihre Doktorarbeit abgelehnt. Wie haben Sie sich gefühlt?</button>
+                    <div id="tinus2" class="answer hidden">
+                        "Natürlich war ich wütend! Zwei Jahre Arbeit... zweimal abgelehnt. Aber ich würde ihm niemals etwas antun! Er war trotz allem mein Mentor. Seine Kritik war hart, aber... vielleicht berechtigt. Ich bin kein Mörder, Detective."
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('tinus3')">Wir fanden Ihre Fingerabdrücke auf der Kaffeetasse. Erklären Sie das.</button>
+                    <div id="tinus3" class="answer hidden">
+                        "Ich... das ergibt keinen Sinn. Ich habe Einstein an dem Abend keinen Kaffee gemacht. Warten Sie – ich habe die Tasse am Nachmittag gespült! Einstein ließ oft Tassen herumstehen. Das müssen alte Abdrücke sein!"
+                    </div>
+                </div>
+
+                <div class="interrogation-panel">
+                    <h3 style="color: #d4af37; margin-bottom: 15px;">📚 Malte Schneider</h3>
+                    <button class="question-btn" onclick="showAnswer('malte1')">Der zerrissene Brief stammt von Ihnen. Was wollten Sie verheimlichen?</button>
+                    <div id="malte1" class="answer hidden">
+                        "Ja, ich habe den Brief geschrieben. Einstein wollte alte Kriegsdokumente aus dem Archiv veröffentlichen – Dokumente über das Manhattan-Projekt. Das hätte viele wichtige Personen in Verlegenheit gebracht. Ich warnte ihn, aber er hörte nicht zu. Ich wollte die Geschichte schützen, nicht ihn töten!"
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('malte2')">Sie rauchen Roth-Händle. Eine deutsche Zigarette wurde am Tatort gefunden.</button>
+                    <div id="malte2" class="answer hidden">
+                        "Ich war tatsächlich in seinem Büro, Detective. Um Mitternacht, wie im Brief erwähnt. Wir trafen uns heimlich, um über die Dokumente zu sprechen. Ich bat ihn inständig, die Veröffentlichung zu stoppen. Wir rauchten zusammen – er erlaubte es ausnahmsweise. Dann ging ich. Er lebte noch!"
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('malte3')">Warum sollten wir Ihnen glauben? Sie hatten das stärkste Motiv.</button>
+                    <div id="malte3" class="answer hidden">
+                        "Weil ich ein Historiker bin! Ich bewahre die Vergangenheit, ich zerstöre sie nicht. Einstein und ich hatten eine Meinungsverschiedenheit, aber er respektierte meine Position. Als ich ging, um 00:25 Uhr, war er am Leben und arbeitete an seinem Manuskript."
+                    </div>
+                </div>
+
+                <div class="interrogation-panel">
+                    <h3 style="color: #d4af37; margin-bottom: 15px;">⚕️ Marie Dubois</h3>
+                    <button class="question-btn" onclick="showAnswer('marie1')">Sie haben Einstein den Kaffee gemacht. War Gift darin?</button>
+                    <div id="marie1" class="answer hidden">
+                        "Nein! Absolut nicht! Ich bin Krankenschwester – ich helfe Menschen, ich töte sie nicht. Der Kaffee war sauber. Einstein bat mich, ihn zu machen, weil er sich schwach fühlte. Ich gab ihm den Kaffee um 01:00 Uhr und ging dann."
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('marie2')">Sie rauchen Gauloises. Französische Zigaretten wurden am Tatort gefunden.</button>
+                    <div id="marie2" class="answer hidden">
+                        "Ja, ich rauche. Einstein erlaubte mir, in seinem Büro zu rauchen, wenn wir allein waren. An dem Abend war ich nervös wegen... persönlicher Dinge. Ich rauchte eine Zigarette, während ich auf den Kaffee wartete. Das beweist nichts."
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('marie3')">Warum kamen Sie um 01:50 zurück? Das war nicht Teil Ihres Routineplans.</button>
+                    <div id="marie3" class="answer hidden">
+                        "Einstein hatte mich gebeten, nach 45 Minuten zurückzukommen, um seine Medikation zu überprüfen. Er fühlte sich nicht gut. Als ich zurückkam... fand ich ihn tot. Ich schwöre, ich hatte nichts damit zu tun!"
+                    </div>
+                </div>
+
+                <div class="interrogation-panel">
+                    <h3 style="color: #d4af37; margin-bottom: 15px;">🔭 Simon Hartmann</h3>
+                    <button class="question-btn" onclick="showAnswer('simon1')">Sie hatten einen heftigen Streit mit Einstein am Abend. Worum ging es?</button>
+                    <div id="simon1" class="answer hidden">
+                        "Einstein behauptete, meine Unified-Field-Gleichungen seien fehlerhaft. Fehlerhaft! Jahre meiner Arbeit. Wir stritten... ich gebe zu, ich war außer mir. Aber ich ging um 18:15 Uhr. Ich war die ganze Nacht im Hotel, allein in meinem Zimmer."
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('simon2')">Das Digitalis-Fläschchen kam aus Ihrer Apotheke. Erklären Sie das.</button>
+                    <div id="simon2" class="answer hidden">
+                        "Was?! Unmöglich! Ich... warten Sie. Vor zwei Wochen wurde in meine Praxis eingebrochen. Medikamente wurden gestohlen, aber es schien nichts Bedeutendes zu fehlen. Jetzt ergibt das einen Sinn – jemand wollte mir die Schuld geben!"
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('simon3')">Ihr Hotel ist 5 Minuten zu Fuß entfernt. Sie hätten zurückkommen können.</button>
+                    <div id="simon3" class="answer hidden">
+                        "Theoretisch ja. Aber warum sollte ich? Ich war wütend, nicht wahnsinnig. Einstein und ich waren Rivalen, aber wir respektierten einander. Sein Tod nutzt mir nichts – im Gegenteil, jetzt kann ich nie beweisen, dass meine Theorie besser war!"
+                    </div>
+                </div>
+
+                <div class="interrogation-panel">
+                    <h3 style="color: #d4af37; margin-bottom: 15px;">💼 Nicolas Westbrook</h3>
+                    <button class="question-btn" onclick="showAnswer('nicolas1')">Einstein wollte sein Testament ändern. Was wäre die Änderung gewesen?</button>
+                    <div id="nicolas1" class="answer hidden">
+                        "Das ist vertraulich zwischen Anwalt und Mandant, aber unter diesen Umständen... Er wollte einen großen Teil seines Vermögens der Friedensforschung vermachen, weg von seiner Familie. Einige Erben wären sehr unglücklich gewesen. Aber ich war dagegen! Ich riet ihm, zu warten."
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('nicolas2')">Wo waren Sie zwischen 01:00 und 02:00 Uhr?</button>
+                    <div id="nicolas2" class="answer hidden">
+                        "In meiner Kanzlei, wie ich sagte. Ich arbeitete an einem anderen Fall – einem Immobilienvertrag. Meine Sekretärin kann... oh, sie war nicht da. Es war nachts. Aber ich habe Dokumente mit Zeitstempel! Ich kann es beweisen!"
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('nicolas3')">Sie hatten einen Schlüssel zu Einsteins Büro. Haben Sie ihn um 00:30 benutzt?</button>
+                    <div id="nicolas3" class="answer hidden">
+                        "Ich habe einen Schlüssel, ja, für Notfälle. Aber ich habe ihn in dieser Nacht nicht benutzt! Warum sollte ich? Ich hatte tagsüber mit Einstein gesprochen. Es gab keinen Grund zurückzukommen."
+                    </div>
+                </div>
+
+                <div class="interrogation-panel">
+                    <h3 style="color: #d4af37; margin-bottom: 15px;">🎨 Luis Fernández</h3>
+                    <button class="question-btn" onclick="showAnswer('luis1')">Sie wurden beschuldigt, Geld unterschlagen zu haben. Stimmt das?</button>
+                    <div id="luis1" class="answer hidden">
+                        "Einstein... er hatte Recht. Ich hatte Rechnungen gefälscht, kleine Beträge über Monate. Meine Tochter braucht eine Operation, wir hatten kein Geld. Ich wollte es zurückzahlen! Einstein entdeckte es vor drei Tagen. Er sagte, er würde darüber nachdenken, ob er mich anzeigt."
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('luis2')">Sie hörten Stimmen um 01:10. Beschreiben Sie, was Sie hörten.</button>
+                    <div id="luis2" class="answer hidden">
+                        "Eine männliche und eine weibliche Stimme, beide auf Deutsch. Ich spreche kein Deutsch gut, aber sie klangen... ernst? Nicht streitend, aber intensiv. Die männliche Stimme war definitiv Einstein. Die weibliche... höher, jünger vielleicht? Ich klopfte nicht an. Das war Privatsache."
+                    </div>
+                    <button class="question-btn" onclick="showAnswer('luis3')">Sie hatten Zugang zu allen Räumen. Auch zum Archiv, wo die Dokumente waren.</button>
+                    <div id="luis3" class="answer hidden">
+                        "Ja, aber ich interessiere mich nicht für alte Papiere! Ich bin ein einfacher Mann. Alles, was ich wollte, war meinen Job behalten und meine Familie ernähren. Einstein tot zu sehen... das hat mir das Herz gebrochen. Er war streng, aber fair. Ich habe ihn nicht getötet!"
+                    </div>
+                </div>
+            </div>
+
+            <div id="notesContent" class="content-section">
+                <h2 style="color: #d4af37; margin-bottom: 20px;">📝 Ihre Ermittlungsnotizen</h2>
+                <p style="margin-bottom: 15px; color: #c0c0c0;">
+                    Nutzen Sie diesen Bereich, um Ihre Gedanken zu organisieren, Widersprüche festzuhalten 
+                    und Ihre Theorie zu entwickeln. Gute Detektivarbeit erfordert sorgfältige Dokumentation!
+                </p>
+                <textarea id="notesArea" class="note-input" placeholder="Ihre Notizen hier...
+
+Vorschläge:
+• Welche Alibis sind fragwürdig?
+• Wer hatte Zugang zu Digitalis?
+• Wer konnte die verschlüsselte Nachricht verstehen?
+• Zeitliche Widersprüche?
+• Wer profitiert vom Tod?
+• Beziehungen zwischen den Verdächtigen?"></textarea>
+                <button class="btn" onclick="saveNotes()">💾 Notizen speichern</button>
+            </div>
+
+            <div id="accusationContent" class="content-section">
+                <h2 style="color: #d4af37; margin-bottom: 20px;">⚖️ Ihre Anklage</h2>
+                <div class="accusation-warning">
+                    ⚠️ WARNUNG: Sie haben nur EINEN Versuch! Eine falsche Anklage bedeutet, dass der wahre Mörder 
+                    frei bleibt und der Fall ungelöst wird. Stellen Sie sicher, dass Sie alle Beweise geprüft, 
+                    alle Verhöre analysiert und alle logischen Schlüsse gezogen haben.
+                </div>
+                
+                <div class="accusation-form">
+                    <h3 style="color: #d4af37; margin-bottom: 20px;">Wer ist der Mörder von Albert Einstein?</h3>
+                    
+                    <label style="display: block; margin: 20px 0 10px 0; color: #e0e0e0;">
+                        <strong>Verdächtige Person:</strong>
+                    </label>
+                    <select id="suspectChoice">
+                        <option value="">-- Wählen Sie den Täter --</option>
+                        <option value="tinus">Tinus Vermeer (Laborassistent)</option>
+                        <option value="malte">Malte Schneider (Bibliothekar)</option>
+                        <option value="marie">Marie Dubois (Krankenschwester)</option>
+                        <option value="simon">Simon Hartmann (Physiker)</option>
+                        <option value="nicolas">Nicolas Westbrook (Anwalt)</option>
+                        <option value="luis">Luis Fernández (Hausmeister)</option>
+                    </select>
+
+                    <label style="display: block; margin: 20px 0 10px 0; color: #e0e0e0;">
+                        <strong>Begründung Ihrer Anklage (kurz zusammenfassen):</strong>
+                    </label>
+                    <textarea id="accusationReason" class="note-input" style="min-height: 150px;" 
+                              placeholder="Erklären Sie hier Ihre Beweiskette:
+• Motiv
+• Gelegenheit
+• Beweis für Schuld
+• Wie passt alles zusammen?"></textarea>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn" onclick="makeAccusation()" style="background: #8B0000; font-size: 1.2em; padding: 20px 40px;">
+                            ⚖️ ANKLAGE ERHEBEN
+                        </button>
+                    </div>
+                </div>
+
+                <div class="clue-item" style="margin-top: 30px;">
+                    <div class="clue-title">💡 Prüfliste vor der Anklage</div>
+                    <p>✓ Haben Sie die verschlüsselte Nachricht entschlüsselt?</p>
+                    <p>✓ Können Sie alle zeitlichen Widersprüche erklären?</p>
+                    <p>✓ Wissen Sie, wer die drei verschiedenen Zigaretten geraucht hat?</p>
+                    <p>✓ Haben Sie eine Theorie zur Stoppuhr bei 01:23:17?</p>
+                    <p>✓ Können Sie erklären, wie das Gift verabreicht wurde?</p>
+                    <p>✓ Wer war die Person um 00:30 beim Seiteneingang?</p>
+                    <p>✓ Haben Sie alle Verhöre aufmerksam gelesen?</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="solutionScreen" class="solution-screen hidden">
+            <!-- Solution will be shown here -->
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            selectedSuspect: null,
+            progress: 0,
+            cipherDecoded: false,
+            notesContent: '',
+            answersRevealed: []
+        };
+
+        function startGame() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            updateProgress(10);
+        }
+
+        function showTab(tabName) {
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected content
+            document.getElementById(tabName + 'Content').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Update progress
+            if (gameState.progress < 30) {
+                updateProgress(Math.min(30, gameState.progress + 5));
+            }
+        }
+
+        function selectSuspect(suspectName) {
+            gameState.selectedSuspect = suspectName;
+            updateProgress(Math.min(100, gameState.progress + 5));
+        }
+
+        function decipherCode() {
+            const cipher = [
+                [20,9,14,21,19],
+                [13,1,18,9,5],
+                [12,21,9,19],
+                [23,5,9,19,19]
+            ];
+            
+            let decoded = cipher.map(row => {
+                return row.map(num => String.fromCharCode(64 + num)).join('');
+            }).join(' ');
+            
+            document.getElementById('cipherResult').innerHTML = `
+                <div style="background: rgba(76,175,80,0.2); padding: 15px; border-radius: 5px; border: 2px solid #4CAF50;">
+                    <strong style="color: #4CAF50;">Entschlüsselt:</strong><br>
+                    <span style="font-size: 1.2em; color: #d4af37;">${decoded}</span>
+                    <p style="margin-top: 10px; color: #c0c0c0; font-size: 0.95em;">
+                        Diese vier Wörter könnten die Namen der vier Personen sein, die in dieser Nacht 
+                        in Einsteins Büro waren. Aber was bedeutet das?
+                    </p>
+                </div>
+            `;
+            
+            gameState.cipherDecoded = true;
+            updateProgress(Math.min(100, gameState.progress + 15));
+        }
+
+        function showAnswer(answerId) {
+            const answerElement = document.getElementById(answerId);
+            answerElement.classList.toggle('hidden');
+            
+            if (!gameState.answersRevealed.includes(answerId)) {
+                gameState.answersRevealed.push(answerId);
+                updateProgress(Math.min(100, gameState.progress + 3));
+            }
+        }
+
+        function saveNotes() {
+            gameState.notesContent = document.getElementById('notesArea').value;
+            alert('✓ Notizen gespeichert!');
+            updateProgress(Math.min(100, gameState.progress + 5));
+        }
+
+        function updateProgress(newProgress) {
+            gameState.progress = newProgress;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = newProgress + '%';
+            progressBar.textContent = `Ermittlungsfortschritt: ${newProgress}%`;
+        }
+
+        function makeAccusation() {
+            const suspect = document.getElementById('suspectChoice').value;
+            const reason = document.getElementById('accusationReason').value;
+            
+            if (!suspect) {
+                alert('⚠️ Bitte wählen Sie einen Verdächtigen aus!');
+                return;
+            }
+            
+            if (reason.length < 50) {
+                alert('⚠️ Bitte geben Sie eine ausführlichere Begründung an (mindestens 50 Zeichen)!');
+                return;
+            }
+            
+            if (!confirm('⚠️ LETZTE WARNUNG: Sie haben nur einen Versuch! Sind Sie absolut sicher?')) {
+                return;
+            }
+            
+            showSolution(suspect, reason);
+        }
+
+        function showSolution(accusedSuspect, playerReason) {
+            const correctSuspect = 'marie';
+            const isCorrect = accusedSuspect === correctSuspect;
+            
+            document.getElementById('gameScreen').classList.add('hidden');
+            
+            const solutionHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: ${isCorrect ? '#4CAF50' : '#f44336'}; font-size: 3em; margin-bottom: 20px;">
+                        ${isCorrect ? '✓ FALL GELÖST!' : '✗ FALL UNGELÖST'}
+                    </h1>
+                    <p class="${isCorrect ? 'success' : 'failure'}" style="font-size: 1.5em;">
+                        ${isCorrect ? 'Ihre brillante Detektivarbeit hat den Täter überführt!' : 'Der Mörder bleibt auf freiem Fuß...'}
+                    </p>
+                </div>
+
+                <div class="clue-item">
+                    <div class="clue-title">Ihre Anklage:</div>
+                    <p><strong>Angeklagte Person:</strong> ${getSuspectName(accusedSuspect)}</p>
+                    <p><strong>Ihre Begründung:</strong></p>
+                    <p style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; margin-top: 10px;">
+                        ${playerReason}
+                    </p>
+                </div>
+
+                <div class="clue-item" style="background: ${isCorrect ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'};">
+                    <div class="clue-title">Die wahre Lösung: Marie Dubois</div>
+                    <p style="margin-bottom: 15px;">
+                        <strong style="color: #d4af37;">Der Täter war tatsächlich Marie Dubois, Einsteins Krankenschwester.</strong>
+                    </p>
+                    
+                    <h4 style="color: #d4af37; margin: 20px 0 10px 0;">Das Motiv:</h4>
+                    <p>
+                        Marie hatte erfahren, dass Einstein sein Testament ändern wollte, um sie als Haupterbin 
+                        einzusetzen (für ihre jahrelange treue Pflege). Aber Nicolas Westbrook hatte ihm davon 
+                        abgeraten. In einem Moment der Verzweiflung – sie hatte hohe Schulden und ein krankes 
+                        Kind – beschloss sie, Einsteins Tod zu beschleunigen, bevor er seine Meinung ändern konnte.
+                    </p>
+
+                    <h4 style="color: #d4af37; margin: 20px 0 10px 0;">Die Beweise:</h4>
+                    <p><strong>1. Zugang zu Gift:</strong> Marie kannte Simon Hartmanns Praxis und hatte Zugang 
+                    zu medizinischen Einrichtungen. Sie stahl das Digitalis zwei Wochen zuvor.</p>
+                    
+                    <p><strong>2. Gelegenheit:</strong> Sie bereitete Einsteins Kaffee um 01:00 Uhr zu und 
+                    mischte das Gift hinein. Die tödliche Dosis wirkte schnell bei Einsteins vorgeschädigtem Herzen.</p>
+                    
+                    <p><strong>3. Die verschlüsselte Nachricht:</strong> "TINUS MARIE LUIS WEISS" – Einstein 
+                    erkannte in seinen letzten Momenten, dass Marie ihn vergiftete. Er versuchte verzweifelt, 
+                    eine Nachricht zu hinterlassen. Die vier Namen waren die Personen, die in dieser Nacht 
+                    Zugang hatten, wobei er Maries Namen als Warnung hervorhob.</p>
+                    
+                    <p><strong>4. Die Stoppuhr (01:23:17):</strong> Einstein stoppte sie mit letzter Kraft, 
+                    um den exakten Zeitpunkt festzuhalten, als er das Gift bemerkte – etwa 23 Minuten nach 
+                    dem Kaffee um 01:00 Uhr.</p>
+                    
+                    <p><strong>5. Das zweimalige Zurückkommen:</strong> Marie kam "zurück", um Einstein tot 
+                    zu finden – aber in Wirklichkeit, um sicherzustellen, dass er gestorben war und um mögliche 
+                    letzte Hinweise zu entfernen.</p>
+
+                    <p><strong>6. Die Gauloises-Zigarette:</strong> Ihre französische Zigarette am Tatort 
+                    platzierte sie dort zur richtigen Zeit.</p>
+
+                    <h4 style="color: #d4af37; margin: 20px 0 10px 0;">Die anderen Verdächtigen:</h4>
+                    <p><strong>Tinus:</strong> War tatsächlich zu Fuß gegangen und kam spät zurück für sein Auto – 
+                    schuldig nur der Lüge, nicht des Mordes.</p>
+                    
+                    <p><strong>Malte:</strong> War um Mitternacht da (zerrissener Brief), rauchte die deutsche 
+                    Zigarette, aber ging vor der Tat. Seine Warnung war echt.</p>
+                    
+                    <p><strong>Simon:</strong> War wütend, aber hatte kein Gift-Zugang. Der Einbruch in 
+                    seine Praxis war Maries Werk, um Verdacht auf ihn zu lenken.</p>
+                    
+                    <p><strong>Nicolas:</strong> Hatte tatsächlich ein Alibi – Zeitstempel-Dokumente beweisen 
+                    seine Anwesenheit in der Kanzlei.</p>
+                    
+                    <p><strong>Luis:</strong> War der Zeuge – er hörte Einstein und Marie um 01:10 Uhr sprechen 
+                    (die zwei Stimmen). Einstein bat Marie verzweifelt aufzuhören, aber es war zu spät.</p>
+
+                    <h4 style="color: #d4af37; margin: 20px 0 10px 0;">Das tragische Ende:</h4>
+                    <p>
+                        Marie Dubois gesteht unter dem erdrückenden Gewicht der Beweise. Sie hatte Einstein 
+                        wirklich geschätzt, aber Verzweiflung und finanzielle Not trieben sie zu dieser 
+                        schrecklichen Tat. Einstein, das größte wissenschaftliche Genie seiner Zeit, wurde 
+                        von jemandem getötet, dem er vertraute – aus einem der ältesten Motive der Welt: Gier.
+                    </p>
+                </div>
+
+                ${isCorrect ? `
+                    <div class="clue-item" style="background: rgba(76,175,80,0.2); border-color: #4CAF50;">
+                        <div class="clue-title" style="color: #4CAF50;">🎉 Herzlichen Glückwunsch!</div>
+                        <p>
+                            Sie haben brillante Detektivarbeit geleistet! Durch sorgfältige Analyse der Beweise, 
+                            logisches Denken und die Entschlüsselung von Einsteins letzter Nachricht haben Sie 
+                            den Fall gelöst. Die Gerechtigkeit hat gesiegt!
+                        </p>
+                    </div>
+                ` : `
+                    <div class="clue-item" style="background: rgba(244,67,54,0.2); border-color: #f44336;">
+                        <div class="clue-title" style="color: #f44336;">Der Fall bleibt ungelöst</div>
+                        <p>
+                            Ihre Anklage war falsch. Marie Dubois bleibt frei und wird nie für ihr Verbrechen 
+                            zur Rechenschaft gezogen. Manchmal entkommt die Gerechtigkeit uns, aber die Wahrheit 
+                            bleibt bestehen. Vielleicht möchten Sie den Fall erneut untersuchen?
+                        </p>
+                    </div>
+                `}
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn" onclick="location.reload()">🔄 Neues Spiel starten</button>
+                </div>
+            `;
+            
+            document.getElementById('solutionScreen').innerHTML = solutionHTML;
+            document.getElementById('solutionScreen').classList.remove('hidden');
+        }
+
+        function getSuspectName(code) {
+            const names = {
+                'tinus': 'Tinus Vermeer (Laborassistent)',
+                'malte': 'Malte Schneider (Bibliothekar)',
+                'marie': 'Marie Dubois (Krankenschwester)',
+                'simon': 'Simon Hartmann (Physiker)',
+                'nicolas': 'Nicolas Westbrook (Anwalt)',
+                'luis': 'Luis Fernández (Hausmeister)'
+            };
+            return names[code] || 'Unbekannt';
+        }
+
+        // Initialize game
+        console.log('Einstein-Mord: Das Rätsel von 1955 - Geladen und bereit!');
+    </script>
+</body>
+</html>
