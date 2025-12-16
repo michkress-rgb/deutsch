@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Island: Historische Edition</title>
+<style>
+
+  body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+
+  #introScreen { position: fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, #ffcccc, #ffe6e6); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; z-index:10; }
+
+  #introScreen h1 { font-size: 36px; margin-bottom: 20px; }
+
+  #introScreen p { font-size: 20px; margin-bottom: 30px; }
+
+  #villaContainer { display:none; padding: 10px; }
+
+  #villa { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+
+  .islander { border: 2px solid #333; padding: 10px; width: 45%; max-width: 150px; text-align: center; background: #fff; border-radius: 8px; }
+
+  .emoji { font-size: 36px; margin-bottom: 5px; }
+
+  .rel-bar { height: 10px; background: pink; margin: 2px 0; border-radius: 5px; }
+
+  button { margin: 10px auto; display: block; padding: 15px 25px; font-size: 18px; cursor: pointer; border-radius: 8px; }
+
+  #storyLog { max-width: 90%; margin: 0 auto; background: #eee; padding: 15px; border-radius: 8px; height: 350px; overflow-y: auto; font-size: 16px; }
+
+  .flirt { color: deeppink; }
+
+  .drama { color: red; }
+
+  .strategy { color: blue; }
+
+  .twist { color: purple; font-weight: bold; }
+</style>
+</head>
+<body>
+<div id="introScreen">
+<h1>Love Island: Historische Edition</h1>
+<p>Berühmte Persönlichkeiten treffen in der ultimativen Villa aufeinander! Flirte, plane und überlebe das Drama. Wer gewinnt?</p>
+<button onclick="startSeason()">Staffel starten</button>
+</div>
+<div id="villaContainer">
+<div id="villa"></div>
+<button id="advanceBtn" onclick="nextDay()">Nächster Tag</button>
+<button id="challengeBtn" onclick="triggerChallenge()">Challenge starten</button>
+<h2>Story-Protokoll</h2>
+<div id="storyLog"></div>
+</div>
+<script>
+
+// Hauptcharaktere
+
+const islanders = [
+
+  { name: "Albert Einstein", emoji: "🧠", stats: { charm: 8, drama: 5, strategy: 7 }, relationships: {} },
+
+  { name: "Cleopatra", emoji: "👑", stats: { charm: 10, drama: 9, strategy: 8 }, relationships: {} },
+
+  { name: "Napoleon Bonaparte", emoji: "⚔️", stats: { charm: 7, drama: 6, strategy: 10 }, relationships: {} },
+
+  { name: "Frida Kahlo", emoji: "🎨", stats: { charm: 8, drama: 8, strategy: 7 }, relationships: {} },
+
+  { name: "Leonardo da Vinci", emoji: "🖌️", stats: { charm: 9, drama: 5, strategy: 9 }, relationships: {} },
+
+  { name: "Marilyn Monroe", emoji: "💃", stats: { charm: 10, drama: 7, strategy: 6 }, relationships: {} }
+
+];
+
+// Bombshell-Bank
+
+const bombshellBank = [
+
+  { name: "Nikola Tesla", emoji: "⚡", stats: { charm: 9, drama: 5, strategy: 8 } },
+
+  { name: "Queen Victoria", emoji: "👸", stats: { charm: 7, drama: 8, strategy: 10 } },
+
+  { name: "Vincent van Gogh", emoji: "🎨", stats: { charm: 6, drama: 7, strategy: 6 } },
+
+  { name: "Amelia Earhart", emoji: "✈️", stats: { charm: 9, drama: 5, strategy: 7 } },
+
+  { name: "Winston Churchill", emoji: "🥂", stats: { charm: 8, drama: 6, strategy: 9 } },
+
+  { name: "Marie Antoinette", emoji: "🍰", stats: { charm: 10, drama: 8, strategy: 6 } },
+
+  { name: "Joan of Arc", emoji: "🏹", stats: { charm: 8, drama: 7, strategy: 8 } },
+
+  { name: "Oscar Wilde", emoji: "🖋️", stats: { charm: 9, drama: 6, strategy: 8 } }
+
+];
+
+islanders.forEach(i => { islanders.forEach(j => { if(i!==j) i.relationships[j.name]=0; }); });
+
+let currentDay = 1;
+
+const totalDays = 10;
+
+let dailyChallengeCount = 0;
+
+let couplingDoneToday = false;
+
+// Staffelstart
+
+function startSeason() {
+
+  document.getElementById('introScreen').style.display='none';
+
+  document.getElementById('villaContainer').style.display='block';
+
+  displayVilla();
+
+  addToStoryLog(`<span class="twist">Tag 1 beginnt! Willkommen in der Villa 💥</span>`);
+
+}
+
+// Villa anzeigen
+
+function displayVilla() {
+
+  const villaDiv = document.getElementById("villa");
+
+  villaDiv.innerHTML = "";
+
+  islanders.forEach(i => {
+
+    let bars="";
+
+    for(let key in i.relationships){
+
+      let val=i.relationships[key];
+
+      let width=Math.max(0,Math.min(100,10+val*5));
+
+      bars+=`<div class="rel-bar" style="width:${width}%;background:${val>0?'pink':'gray'}" title="${key}: ${val}"></div>`;
+
+    }
+
+    villaDiv.innerHTML+=`<div class="islander">
+<div class="emoji">${i.emoji}</div>
+<strong>${i.name}</strong><br>
+
+      Charme: ${i.stats.charm}<br>
+
+      Drama: ${i.stats.drama}<br>
+
+      Strategie: ${i.stats.strategy}<br>
+
+      ${bars}
+</div>`;
+
+  });
+
+}
+
+// Story-Log
+
+function addToStoryLog(text){
+
+  const log=document.getElementById("storyLog");
+
+  log.innerHTML+=`Tag ${currentDay}: ${text}<br>`;
+
+  log.scrollTop=log.scrollHeight;
+
+  displayVilla();
+
+}
+
+// Couplings
+
+function formCouples() {
+
+  if (couplingDoneToday) return;
+
+  const paired = new Set();
+
+  islanders.forEach(i => {
+
+    if (paired.has(i.name)) return;
+
+    let topChoice = null;
+
+    let maxRel = -Infinity;
+
+    for (let key in i.relationships) {
+
+      if (!paired.has(key) && i.relationships[key] > maxRel) {
+
+        maxRel = i.relationships[key];
+
+        topChoice = key;
+
+      }
+
+    }
+
+    if (topChoice) {
+
+      const j = islanders.find(x => x.name === topChoice);
+
+      const jTop = Object.entries(j.relationships).reduce((a,b)=>b[1]>a[1]?b:a)[0];
+
+      if (jTop === i.name) {
+
+        paired.add(i.name);
+
+        paired.add(j.name);
+
+        i.relationships[j.name] += 2;
+
+        j.relationships[i.name] += 2;
+
+        addToStoryLog(`<span class="flirt">${i.name} ❤️ ${j.name} haben sich als Paar zusammengeschlossen! (+2)</span>`);
+
+        couplingDoneToday = true;
+
+      }
+
+    }
+
+  });
+
+}
+
+// Bombshells (mutually exclusive with couplings)
+
+function addBombshell() {
+
+  if(couplingDoneToday) return;
+
+  if(bombshellBank.length===0) return;
+
+  const index=Math.floor(Math.random()*bombshellBank.length);
+
+  const newBombshell=bombshellBank.splice(index,1)[0];
+
+  newBombshell.relationships={};
+
+  islanders.forEach(i=>{newBombshell.relationships[i.name]=0;i.relationships[newBombshell.name]=0;});
+
+  islanders.push(newBombshell);
+
+  displayVilla();
+
+  addToStoryLog(`<span class="twist">Neue Bombshell! ${newBombshell.emoji} ${newBombshell.name} betritt die Villa 💥</span>`);
+
+}
+
+// Random events
+
+function randomEvent(){
+
+  const i1=islanders[Math.floor(Math.random()*islanders.length)];
+
+  let i2; do{i2=islanders[Math.floor(Math.random()*islanders.length)];}while(i2===i1);
+
+  const events=[
+
+    ()=>{i1.relationships[i2.name]+=2; return `<span class="flirt">${i1.name} flirtet mit ${i2.name} 💘 (+2)</span>`;},
+
+    ()=>{i1.relationships[i2.name]-=2; return `<span class="drama">${i1.name} startet Drama mit ${i2.name} 😡 (-2)</span>`;},
+
+    ()=>{i1.relationships[i2.name]+=1; return `<span class="strategy">${i1.name} hilft ${i2.name} bei der Strategie 🤝 (+1)</span>`;},
+
+    ()=>{return `<span class="drama">${i1.name} plaudert ein Geheimnis aus 😱 (-1)</span>`;},
+
+    ()=>{i1.relationships[i2.name]+=3; return `<span class="flirt">${i1.name} gesteht ${i2.name} eine heimliche Schwärmerei 💘 (+3)</span>`;},
+
+    ()=>{i1.relationships[i2.name]-=1; return `<span class="drama">${i1.name} ist eifersüchtig auf ${i2.name} 😡 (-1)</span>`;},
+
+    ()=>{i1.relationships[i2.name]+=1; return `<span class="strategy">${i1.name} plant mit ${i2.name} eine Allianz 🤝 (+1)</span>`;}
+
+  ];
+
+  return events[Math.floor(Math.random()*events.length)]();
+
+}
+
+// Challenge
+
+function triggerChallenge() {
+
+  if(dailyChallengeCount >= 10) {
+
+    addToStoryLog(`<span class="drama">Maximale Anzahl an Challenges für heute erreicht!</span>`);
+
+    return;
+
+  }
+
+  dailyChallengeCount++;
+
+  const i1 = islanders[Math.floor(Math.random()*islanders.length)];
+
+  let i2; do{i2=islanders[Math.floor(Math.random()*islanders.length)];}while(i2===i1);
+
+  const challengeThemes = [
+
+    {
+
+      name: "💘 Flirt-Off",
+
+      outcomes: [
+
+        ()=>`${i1.name} und ${i2.name} treten im Flirt-Off an – ${i1.name} gewinnt die Herzen der Villa! (+3)`,
+
+        ()=>`${i1.name} versucht zu flirten, aber ${i2.name} bringt alle zum Lachen 😅 (+1 ${i2.name})`,
+
+        ()=>`${i1.name} übertreibt es im Flirt-Off – peinlicher Moment 😬 (-2)`
+
+      ]
+
+    },
+
+    {
+
+      name: "🤔 Wissensquiz",
+
+      outcomes: [
+
+        ()=>`${i1.name} beantwortet jede Frage richtig und beeindruckt alle 🧠 (+2)`,
+
+        ()=>`${i2.name} gewinnt das Quiz und neckt ${i1.name} charmant 😏 (+2 ${i2.name})`,
+
+        ()=>`${i1.name} verwechselt Physik mit Romantikfragen 😂 (-1)`
+
+      ]
+
+    },
+
+    {
+
+      name: "🎭 Schauspiel-Challenge",
+
+      outcomes: [
+
+        ()=>`${i1.name} und ${i2.name} spielen eine dramatische Szene – Funken fliegen! 💥 (+3 beide)`,
+
+        ()=>`${i1.name} vergisst seinen Text – ${i2.name} rettet die Szene 👏 (+1 ${i2.name})`,
+
+        ()=>`${i1.name} übertreibt so sehr, dass alle lachen 🤣 (0)`
+
+      ]
+
+    },
+
+    {
+
+      name: "🍹 Kochduell",
+
+      outcomes: [
+
+        ()=>`${i1.name} verbrennt das Essen und beschuldigt ${i2.name} 😂 (-2)`,
+
+        ()=>`${i1.name} kocht das beste Gericht – ${i2.name} ist beeindruckt 😍 (+3)`,
+
+        ()=>`${i1.name} und ${i2.name} arbeiten perfekt zusammen 👨‍🍳🤝 (+2 beide)`
+
+      ]
+
+    },
+
+    {
+
+      name: "🎤 Talent Show",
+
+      outcomes: [
+
+        ()=>`${i1.name} singt – ${i2.name} ist hin und weg 💘 (+3)`,
+
+        ()=>`${i2.name} tanzt alle in Grund und Boden 💃 (+3 ${i2.name})`,
+
+        ()=>`${i1.name} blamiert sich mit einer schlechten Witzeinlage 😂 (-1)`
+
+      ]
+
+    }
+
+  ];
+
+  const chosen = challengeThemes[Math.floor(Math.random()*challengeThemes.length)];
+
+  const outcome = chosen.outcomes[Math.floor(Math.random()*chosen.outcomes.length)]();
+
+  // adjust relationship points
+
+  if(outcome.includes("+3 beide")){i1.relationships[i2.name]+=3;i2.relationships[i1.name]+=3;}
+
+  else if(outcome.includes("+3")) i1.relationships[i2.name]+=3;
+
+  else if(outcome.includes("+2")) i1.relationships[i2.name]+=2;
+
+  else if(outcome.includes("-2")) i1.relationships[i2.name]-=2;
+
+  else if(outcome.includes("-1")) i1.relationships[i2.name]-=1;
+
+  addToStoryLog(`<span class="strategy">Challenge: ${chosen.name}</span><br>${outcome}`);
+
+}
+
+// Twists & Bombshells
+
+function triggerTwist() {
+
+  const twistTypes = [
+
+    ()=>{addBombshell();},
+
+    ()=>{const i=islanders[Math.floor(Math.random()*islanders.length)]; const j=islanders[Math.floor(Math.random()*islanders.length)];
+
+      if(i!==j){i.relationships[j.name]-=2; addToStoryLog(`<span class="twist">Twist! ${i.name} sorgt für Chaos 😡 (-2)</span>`);}},
+
+    ()=>{const i=islanders[Math.floor(Math.random()*islanders.length)]; islanders.forEach(j=>{if(j!==i)i.relationships[j.name]+=2}); addToStoryLog(`<span class="twist">Bonus-Twist! ${i.name} bekommt einen heimlichen Crush-Boost 💘 (+2 bei allen)</span>`);}
+
+  ];
+
+  twistTypes[Math.floor(Math.random()*twistTypes.length)]();
+
+}
+
+// Nächster Tag
+
+function nextDay() {
+
+  if(currentDay>totalDays) return;
+
+  dailyChallengeCount = 0;
+
+  couplingDoneToday = false;
+
+  formCouples(); // daily couplings before events
+
+  const eventsPerDay=3;
+
+  for(let i=0;i<eventsPerDay;i++) addToStoryLog(randomEvent());
+
+  if(Math.random()<0.3) triggerTwist();
+
+  if(currentDay===totalDays) endSeason(); else currentDay++;
+
+}
+
+// Staffelfinale
+
+function endSeason() {
+
+  addToStoryLog("<strong>Finale: Zusammenfassung der Beziehungen</strong>");
+
+  islanders.forEach(i=>{
+
+    let maxRel={name:null,value:-Infinity};
+
+    for(let key in i.relationships) if(i.relationships[key]>maxRel.value) maxRel={name:key,value:i.relationships[key]};
+
+    addToStoryLog(`${i.name}s stärkste Verbindung: ${maxRel.name} (Beziehungswert: ${maxRel.value})`);
+
+  });
+
+  let winner=islanders[0];
+
+  islanders.forEach(i=>{
+
+    const total=Object.values(i.relationships).reduce((a,b)=>a+b,0);
+
+    const winnerTotal=Object.values(winner.relationships).reduce((a,b)=>a+b,0);
+
+    if(total>winnerTotal) winner=i;
+
+  });
+
+  addToStoryLog(`<strong>Der Gewinner von Love Island ist ${winner.emoji} ${winner.name} 🏆</strong>`);
+
+  document.getElementById("advanceBtn").disabled=true;
+
+  document.getElementById("advanceBtn").innerText="Staffel beendet";
+
+  document.getElementById("challengeBtn").disabled=true;
+
+  document.getElementById("challengeBtn").innerText="Staffel beendet";
+
+}
+</script>
+</body>
+</html>
+ 
