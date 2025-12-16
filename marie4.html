@@ -3,486 +3,1119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love Island: Historische Edition</title>
+<title>Villa der Genies: Historische Persönlichkeiten verstehen</title>
 <style>
+  * { box-sizing: border-box; }
+  
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0; 
+    padding: 0; 
+    min-height: 100vh;
+  }
 
-  body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+  @keyframes sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+  }
 
-  #introScreen { position: fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, #ffcccc, #ffe6e6); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; z-index:10; }
+  @keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 
-  #introScreen h1 { font-size: 36px; margin-bottom: 20px; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
 
-  #introScreen p { font-size: 20px; margin-bottom: 30px; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
 
-  #villaContainer { display:none; padding: 10px; }
+  #introScreen { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+    z-index: 10;
+    color: white;
+    padding: 20px;
+  }
 
-  #villa { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+  #introScreen h1 { 
+    font-size: 48px; 
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    animation: float 3s ease-in-out infinite;
+  }
 
-  .islander { border: 2px solid #333; padding: 10px; width: 45%; max-width: 150px; text-align: center; background: #fff; border-radius: 8px; }
+  #introScreen .subtitle {
+    font-size: 24px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+  }
 
-  .emoji { font-size: 36px; margin-bottom: 5px; }
+  .goal-box {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 600px;
+    margin: 20px auto;
+    border: 2px solid rgba(255,255,255,0.3);
+  }
 
-  .rel-bar { height: 10px; background: pink; margin: 2px 0; border-radius: 5px; }
+  .goal-box h2 {
+    font-size: 28px;
+    margin-top: 0;
+    color: #ffd700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  }
 
-  button { margin: 10px auto; display: block; padding: 15px 25px; font-size: 18px; cursor: pointer; border-radius: 8px; }
+  .goal-box p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 10px 0;
+  }
 
-  #storyLog { max-width: 90%; margin: 0 auto; background: #eee; padding: 15px; border-radius: 8px; height: 350px; overflow-y: auto; font-size: 16px; }
+  .goal-list {
+    text-align: left;
+    margin: 15px 0;
+  }
 
-  .flirt { color: deeppink; }
+  .goal-list li {
+    margin: 8px 0;
+    font-size: 16px;
+  }
 
-  .drama { color: red; }
+  #villaContainer { 
+    display: none; 
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
 
-  .strategy { color: blue; }
+  #topBar {
+    background: rgba(255,255,255,0.95);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
 
-  .twist { color: purple; font-weight: bold; }
+  #dayCounter {
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+  }
+
+  #missionTracker {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  #badgeCollection {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 32px;
+    animation: sparkle 2s infinite;
+    cursor: pointer;
+    position: relative;
+    filter: grayscale(100%);
+    opacity: 0.3;
+    transition: all 0.3s;
+  }
+
+  .badge.earned {
+    filter: grayscale(0%);
+    opacity: 1;
+    animation: pulse 1s ease-in-out;
+  }
+
+  .badge-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 100;
+  }
+
+  .badge:hover .badge-tooltip {
+    opacity: 1;
+  }
+
+  #villa { 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .islander { 
+    border: 3px solid #333;
+    padding: 15px;
+    text-align: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    animation: slideIn 0.5s ease-out;
+    position: relative;
+  }
+
+  .islander:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+  }
+
+  .islander.highlighted {
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+  }
+
+  .emoji { 
+    font-size: 48px; 
+    margin-bottom: 10px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .personality-trait {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin: 5px 2px;
+    display: inline-block;
+  }
+
+  .stat-bar {
+    background: #f0f0f0;
+    height: 20px;
+    border-radius: 10px;
+    margin: 5px 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .stat-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: white;
+    font-weight: bold;
+  }
+
+  .stat-charm { background: linear-gradient(90deg, #ff6b6b, #ff8e8e); }
+  .stat-intellect { background: linear-gradient(90deg, #4ecdc4, #6eddd6); }
+  .stat-passion { background: linear-gradient(90deg, #ff6b9d, #ff8eb3); }
+
+  .rel-bar { 
+    height: 8px;
+    background: #ddd;
+    margin: 3px 0;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .rel-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+  }
+
+  .rel-positive { background: linear-gradient(90deg, #ff6b9d, #c44569); }
+  .rel-negative { background: linear-gradient(90deg, #95a5a6, #7f8c8d); }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  button { 
+    padding: 15px 30px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  #storyLog { 
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    height: 400px;
+    overflow-y: auto;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-top: 20px;
+  }
+
+  .story-entry {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .flirt { 
+    background: linear-gradient(135deg, #ffe5ec 0%, #ffd1dc 100%);
+    border-left: 4px solid #ff6b9d;
+    color: #c44569;
+  }
+
+  .insight {
+    background: linear-gradient(135deg, #e0f7ff 0%, #b3e5fc 100%);
+    border-left: 4px solid #4ecdc4;
+    color: #006064;
+    font-style: italic;
+  }
+
+  .drama { 
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    border-left: 4px solid #f44336;
+    color: #c62828;
+  }
+
+  .strategy { 
+    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+    border-left: 4px solid #5c6bc0;
+    color: #283593;
+  }
+
+  .twist { 
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-left: 4px solid #ff9800;
+    color: #e65100;
+    font-weight: bold;
+  }
+
+  .mission-complete {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    border-left: 4px solid #f57f17;
+    color: #f57f17;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+    animation: pulse 0.5s ease-in-out 3;
+  }
+
+  .info-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .info-card h3 {
+    margin-top: 0;
+    color: #667eea;
+  }
+
+  #missionPanel {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .mission-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    background: #f5f5f5;
+    transition: all 0.3s;
+  }
+
+  .mission-item.complete {
+    background: linear-gradient(135deg, #d4f1d4 0%, #c8e6c9 100%);
+  }
+
+  .mission-checkbox {
+    font-size: 24px;
+    margin-right: 15px;
+  }
+
+  .historical-note {
+    background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+    border-left: 4px solid #fbc02d;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .character-revelation {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    border: 2px solid #9c27b0;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    #introScreen h1 { font-size: 32px; }
+    .goal-box { padding: 15px; }
+    #topBar { flex-direction: column; }
+    button { padding: 12px 20px; font-size: 16px; }
+  }
 </style>
 </head>
 <body>
+
 <div id="introScreen">
-<h1>Love Island: Historische Edition</h1>
-<p>Berühmte Persönlichkeiten treffen in der ultimativen Villa aufeinander! Flirte, plane und überlebe das Drama. Wer gewinnt?</p>
-<button onclick="startSeason()">Staffel starten</button>
+  <h1>🏛️ Villa der Genies 🏛️</h1>
+  <div class="subtitle">Historische Persönlichkeiten besser verstehen</div>
+  
+  <div class="goal-box">
+    <h2>🎯 Deine Mission</h2>
+    <p><strong>Verstehe die Persönlichkeiten hinter den Namen!</strong></p>
+    <p>In dieser Villa treffen sich die größten Denker, Künstler und Führungspersönlichkeiten der Geschichte. Deine Aufgabe ist es, ihre Charaktereigenschaften, Motivationen und Beziehungsdynamiken zu entdecken.</p>
+    
+    <div class="goal-list">
+      <ul>
+        <li>📚 <strong>Lerne:</strong> Entdecke, was diese Persönlichkeiten antrieb</li>
+        <li>🤝 <strong>Beobachte:</strong> Wie würden sie miteinander interagieren?</li>
+        <li>🏆 <strong>Sammle:</strong> Verdiene Abzeichen für historische Erkenntnisse</li>
+        <li>💡 <strong>Verstehe:</strong> Warum Einstein anders dachte als Napoleon</li>
+      </ul>
+    </div>
+    
+    <p style="font-size: 16px; margin-top: 20px;">
+      <em>Jede Interaktion enthüllt tiefere Einblicke in die Persönlichkeitstypen dieser historischen Figuren!</em>
+    </p>
+  </div>
+  
+  <button onclick="startSeason()">🎬 Staffel starten</button>
 </div>
+
 <div id="villaContainer">
-<div id="villa"></div>
-<button id="advanceBtn" onclick="nextDay()">Nächster Tag</button>
-<button id="challengeBtn" onclick="triggerChallenge()">Challenge starten</button>
-<h2>Story-Protokoll</h2>
-<div id="storyLog"></div>
+  <div id="topBar">
+    <div id="dayCounter">Tag 1 von 10</div>
+    <div id="missionTracker">Mission: 0/5 Abzeichen gesammelt</div>
+    <div id="badgeCollection">
+      <div class="badge" data-badge="observer">
+        🔍
+        <div class="badge-tooltip">Beobachter: 10 Interaktionen beobachtet</div>
+      </div>
+      <div class="badge" data-badge="psychologist">
+        🧠
+        <div class="badge-tooltip">Psychologe: Alle Persönlichkeitstypen verstanden</div>
+      </div>
+      <div class="badge" data-badge="historian">
+        📜
+        <div class="badge-tooltip">Historiker: 5 historische Fakten entdeckt</div>
+      </div>
+      <div class="badge" data-badge="matchmaker">
+        💕
+        <div class="badge-tooltip">Kuppler: 3 erfolgreiche Paare gebildet</div>
+      </div>
+      <div class="badge" data-badge="philosopher">
+        ⭐
+        <div class="badge-tooltip">Philosoph: Staffel abgeschlossen</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="missionPanel">
+    <h2 style="margin-top: 0; color: #667eea;">📋 Aktuelle Missionen</h2>
+    <div class="mission-item" id="mission-observe">
+      <span class="mission-checkbox">⬜</span>
+      <span>Beobachte 10 Interaktionen zwischen den Genies</span>
+    </div>
+    <div class="mission-item" id="mission-couples">
+      <span class="mission-checkbox">⬜</span>
+      <span>Bilde 3 erfolgreiche Paare basierend auf Persönlichkeiten</span>
+    </div>
+    <div class="mission-item" id="mission-insights">
+      <span class="mission-checkbox">⬜</span>
+      <span>Entdecke 5 historische Erkenntnisse</span>
+    </div>
+    <div class="mission-item" id="mission-einstein">
+      <span class="mission-checkbox">⬜</span>
+      <span>Verstehe Einsteins einzigartige Perspektive</span>
+    </div>
+  </div>
+
+  <div id="villa"></div>
+
+  <div class="controls">
+    <button id="advanceBtn" onclick="nextDay()">⏭️ Nächster Tag</button>
+    <button id="challengeBtn" class="btn-secondary" onclick="triggerChallenge()">🎯 Challenge starten</button>
+    <button id="insightBtn" class="btn-success" onclick="requestInsight()">💡 Historische Einsicht</button>
+  </div>
+
+  <h2 style="text-align: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">📖 Story-Protokoll & Erkenntnisse</h2>
+  <div id="storyLog"></div>
 </div>
+
 <script>
-
-// Hauptcharaktere
-
+// Enhanced character data with personality traits
 const islanders = [
-
-  { name: "Albert Einstein", emoji: "🧠", stats: { charm: 8, drama: 5, strategy: 7 }, relationships: {} },
-
-  { name: "Cleopatra", emoji: "👑", stats: { charm: 10, drama: 9, strategy: 8 }, relationships: {} },
-
-  { name: "Napoleon Bonaparte", emoji: "⚔️", stats: { charm: 7, drama: 6, strategy: 10 }, relationships: {} },
-
-  { name: "Frida Kahlo", emoji: "🎨", stats: { charm: 8, drama: 8, strategy: 7 }, relationships: {} },
-
-  { name: "Leonardo da Vinci", emoji: "🖌️", stats: { charm: 9, drama: 5, strategy: 9 }, relationships: {} },
-
-  { name: "Marilyn Monroe", emoji: "💃", stats: { charm: 10, drama: 7, strategy: 6 }, relationships: {} }
-
+  { 
+    name: "Albert Einstein", 
+    emoji: "🧑‍🔬", 
+    stats: { charm: 7, intellect: 10, passion: 8 }, 
+    relationships: {},
+    traits: ["Visionär", "Pazifist", "Querdenker"],
+    historicalFact: "Einstein lehnte Autorität ab und glaubte an kreatives Denken statt stures Auswendiglernen."
+  },
+  { 
+    name: "Cleopatra", 
+    emoji: "👑", 
+    stats: { charm: 10, intellect: 9, passion: 9 }, 
+    relationships: {},
+    traits: ["Strategisch", "Charismatisch", "Gebildet"],
+    historicalFact: "Cleopatra sprach neun Sprachen und war die erste Ptolemäerin, die Ägyptisch lernte."
+  },
+  { 
+    name: "Napoleon Bonaparte", 
+    emoji: "⚔️", 
+    stats: { charm: 6, intellect: 9, passion: 7 }, 
+    relationships: {},
+    traits: ["Strategisch", "Ehrgeizig", "Reformer"],
+    historicalFact: "Napoleon reformierte das französische Rechtssystem und schuf den Code Civil, der heute noch gilt."
+  },
+  { 
+    name: "Frida Kahlo", 
+    emoji: "🎨", 
+    stats: { charm: 8, intellect: 8, passion: 10 }, 
+    relationships: {},
+    traits: ["Leidenschaftlich", "Resilient", "Authentisch"],
+    historicalFact: "Frida verwandelte ihren Schmerz in Kunst und wurde zum Symbol für Authentizität und Widerstandsfähigkeit."
+  },
+  { 
+    name: "Leonardo da Vinci", 
+    emoji: "🖌️", 
+    stats: { charm: 8, intellect: 10, passion: 9 }, 
+    relationships: {},
+    traits: ["Universalgenie", "Neugierig", "Perfektionist"],
+    historicalFact: "Leonardo war Maler, Erfinder, Anatom und Ingenieur - das ultimative Renaissance-Genie."
+  },
+  { 
+    name: "Marilyn Monroe", 
+    emoji: "💃", 
+    stats: { charm: 10, intellect: 7, passion: 8 }, 
+    relationships: {},
+    traits: ["Charismatisch", "Komplex", "Verletzlich"],
+    historicalFact: "Hinter dem Star-Image war Monroe eine intelligente Leserin und geschäftsbewusste Unternehmerin."
+  }
 ];
-
-// Bombshell-Bank
 
 const bombshellBank = [
-
-  { name: "Nikola Tesla", emoji: "⚡", stats: { charm: 9, drama: 5, strategy: 8 } },
-
-  { name: "Queen Victoria", emoji: "👸", stats: { charm: 7, drama: 8, strategy: 10 } },
-
-  { name: "Vincent van Gogh", emoji: "🎨", stats: { charm: 6, drama: 7, strategy: 6 } },
-
-  { name: "Amelia Earhart", emoji: "✈️", stats: { charm: 9, drama: 5, strategy: 7 } },
-
-  { name: "Winston Churchill", emoji: "🥂", stats: { charm: 8, drama: 6, strategy: 9 } },
-
-  { name: "Marie Antoinette", emoji: "🍰", stats: { charm: 10, drama: 8, strategy: 6 } },
-
-  { name: "Joan of Arc", emoji: "🏹", stats: { charm: 8, drama: 7, strategy: 8 } },
-
-  { name: "Oscar Wilde", emoji: "🖋️", stats: { charm: 9, drama: 6, strategy: 8 } }
-
+  { 
+    name: "Nikola Tesla", 
+    emoji: "⚡", 
+    stats: { charm: 7, intellect: 10, passion: 8 },
+    traits: ["Visionär", "Einzelgänger", "Idealist"],
+    historicalFact: "Tesla träumte von kostenloser Energie für alle und arbeitete oft 20 Stunden am Tag."
+  },
+  { 
+    name: "Marie Curie", 
+    emoji: "🧪", 
+    stats: { charm: 7, intellect: 10, passion: 9 },
+    traits: ["Beharrlich", "Pionier", "Bescheiden"],
+    historicalFact: "Marie Curie war die erste Frau, die einen Nobelpreis gewann - und gewann sogar zwei!"
+  },
+  { 
+    name: "Oscar Wilde", 
+    emoji: "🖋️", 
+    stats: { charm: 10, intellect: 9, passion: 8 },
+    traits: ["Witzig", "Provokant", "Ästhet"],
+    historicalFact: "Wilde benutzte Humor und Satire, um gesellschaftliche Heuchelei zu entlarven."
+  },
+  { 
+    name: "Joan of Arc", 
+    emoji: "🗡️", 
+    stats: { charm: 7, intellect: 7, passion: 10 },
+    traits: ["Mutig", "Entschlossen", "Idealistisch"],
+    historicalFact: "Mit nur 17 Jahren führte Jeanne d'Arc französische Truppen zum Sieg - getrieben von ihrem Glauben."
+  }
 ];
 
-islanders.forEach(i => { islanders.forEach(j => { if(i!==j) i.relationships[j.name]=0; }); });
+// Initialize relationships
+islanders.forEach(i => { 
+  islanders.forEach(j => { 
+    if(i !== j) i.relationships[j.name] = 0; 
+  }); 
+});
 
 let currentDay = 1;
-
 const totalDays = 10;
+let interactionCount = 0;
+let couplesFormed = 0;
+let insightsRevealed = 0;
+let einsteinInsightRevealed = false;
+let challengesCompleted = 0;
 
-let dailyChallengeCount = 0;
+const badges = {
+  observer: false,
+  psychologist: false,
+  historian: false,
+  matchmaker: false,
+  philosopher: false
+};
 
-let couplingDoneToday = false;
+// Historical insights
+const historicalInsights = [
+  {
+    type: "Einstein",
+    text: "🧠 <strong>Einstein-Einsicht:</strong> Einstein war kein typischer Wissenschaftler. Er dachte in Bildern und Gedankenexperimenten, nicht nur in Formeln. Seine größte Stärke war die Fähigkeit, komplexe Konzepte einfach zu visualisieren.",
+    character: "Albert Einstein"
+  },
+  {
+    type: "Cleopatra",
+    text: "👑 <strong>Cleopatra-Einsicht:</strong> Cleopatra war nicht nur schön - sie war politisch brilliant. Sie nutzte Bildung und Diplomatie als Waffen und verstand, dass Macht durch Beziehungen gesichert wird.",
+    character: "Cleopatra"
+  },
+  {
+    type: "Napoleon",
+    text: "⚔️ <strong>Napoleon-Einsicht:</strong> Napoleons Stärke lag in seiner Fähigkeit, Details zu meistern. Er kannte jeden seiner Generäle persönlich und konnte komplexe militärische Operationen im Kopf koordinieren.",
+    character: "Napoleon Bonaparte"
+  },
+  {
+    type: "Frida",
+    text: "🎨 <strong>Frida-Einsicht:</strong> Fridas Kunst war zutiefst persönlich. Sie verwandelte körperlichen und emotionalen Schmerz in kraftvolle Selbstporträts, die ihre innere Wahrheit zeigten.",
+    character: "Frida Kahlo"
+  },
+  {
+    type: "Leonardo",
+    text: "🖌️ <strong>Leonardo-Einsicht:</strong> Leonardos Neugier kannte keine Grenzen. Er sezierte Leichen, um Anatomie zu verstehen, studierte Vögel für Flugmaschinen und war besessen von Perfektion.",
+    character: "Leonardo da Vinci"
+  },
+  {
+    type: "Marilyn",
+    text: "💃 <strong>Marilyn-Einsicht:</strong> Marilyn Monroe war mehr als ein 'Dumb Blonde'. Sie gründete ihre eigene Produktionsfirma und kämpfte für kreative Kontrolle in einer von Männern dominierten Industrie.",
+    character: "Marilyn Monroe"
+  }
+];
 
-// Staffelstart
+let availableInsights = [...historicalInsights];
 
 function startSeason() {
-
-  document.getElementById('introScreen').style.display='none';
-
-  document.getElementById('villaContainer').style.display='block';
-
+  document.getElementById('introScreen').style.display = 'none';
+  document.getElementById('villaContainer').style.display = 'block';
   displayVilla();
-
-  addToStoryLog(`<span class="twist">Tag 1 beginnt! Willkommen in der Villa 💥</span>`);
-
+  addToStoryLog(`<div class="twist">🎬 Tag 1 beginnt! Willkommen in der Villa der Genies! Deine Mission: Verstehe die Persönlichkeiten dieser historischen Figuren durch ihre Interaktionen.</div>`);
 }
-
-// Villa anzeigen
 
 function displayVilla() {
-
   const villaDiv = document.getElementById("villa");
-
   villaDiv.innerHTML = "";
-
+  
   islanders.forEach(i => {
-
-    let bars="";
-
-    for(let key in i.relationships){
-
-      let val=i.relationships[key];
-
-      let width=Math.max(0,Math.min(100,10+val*5));
-
-      bars+=`<div class="rel-bar" style="width:${width}%;background:${val>0?'pink':'gray'}" title="${key}: ${val}"></div>`;
-
+    let statBars = `
+      <div class="stat-bar">
+        <div class="stat-fill stat-charm" style="width: ${i.stats.charm * 10}%">Charme: ${i.stats.charm}</div>
+      </div>
+      <div class="stat-bar">
+        <div class="stat-fill stat-intellect" style="width: ${i.stats.intellect * 10}%">Intellekt: ${i.stats.intellect}</div>
+      </div>
+      <div class="stat-bar">
+        <div class="stat-fill stat-passion" style="width: ${i.stats.passion * 10}%">Leidenschaft: ${i.stats.passion}</div>
+      </div>
+    `;
+    
+    let traits = i.traits.map(t => `<span class="personality-trait">${t}</span>`).join('');
+    
+    let relBars = "";
+    for(let key in i.relationships) {
+      let val = i.relationships[key];
+      let width = Math.max(0, Math.min(100, 50 + val * 5));
+      let isPositive = val > 0;
+      relBars += `
+        <div class="rel-bar">
+          <div class="rel-fill ${isPositive ? 'rel-positive' : 'rel-negative'}" 
+               style="width: ${width}%" 
+               title="${key}: ${val > 0 ? '+' : ''}${val}">
+          </div>
+        </div>`;
     }
-
-    villaDiv.innerHTML+=`<div class="islander">
-<div class="emoji">${i.emoji}</div>
-<strong>${i.name}</strong><br>
-
-      Charme: ${i.stats.charm}<br>
-
-      Drama: ${i.stats.drama}<br>
-
-      Strategie: ${i.stats.strategy}<br>
-
-      ${bars}
-</div>`;
-
+    
+    villaDiv.innerHTML += `
+      <div class="islander" data-name="${i.name}">
+        <div class="emoji">${i.emoji}</div>
+        <strong>${i.name}</strong><br>
+        ${traits}
+        <div style="margin-top: 10px;">
+          ${statBars}
+        </div>
+        <div style="margin-top: 10px; font-size: 12px; color: #666;">
+          <strong>Beziehungen:</strong>
+          ${relBars}
+        </div>
+      </div>
+    `;
   });
-
 }
 
-// Story-Log
-
-function addToStoryLog(text){
-
-  const log=document.getElementById("storyLog");
-
-  log.innerHTML+=`Tag ${currentDay}: ${text}<br>`;
-
-  log.scrollTop=log.scrollHeight;
-
+function addToStoryLog(text) {
+  const log = document.getElementById("storyLog");
+  log.innerHTML += text;
+  log.scrollTop = log.scrollHeight;
   displayVilla();
-
+  updateMissions();
 }
 
-// Couplings
+function updateMissions() {
+  document.getElementById('dayCounter').textContent = `Tag ${currentDay} von ${totalDays}`;
+  
+  // Update mission tracker
+  const earnedBadges = Object.values(badges).filter(b => b).length;
+  document.getElementById('missionTracker').textContent = `Mission: ${earnedBadges}/5 Abzeichen gesammelt`;
+  
+  // Update individual missions
+  if (interactionCount >= 10) {
+    document.getElementById('mission-observe').classList.add('complete');
+    document.getElementById('mission-observe').querySelector('.mission-checkbox').textContent = '✅';
+    if (!badges.observer) {
+      badges.observer = true;
+      awardBadge('observer');
+    }
+  }
+  
+  if (couplesFormed >= 3) {
+    document.getElementById('mission-couples').classList.add('complete');
+    document.getElementById('mission-couples').querySelector('.mission-checkbox').textContent = '✅';
+    if (!badges.matchmaker) {
+      badges.matchmaker = true;
+      awardBadge('matchmaker');
+    }
+  }
+  
+  if (insightsRevealed >= 5) {
+    document.getElementById('mission-insights').classList.add('complete');
+    document.getElementById('mission-insights').querySelector('.mission-checkbox').textContent = '✅';
+    if (!badges.historian) {
+      badges.historian = true;
+      awardBadge('historian');
+    }
+  }
+  
+  if (einsteinInsightRevealed) {
+    document.getElementById('mission-einstein').classList.add('complete');
+    document.getElementById('mission-einstein').querySelector('.mission-checkbox').textContent = '✅';
+    if (!badges.psychologist) {
+      badges.psychologist = true;
+      awardBadge('psychologist');
+    }
+  }
+}
+
+function awardBadge(badgeType) {
+  const badgeElement = document.querySelector(`.badge[data-badge="${badgeType}"]`);
+  badgeElement.classList.add('earned');
+  addToStoryLog(`<div class="mission-complete">🏆 Neues Abzeichen freigeschaltet: ${badgeElement.textContent} ${badgeElement.querySelector('.badge-tooltip').textContent}</div>`);
+}
+
+function requestInsight() {
+  if (availableInsights.length === 0) {
+    addToStoryLog(`<div class="historical-note">📚 Du hast bereits alle historischen Einsichten entdeckt! Großartige Arbeit!</div>`);
+    return;
+  }
+  
+  const insight = availableInsights.splice(Math.floor(Math.random() * availableInsights.length), 1)[0];
+  insightsRevealed++;
+  
+  if (insight.character === "Albert Einstein") {
+    einsteinInsightRevealed = true;
+  }
+  
+  // Highlight the character
+  document.querySelectorAll('.islander').forEach(el => {
+    if (el.dataset.name === insight.character) {
+      el.classList.add('highlighted');
+      setTimeout(() => el.classList.remove('highlighted'), 3000);
+    }
+  });
+  
+  addToStoryLog(`<div class="character-revelation">${insight.text}</div>`);
+  
+  // Add contextual interaction
+  const character = islanders.find(i => i.name === insight.character);
+  if (character) {
+    addToStoryLog(`<div class="insight">💭 Diese Eigenschaft erklärt, warum ${character.name} so ${character.traits[0].toLowerCase()} ist!</div>`);
+  }
+  
+  updateMissions();
+}
 
 function formCouples() {
-
-  if (couplingDoneToday) return;
-
   const paired = new Set();
-
+  let newCouples = 0;
+  
   islanders.forEach(i => {
-
     if (paired.has(i.name)) return;
-
+    
     let topChoice = null;
-
     let maxRel = -Infinity;
-
+    
     for (let key in i.relationships) {
-
       if (!paired.has(key) && i.relationships[key] > maxRel) {
-
         maxRel = i.relationships[key];
-
         topChoice = key;
-
       }
-
     }
-
-    if (topChoice) {
-
+    
+    if (topChoice && maxRel > 5) {
       const j = islanders.find(x => x.name === topChoice);
-
-      const jTop = Object.entries(j.relationships).reduce((a,b)=>b[1]>a[1]?b:a)[0];
-
-      if (jTop === i.name) {
-
+      const jTopName = Object.entries(j.relationships).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+      
+      if (jTopName === i.name) {
         paired.add(i.name);
-
         paired.add(j.name);
-
-        i.relationships[j.name] += 2;
-
-        j.relationships[i.name] += 2;
-
-        addToStoryLog(`<span class="flirt">${i.name} ❤️ ${j.name} haben sich als Paar zusammengeschlossen! (+2)</span>`);
-
-        couplingDoneToday = true;
-
+        i.relationships[j.name] += 3;
+        j.relationships[i.name] += 3;
+        couplesFormed++;
+        newCouples++;
+        
+        const reason = explainConnection(i, j);
+        addToStoryLog(`<div class="flirt">💕 ${i.name} ${i.emoji} und ${j.name} ${j.emoji} haben sich als Paar zusammengeschlossen! <br><em>${reason}</em></div>`);
+        
+        interactionCount++;
       }
-
     }
-
   });
-
+  
+  updateMissions();
 }
 
-// Bombshells (mutually exclusive with couplings)
+function explainConnection(person1, person2) {
+  const reasons = [
+    `Beide schätzen ${person1.traits[0].toLowerCase()} Persönlichkeiten`,
+    `Ihre intellektuelle Kompatibilität ist offensichtlich`,
+    `${person1.name}s ${person1.traits[1].toLowerCase()}e Art harmoniert perfekt mit ${person2.name}`,
+    `Gegensätze ziehen sich an - ihre unterschiedlichen Stärken ergänzen sich`,
+    `Sie teilen eine tiefe Leidenschaft für ihre jeweiligen Felder`
+  ];
+  return reasons[Math.floor(Math.random() * reasons.length)];
+}
 
 function addBombshell() {
-
-  if(couplingDoneToday) return;
-
-  if(bombshellBank.length===0) return;
-
-  const index=Math.floor(Math.random()*bombshellBank.length);
-
-  const newBombshell=bombshellBank.splice(index,1)[0];
-
-  newBombshell.relationships={};
-
-  islanders.forEach(i=>{newBombshell.relationships[i.name]=0;i.relationships[newBombshell.name]=0;});
-
+  if (bombshellBank.length === 0) return;
+  
+  const index = Math.floor(Math.random() * bombshellBank.length);
+  const newBombshell = bombshellBank.splice(index, 1)[0];
+  newBombshell.relationships = {};
+  
+  islanders.forEach(i => {
+    newBombshell.relationships[i.name] = 0;
+    i.relationships[newBombshell.name] = 0;
+  });
+  
   islanders.push(newBombshell);
-
   displayVilla();
-
-  addToStoryLog(`<span class="twist">Neue Bombshell! ${newBombshell.emoji} ${newBombshell.name} betritt die Villa 💥</span>`);
-
+  
+  addToStoryLog(`<div class="twist">💥 Neue Bombshell! ${newBombshell.emoji} ${newBombshell.name} betritt die Villa!</div>`);
+  addToStoryLog(`<div class="historical-note">📚 Historischer Fakt: ${newBombshell.historicalFact}</div>`);
+  
+  interactionCount++;
+  updateMissions();
 }
 
-// Random events
-
-function randomEvent(){
-
-  const i1=islanders[Math.floor(Math.random()*islanders.length)];
-
-  let i2; do{i2=islanders[Math.floor(Math.random()*islanders.length)];}while(i2===i1);
-
-  const events=[
-
-    ()=>{i1.relationships[i2.name]+=2; return `<span class="flirt">${i1.name} flirtet mit ${i2.name} 💘 (+2)</span>`;},
-
-    ()=>{i1.relationships[i2.name]-=2; return `<span class="drama">${i1.name} startet Drama mit ${i2.name} 😡 (-2)</span>`;},
-
-    ()=>{i1.relationships[i2.name]+=1; return `<span class="strategy">${i1.name} hilft ${i2.name} bei der Strategie 🤝 (+1)</span>`;},
-
-    ()=>{return `<span class="drama">${i1.name} plaudert ein Geheimnis aus 😱 (-1)</span>`;},
-
-    ()=>{i1.relationships[i2.name]+=3; return `<span class="flirt">${i1.name} gesteht ${i2.name} eine heimliche Schwärmerei 💘 (+3)</span>`;},
-
-    ()=>{i1.relationships[i2.name]-=1; return `<span class="drama">${i1.name} ist eifersüchtig auf ${i2.name} 😡 (-1)</span>`;},
-
-    ()=>{i1.relationships[i2.name]+=1; return `<span class="strategy">${i1.name} plant mit ${i2.name} eine Allianz 🤝 (+1)</span>`;}
-
+function randomEvent() {
+  const i1 = islanders[Math.floor(Math.random() * islanders.length)];
+  let i2;
+  do {
+    i2 = islanders[Math.floor(Math.random() * islanders.length)];
+  } while (i2 === i1);
+  
+  const events = [
+    () => {
+      i1.relationships[i2.name] += 3;
+      interactionCount++;
+      return `<div class="flirt">💘 ${i1.name} und ${i2.name} führen ein tiefgründiges Gespräch. ${i1.name}s ${i1.traits[0].toLowerCase()}e Natur kommt gut an! (+3)</div>`;
+    },
+    () => {
+      i1.relationships[i2.name] -= 2;
+      interactionCount++;
+      return `<div class="drama">⚡ ${i1.name} und ${i2.name} geraten aneinander - ihre unterschiedlichen Persönlichkeiten prallen aufeinander! (-2)</div>`;
+    },
+    () => {
+      i1.relationships[i2.name] += 2;
+      interactionCount++;
+      const insight = `${i1.name}s ${i1.traits[0].toLowerCase()}e Art findet Respekt bei ${i2.name}`;
+      return `<div class="strategy">🤝 ${i1.name} hilft ${i2.name} bei einer Challenge. ${insight} (+2)</div>`;
+    },
+    () => {
+      interactionCount++;
+      return `<div class="insight">💭 ${i1.name} teilt eine persönliche Geschichte über ${i1.traits[1].toLowerCase()}e Erfahrungen - die anderen sind fasziniert!</div>`;
+    },
+    () => {
+      i1.relationships[i2.name] += 4;
+      interactionCount++;
+      return `<div class="flirt">✨ ${i1.name} und ${i2.name} entdecken eine gemeinsame Leidenschaft! Ihre Beziehung vertieft sich. (+4)</div>`;
+    }
   ];
-
-  return events[Math.floor(Math.random()*events.length)]();
-
+  
+  return events[Math.floor(Math.random() * events.length)]();
 }
-
-// Challenge
 
 function triggerChallenge() {
-
-  if(dailyChallengeCount >= 10) {
-
-    addToStoryLog(`<span class="drama">Maximale Anzahl an Challenges für heute erreicht!</span>`);
-
+  if (challengesCompleted >= 15) {
+    addToStoryLog(`<div class="drama">⏸️ Genug Challenges für heute - lass die Beziehungen sich entwickeln!</div>`);
     return;
-
   }
-
-  dailyChallengeCount++;
-
-  const i1 = islanders[Math.floor(Math.random()*islanders.length)];
-
-  let i2; do{i2=islanders[Math.floor(Math.random()*islanders.length)];}while(i2===i1);
-
-  const challengeThemes = [
-
+  
+  challengesCompleted++;
+  const i1 = islanders[Math.floor(Math.random() * islanders.length)];
+  let i2;
+  do {
+    i2 = islanders[Math.floor(Math.random() * islanders.length)];
+  } while (i2 === i1);
+  
+  const challenges = [
     {
-
-      name: "💘 Flirt-Off",
-
+      name: "🧠 Intellekt-Duell",
       outcomes: [
-
-        ()=>`${i1.name} und ${i2.name} treten im Flirt-Off an – ${i1.name} gewinnt die Herzen der Villa! (+3)`,
-
-        ()=>`${i1.name} versucht zu flirten, aber ${i2.name} bringt alle zum Lachen 😅 (+1 ${i2.name})`,
-
-        ()=>`${i1.name} übertreibt es im Flirt-Off – peinlicher Moment 😬 (-2)`
-
+        () => {
+          i1.relationships[i2.name] += 3;
+          interactionCount++;
+          return `${i1.name} brilliert im Intellekt-Duell und beeindruckt ${i2.name} mit ${i1.traits[0].toLowerCase()}en Einsichten! (+3)`;
+        },
+        () => {
+          i2.relationships[i1.name] += 3;
+          interactionCount++;
+          return `${i2.name} zeigt überraschende Tiefe und gewinnt ${i1.name}s Respekt! (+3 für ${i2.name})`;
+        }
       ]
-
     },
-
     {
-
-      name: "🤔 Wissensquiz",
-
+      name: "🎨 Kreativitäts-Challenge",
       outcomes: [
-
-        ()=>`${i1.name} beantwortet jede Frage richtig und beeindruckt alle 🧠 (+2)`,
-
-        ()=>`${i2.name} gewinnt das Quiz und neckt ${i1.name} charmant 😏 (+2 ${i2.name})`,
-
-        ()=>`${i1.name} verwechselt Physik mit Romantikfragen 😂 (-1)`
-
+        () => {
+          i1.relationships[i2.name] += 3;
+          i2.relationships[i1.name] += 3;
+          interactionCount++;
+          return `${i1.name} und ${i2.name} kreieren zusammen etwas Wunderbares - ihre ${i1.traits[0].toLowerCase()}e und ${i2.traits[0].toLowerCase()}e Naturen harmonieren perfekt! (+3 beide)`;
+        },
+        () => {
+          i1.relationships[i2.name] += 2;
+          interactionCount++;
+          return `${i1.name}s ${i1.traits[1].toLowerCase()}er Ansatz beeindruckt ${i2.name}! (+2)`;
+        }
       ]
-
     },
-
     {
-
-      name: "🎭 Schauspiel-Challenge",
-
+      name: "💬 Tiefgründiges Gespräch",
       outcomes: [
-
-        ()=>`${i1.name} und ${i2.name} spielen eine dramatische Szene – Funken fliegen! 💥 (+3 beide)`,
-
-        ()=>`${i1.name} vergisst seinen Text – ${i2.name} rettet die Szene 👏 (+1 ${i2.name})`,
-
-        ()=>`${i1.name} übertreibt so sehr, dass alle lachen 🤣 (0)`
-
+        () => {
+          i1.relationships[i2.name] += 4;
+          i2.relationships[i1.name] += 4;
+          interactionCount++;
+          return `${i1.name} und ${i2.name} haben ein bedeutungsvolles Gespräch über ihre Lebensmissionen. Beide fühlen eine tiefe Verbindung! (+4 beide)`;
+        },
+        () => {
+          i1.relationships[i2.name] -= 1;
+          interactionCount++;
+          return `${i1.name}s ${i1.traits[2].toLowerCase()}e Perspektive passt nicht zu ${i2.name}s Weltanschauung. (-1)`;
+        }
       ]
-
     },
-
     {
-
-      name: "🍹 Kochduell",
-
+      name: "🎭 Persönlichkeits-Showcase",
       outcomes: [
-
-        ()=>`${i1.name} verbrennt das Essen und beschuldigt ${i2.name} 😂 (-2)`,
-
-        ()=>`${i1.name} kocht das beste Gericht – ${i2.name} ist beeindruckt 😍 (+3)`,
-
-        ()=>`${i1.name} und ${i2.name} arbeiten perfekt zusammen 👨‍🍳🤝 (+2 beide)`
-
+        () => {
+          i1.relationships[i2.name] += 3;
+          interactionCount++;
+          return `${i1.name} zeigt seine wahre, ${i1.traits[0].toLowerCase()}e Persönlichkeit - ${i2.name} ist begeistert! (+3)`;
+        },
+        () => {
+          interactionCount++;
+          return `${i1.name} öffnet sich über ihre ${i1.traits[1].toLowerCase()}e Seite - die Villa ist berührt! 💫`;
+        }
       ]
-
-    },
-
-    {
-
-      name: "🎤 Talent Show",
-
-      outcomes: [
-
-        ()=>`${i1.name} singt – ${i2.name} ist hin und weg 💘 (+3)`,
-
-        ()=>`${i2.name} tanzt alle in Grund und Boden 💃 (+3 ${i2.name})`,
-
-        ()=>`${i1.name} blamiert sich mit einer schlechten Witzeinlage 😂 (-1)`
-
-      ]
-
     }
-
   ];
-
-  const chosen = challengeThemes[Math.floor(Math.random()*challengeThemes.length)];
-
-  const outcome = chosen.outcomes[Math.floor(Math.random()*chosen.outcomes.length)]();
-
-  // adjust relationship points
-
-  if(outcome.includes("+3 beide")){i1.relationships[i2.name]+=3;i2.relationships[i1.name]+=3;}
-
-  else if(outcome.includes("+3")) i1.relationships[i2.name]+=3;
-
-  else if(outcome.includes("+2")) i1.relationships[i2.name]+=2;
-
-  else if(outcome.includes("-2")) i1.relationships[i2.name]-=2;
-
-  else if(outcome.includes("-1")) i1.relationships[i2.name]-=1;
-
-  addToStoryLog(`<span class="strategy">Challenge: ${chosen.name}</span><br>${outcome}`);
-
+  
+  const chosen = challenges[Math.floor(Math.random() * challenges.length)];
+  const outcome = chosen.outcomes[Math.floor(Math.random() * chosen.outcomes.length)]();
+  
+  addToStoryLog(`<div class="strategy"><strong>Challenge: ${chosen.name}</strong><br>${outcome}</div>`);
+  updateMissions();
 }
-
-// Twists & Bombshells
 
 function triggerTwist() {
-
-  const twistTypes = [
-
-    ()=>{addBombshell();},
-
-    ()=>{const i=islanders[Math.floor(Math.random()*islanders.length)]; const j=islanders[Math.floor(Math.random()*islanders.length)];
-
-      if(i!==j){i.relationships[j.name]-=2; addToStoryLog(`<span class="twist">Twist! ${i.name} sorgt für Chaos 😡 (-2)</span>`);}},
-
-    ()=>{const i=islanders[Math.floor(Math.random()*islanders.length)]; islanders.forEach(j=>{if(j!==i)i.relationships[j.name]+=2}); addToStoryLog(`<span class="twist">Bonus-Twist! ${i.name} bekommt einen heimlichen Crush-Boost 💘 (+2 bei allen)</span>`);}
-
+  const twists = [
+    () => {
+      addBombshell();
+    },
+    () => {
+      const i = islanders[Math.floor(Math.random() * islanders.length)];
+      addToStoryLog(`<div class="character-revelation">🌟 ${i.name} hat eine Offenbarung: Als ${i.traits[0].toLowerCase()}e Person hat ${i.name} immer versucht, ${i.traits[1].toLowerCase()} zu sein, aber das wahre Genie liegt in der Authentizität!</div>`);
+      addToStoryLog(`<div class="historical-note">📚 ${i.historicalFact}</div>`);
+      interactionCount++;
+    },
+    () => {
+      const i = islanders[Math.floor(Math.random() * islanders.length)];
+      islanders.forEach(j => {
+        if (j !== i) i.relationships[j.name] += 2;
+      });
+      addToStoryLog(`<div class="twist">✨ ${i.name} hat einen magischen Moment! Ihre ${i.traits[0].toLowerCase()}e Art berührt alle in der Villa. (+2 bei allen)</div>`);
+      interactionCount++;
+    }
   ];
-
-  twistTypes[Math.floor(Math.random()*twistTypes.length)]();
-
+  
+  twists[Math.floor(Math.random() * twists.length)]();
 }
-
-// Nächster Tag
 
 function nextDay() {
-
-  if(currentDay>totalDays) return;
-
-  dailyChallengeCount = 0;
-
-  couplingDoneToday = false;
-
-  formCouples(); // daily couplings before events
-
-  const eventsPerDay=3;
-
-  for(let i=0;i<eventsPerDay;i++) addToStoryLog(randomEvent());
-
-  if(Math.random()<0.3) triggerTwist();
-
-  if(currentDay===totalDays) endSeason(); else currentDay++;
-
+  if (currentDay >= totalDays) {
+    endSeason();
+    return;
+  }
+  
+  challengesCompleted = 0;
+  
+  formCouples();
+  
+  const eventsPerDay = 4;
+  for (let i = 0; i < eventsPerDay; i++) {
+    addToStoryLog(randomEvent());
+  }
+  
+  if (Math.random() < 0.4) {
+    triggerTwist();
+  }
+  
+  currentDay++;
+  updateMissions();
+  
+  // Scroll to top of story log
+  document.getElementById('storyLog').scrollTop = 0;
 }
-
-// Staffelfinale
 
 function endSeason() {
-
-  addToStoryLog("<strong>Finale: Zusammenfassung der Beziehungen</strong>");
-
-  islanders.forEach(i=>{
-
-    let maxRel={name:null,value:-Infinity};
-
-    for(let key in i.relationships) if(i.relationships[key]>maxRel.value) maxRel={name:key,value:i.relationships[key]};
-
-    addToStoryLog(`${i.name}s stärkste Verbindung: ${maxRel.name} (Beziehungswert: ${maxRel.value})`);
-
+  if (!badges.philosopher) {
+    badges.philosopher = true;
+    awardBadge('philosopher');
+  }
+  
+  addToStoryLog(`<div class="twist"><h2>🏆 STAFFELFINALE 🏆</h2></div>`);
+  addToStoryLog(`<div class="info-card"><h3>Was haben wir über Persönlichkeiten gelernt?</h3></div>`);
+  
+  islanders.forEach(i => {
+    let maxRel = { name: null, value: -Infinity };
+    for (let key in i.relationships) {
+      if (i.relationships[key] > maxRel.value) {
+        maxRel = { name: key, value: i.relationships[key] };
+      }
+    }
+    
+    const partner = islanders.find(p => p.name === maxRel.name);
+    let insight = "";
+    if (partner) {
+      insight = `Diese Verbindung zeigt, wie ${i.traits[0].toLowerCase()}e Menschen mit ${partner.traits[0].toLowerCase()}en Persönlichkeiten harmonieren können.`;
+    }
+    
+    addToStoryLog(`<div class="info-card">
+      <strong>${i.emoji} ${i.name}</strong> (${i.traits.join(", ")})<br>
+      Stärkste Verbindung: ${maxRel.name} (Wert: ${maxRel.value})<br>
+      <em>${insight}</em><br>
+      <div class="historical-note">📚 ${i.historicalFact}</div>
+    </div>`);
   });
-
-  let winner=islanders[0];
-
-  islanders.forEach(i=>{
-
-    const total=Object.values(i.relationships).reduce((a,b)=>a+b,0);
-
-    const winnerTotal=Object.values(winner.relationships).reduce((a,b)=>a+b,0);
-
-    if(total>winnerTotal) winner=i;
-
+  
+  let winner = islanders[0];
+  islanders.forEach(i => {
+    const total = Object.values(i.relationships).reduce((a, b) => a + b, 0);
+    const winnerTotal = Object.values(winner.relationships).reduce((a, b) => a + b, 0);
+    if (total > winnerTotal) winner = i;
   });
-
-  addToStoryLog(`<strong>Der Gewinner von Love Island ist ${winner.emoji} ${winner.name} 🏆</strong>`);
-
-  document.getElementById("advanceBtn").disabled=true;
-
-  document.getElementById("advanceBtn").innerText="Staffel beendet";
-
-  document.getElementById("challengeBtn").disabled=true;
-
-  document.getElementById("challengeBtn").innerText="Staffel beendet";
-
+  
+  addToStoryLog(`<div class="mission-complete">
+    <h2>🏆 Der Gewinner: ${winner.emoji} ${winner.name} 🏆</h2>
+    <p><strong>Warum ${winner.name} gewonnen hat:</strong></p>
+    <p>${winner.name}s ${winner.traits[0].toLowerCase()}e und ${winner.traits[1].toLowerCase()}e Natur ermöglichte es, authentische Verbindungen mit unterschiedlichsten Persönlichkeitstypen aufzubauen!</p>
+    <p><em>Das zeigt uns: Echte historische Größe kommt oft von der Fähigkeit, mit anderen zusammenzuarbeiten und sie zu verstehen.</em></p>
+  </div>`);
+  
+  const earnedBadges = Object.values(badges).filter(b => b).length;
+  addToStoryLog(`<div class="mission-complete">
+    <h3>🎓 Deine Lernerfolge</h3>
+    <p>Du hast ${earnedBadges} von 5 Abzeichen verdient!</p>
+    <p>Beobachtete Interaktionen: ${interactionCount}</p>
+    <p>Gebildete Paare: ${couplesFormed}</p>
+    <p>Entdeckte Einsichten: ${insightsRevealed}</p>
+    <p><em>${earnedBadges === 5 ? 'Perfekt! Du bist ein wahrer Historiker der Persönlichkeiten!' : 'Starte eine neue Staffel, um mehr zu lernen!'}</em></p>
+  </div>`);
+  
+  document.getElementById("advanceBtn").disabled = true;
+  document.getElementById("advanceBtn").textContent = "✅ Staffel beendet";
+  document.getElementById("challengeBtn").disabled = true;
+  document.getElementById("insightBtn").disabled = true;
 }
+
+// Initialize
+updateMissions();
 </script>
+
 </body>
 </html>
- 
