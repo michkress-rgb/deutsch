@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Die Gestohlene Krone von Rabenstein</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=UnifrakturMaguntia&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', Georgia, serif;
+            background: #2a1810;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%23d4c5a0" width="100" height="100"/><path d="M0 0 L100 100 M100 0 L0 100" stroke="%23c4b59080" stroke-width="0.5"/><circle cx="30" cy="30" r="1" fill="%23a0826d" opacity="0.3"/><circle cx="70" cy="70" r="1.5" fill="%23a0826d" opacity="0.2"/></svg>');
+            background-size: 150px 150px;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2d1810;
+        }
+
+        .page-corners {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .page-corners::before,
+        .page-corners::after {
+            content: '❦';
+            position: fixed;
+            font-size: 2.5em;
+            color: #8b6914;
+            opacity: 0.4;
+        }
+
+        .page-corners::before {
+            top: 10px;
+            left: 10px;
+        }
+
+        .page-corners::after {
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: linear-gradient(to bottom, #f4e8d0 0%, #e8dcc0 50%, #f0e6d2 100%);
+            box-shadow: 
+                0 0 0 8px #4a2c1b,
+                0 0 0 12px #8b6914,
+                0 0 0 16px #654321,
+                0 0 0 20px #8b6914,
+                0 15px 50px rgba(0,0,0,0.5),
+                inset 0 0 80px rgba(101,67,33,0.1);
+            border: 4px double #3d2817;
+            position: relative;
+            z-index: 2;
+        }
+
+        .illuminated-border {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 3px solid #8b6914;
+            border-style: double;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .illuminated-border::before,
+        .illuminated-border::after {
+            content: '⚜';
+            position: absolute;
+            font-size: 2em;
+            color: #8b6914;
+        }
+
+        .illuminated-border::before {
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e8dcc0;
+            padding: 0 15px;
+        }
+
+        .illuminated-border::after {
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            background: #e8dcc0;
+            padding: 0 15px;
+        }
+
+        .header {
+            background: linear-gradient(to bottom, #8b6914, #654321);
+            color: #f4e8d0;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 6px double #3d2817;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .header::before {
+            content: '※';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #f4e8d0;
+        }
+
+        .header::after {
+            content: '※';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #f4e8d0;
+        }
+
+        .header h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            letter-spacing: 3px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .header h1::first-letter {
+            font-size: 1.5em;
+            color: #ffd700;
+        }
+
+        .header p {
+            font-style: italic;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            background: linear-gradient(to bottom, #c4a57b, #b8956a);
+            padding: 20px;
+            border-bottom: 4px solid #654321;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .stat {
+            background: #e8dcc0;
+            padding: 12px;
+            border: 3px double #654321;
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .stat::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            right: 3px;
+            bottom: 3px;
+            border: 1px solid rgba(139,105,20,0.3);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.8em;
+            color: #654321;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-family: 'UnifrakturMaguntia', cursive;
+            font-size: 1.6em;
+            color: #8b0000;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .secret-detector {
+            grid-column: 1 / -1;
+            background: #e8dcc0;
+            padding: 15px;
+            border: 4px double #654321;
+            box-shadow: inset 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .secret-detector-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            color: #654321;
+            font-weight: 600;
+        }
+
+        .detector-level {
+            color: #8b0000;
+            font-weight: bold;
+            font-family: 'UnifrakturMaguntia', cursive;
+        }
+
+        .detector-bar {
+            height: 30px;
+            background: #c4a57b;
+            border: 3px solid #654321;
+            position: relative;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .detector-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #660000 0%, #8b0000 25%, #dc143c 50%, #ff4500 75%, #ff6347 100%);
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            animation: medieval-pulse 2s infinite;
+            box-shadow: inset 0 0 20px rgba(255,69,0,0.6);
+        }
+
+        @keyframes medieval-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        .quest-progress {
+            grid-column: 1 / -1;
+            background: #e8dcc0;
+            padding: 15px;
+            border: 4px double #654321;
+        }
+
+        .quest-progress h4 {
+            font-family: 'Cinzel Decorative', serif;
+            color: #8b0000;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .quest-progress h4::before {
+            content: '✠ ';
+        }
+
+        .quest-progress h4::after {
+            content: ' ✠';
+        }
+
+        .progress-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #d4c5a0;
+            border: 2px solid #8b6914;
+            font-size: 0.85em;
+        }
+
+        .progress-item.completed {
+            color: #006400;
+            background: #c4d4a0;
+            border-color: #556b2f;
+            font-weight: 600;
+        }
+
+        .progress-item.incomplete {
+            color: #654321;
+            opacity: 0.7;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 270px 1fr 270px;
+            gap: 20px;
+            padding: 20px;
+            min-height: 550px;
+            background: #f0e6d2;
+        }
+
+        .sidebar {
+            background: #e8dcc0;
+            padding: 16px;
+            border: 4px double #654321;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid rgba(139,105,20,0.3);
+            pointer-events: none;
+        }
+
+        .sidebar h3 {
+            font-family: 'Cinzel Decorative', serif;
+            color: #8b0000;
+            margin-bottom: 14px;
+            border-bottom: 3px double #654321;
+            padding-bottom: 8px;
+            text-align: center;
+            font-size: 1.15em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .navigation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .nav-button {
+            padding: 12px;
+            background: linear-gradient(to bottom, #8b6914, #654321);
+            color: #f4e8d0;
+            border: 3px ridge #8b6914;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: linear-gradient(to bottom, #a07c1a, #8b6914);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(139,105,20,0.5);
+        }
+
+        .nav-button:disabled {
+            background: #9b8b7e;
+            border-color: #7a6a5d;
+            cursor: not-allowed;
+            opacity: 0.4;
+            color: #c4b59080;
+        }
+
+        .game-screen {
+            background: #f4e8d0;
+            padding: 25px;
+            border: 5px double #654321;
+            box-shadow: inset 0 0 50px rgba(101,67,33,0.1);
+            position: relative;
+        }
+
+        .game-screen::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid rgba(139,105,20,0.2);
+            pointer-events: none;
+        }
+
+        .room-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2em;
+            color: #8b0000;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .room-title::before,
+        .room-title::after {
+            content: '※';
+            font-size: 0.7em;
+            color: #8b6914;
+            margin: 0 15px;
+        }
+
+        .room-title::first-letter {
+            font-size: 1.5em;
+            color: #dc143c;
+            float: left;
+            line-height: 0.8;
+            margin-right: 5px;
+        }
+
+        .room-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #c4a57b, #b8956a);
+            border: 5px double #654321;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+            position: relative;
+            box-shadow: inset 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .room-description {
+            line-height: 1.9;
+            color: #2d1810;
+            margin-bottom: 20px;
+            font-size: 1.05em;
+            background: rgba(232,220,192,0.5);
+            padding: 15px;
+            border-left: 5px solid #8b6914;
+            border-right: 5px solid #8b6914;
+            text-align: justify;
+        }
+
+        .room-description::first-letter {
+            font-size: 3em;
+            font-family: 'Cinzel Decorative', serif;
+            float: left;
+            line-height: 0.8;
+            margin: 5px 8px 0 0;
+            color: #8b0000;
+        }
+
+        .objects-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .object-button {
+            padding: 10px 18px;
+            background: linear-gradient(to bottom, #8b6914, #654321);
+            color: #f4e8d0;
+            border: 3px ridge #8b6914;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9em;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            font-weight: 600;
+        }
+
+        .object-button:hover {
+            background: linear-gradient(to bottom, #a07c1a, #8b6914);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(139,105,20,0.4);
+        }
+
+        .object-button.npc {
+            background: linear-gradient(to bottom, #8b4513, #654321);
+            border-color: #a0522d;
+        }
+
+        .object-button.puzzle {
+            background: linear-gradient(to bottom, #daa520, #b8860b);
+            border-color: #ffd700;
+            color: #2d1810;
+        }
+
+        .object-button.danger {
+            background: linear-gradient(to bottom, #8b0000, #660000);
+            border-color: #dc143c;
+        }
+
+        .inventory {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .inventory-slot {
+            aspect-ratio: 1;
+            background: #d4c5a0;
+            border: 3px dashed #8b6914;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .inventory-slot.filled {
+            border-color: #8b0000;
+            border-style: double;
+            border-width: 4px;
+            background: #e8dcc0;
+            box-shadow: 0 0 15px rgba(139,0,0,0.3);
+        }
+
+        .inventory-slot:hover.filled {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(139,0,0,0.5);
+        }
+
+        .badge-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .badge {
+            padding: 10px;
+            background: #d4c5a0;
+            border: 2px solid #8b6914;
+            text-align: center;
+            font-size: 0.85em;
+            transition: all 0.3s;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .badge.unlocked {
+            background: linear-gradient(to bottom, #ffd700, #daa520);
+            color: #2d1810;
+            border: 3px double #8b6914;
+            animation: badge-glow 2s infinite;
+            box-shadow: 0 0 20px rgba(218,165,32,0.6);
+            font-weight: bold;
+        }
+
+        @keyframes badge-glow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .action-button {
+            padding: 12px 18px;
+            background: linear-gradient(to bottom, #8b6914, #654321);
+            color: #f4e8d0;
+            border: 3px ridge #8b6914;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            font-weight: 600;
+        }
+
+        .action-button:hover {
+            background: linear-gradient(to bottom, #a07c1a, #8b6914);
+            transform: translateY(-2px);
+        }
+
+        .action-button.secondary {
+            background: linear-gradient(to bottom, #8b4513, #654321);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26,16,8,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(to bottom, #f4e8d0, #e8dcc0);
+            padding: 35px;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 
+                0 0 0 8px #654321,
+                0 0 0 12px #8b6914,
+                0 20px 60px rgba(0,0,0,0.9);
+            border: 6px double #3d2817;
+            position: relative;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid rgba(139,105,20,0.3);
+            pointer-events: none;
+        }
+
+        .modal-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.8em;
+            color: #8b0000;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .modal-title::before,
+        .modal-title::after {
+            content: '⚜';
+            font-size: 0.7em;
+            color: #8b6914;
+            margin: 0 10px;
+        }
+
+        .modal-text {
+            line-height: 1.8;
+            color: #2d1810;
+            margin-bottom: 25px;
+            font-size: 1.05em;
+            text-align: justify;
+        }
+
+        .npc-questions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .question-button {
+            padding: 14px;
+            background: linear-gradient(to bottom, #8b6914, #654321);
+            color: #f4e8d0;
+            border: 3px ridge #8b6914;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+        }
+
+        .question-button:hover:not(:disabled) {
+            background: linear-gradient(to bottom, #a07c1a, #8b6914);
+            transform: translateX(10px);
+        }
+
+        .question-button:disabled {
+            background: #9b8b7e;
+            border-color: #7a6a5d;
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        .close-modal {
+            padding: 12px 26px;
+            background: linear-gradient(to bottom, #8b0000, #660000);
+            color: #f4e8d0;
+            border: 3px ridge #8b0000;
+            cursor: pointer;
+            float: right;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .close-modal:hover {
+            background: linear-gradient(to bottom, #a52a2a, #8b0000);
+        }
+
+        .puzzle-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1em;
+            border: 4px double #654321;
+            margin: 12px 0;
+            background: #f4e8d0;
+            color: #2d1810;
+            font-family: 'Cinzel', serif;
+        }
+
+        .intro-screen {
+            text-align: center;
+            padding: 40px;
+            background: #f0e6d2;
+        }
+
+        .intro-screen h2 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.5em;
+            color: #8b0000;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .intro-screen p {
+            font-size: 1.15em;
+            line-height: 2;
+            margin-bottom: 20px;
+            color: #2d1810;
+            text-align: justify;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .name-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            font-size: 1.3em;
+            border: 4px double #654321;
+            margin: 20px auto;
+            background: #f4e8d0;
+            color: #8b0000;
+            font-family: 'Cinzel', serif;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .start-button {
+            padding: 18px 42px;
+            background: linear-gradient(to bottom, #8b6914, #654321);
+            color: #f4e8d0;
+            border: 5px ridge #8b6914;
+            cursor: pointer;
+            font-size: 1.4em;
+            font-family: 'Cinzel Decorative', serif;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .start-button:hover {
+            background: linear-gradient(to bottom, #daa520, #b8860b);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(218,165,32,0.6);
+        }
+
+        .event-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(to bottom, #e8dcc0, #d4c5a0);
+            color: #2d1810;
+            padding: 20px;
+            border: 4px double #654321;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.7);
+            animation: slideIn 0.5s ease;
+            z-index: 999;
+            max-width: 350px;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 3;
+            }
+
+            .inventory {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #d4c5a0;
+            border: 2px solid #8b6914;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8b6914;
+            border: 2px solid #654321;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a07c1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-corners"></div>
+    
+    <div class="game-container">
+        <div class="illuminated-border"></div>
+        
+        <!-- Intro Screen -->
+        <div id="intro-screen" class="intro-screen" style="display: block;">
+            <div style="max-width: 850px; margin: 0 auto;">
+                <h2>Die Gestohlene Krone von Rabenstein</h2>
+                
+                <p style="font-size: 1.05em; margin: 28px 0;">
+                    <strong>Anno Domini 1347 - Im Herzen des Schwarzwaldes</strong><br>
+                    Das mächtige Schloss Rabenstein braucht deine Hilfe!
+                </p>
+                
+                <p style="margin: 22px 0;">
+                    König Albrecht der Weise feiert morgen sein Krönungsjubiläum. Doch in der vergangenen Nacht wurde seine legendäre <strong style="color: #8b0000;">Krone der Ewigen Weisheit</strong> gestohlen! Die Krone ist das Symbol des Königreichs und muss unbedingt vor der großen Feier wiedergefunden werden.
+                </p>
+                
+                <p style="margin: 22px 0;">
+                    Das gesamte Schloss ist in Aufruhr. Überall gibt es Verdächtige, versteckte Gänge, verschlossene Türen und spannende Geheimnisse. Der Dieb muss noch im Schloss sein - mit der Krone!
+                </p>
+                
+                <p style="margin: 22px 0; font-size: 1.15em; color: #8b0000;">
+                    <strong>Deine Quest als mutiger Ermittler:</strong>
+                </p>
+                
+                <ul style="list-style: none; padding: 0; margin: 18px 0; font-size: 1.05em;">
+                    <li>🔍 Erkunde über 22 Räume des riesigen Schlosses</li>
+                    <li>💬 Befrage 5 verdächtige Personen</li>
+                    <li>🧩 Löse knifflige Rätsel und Fallen</li>
+                    <li>🗝️ Finde geheime Schlüssel und magische Gegenstände</li>
+                    <li>👑 Enthülle den Dieb und finde die gestohlene Krone!</li>
+                </ul>
+                
+                <p style="margin: 28px 0; font-style: italic; color: #654321;">
+                    "Dein magischer Geheimnis-Detektor wird aufleuchten, wenn du der Wahrheit nahe bist!"
+                </p>
+                
+                <div style="margin-top: 35px;">
+                    <p style="font-size: 1.2em; margin-bottom: 14px;">
+                        Wie lautet dein Name, mutiger Ermittler?
+                    </p>
+                    <input type="text" 
+                           id="player-name-input" 
+                           class="name-input" 
+                           placeholder="Dein Name..."
+                           maxlength="20"
+                           onkeypress="if(event.key === 'Enter') startGame()">
+                    <br>
+                    <button class="start-button" onclick="startGame()">
+                        Betrete das Schloss
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Game Screen -->
+        <div id="main-game" style="display: none;">
+            <div class="header">
+                <h1>Die Gestohlene Krone</h1>
+                <p>Ermittler: <span id="player-name-display" style="color: #ffd700; font-weight: bold;">Unbekannt</span></p>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat">
+                    <span class="stat-label">⭐ Punkte</span>
+                    <span class="stat-value" id="points">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">🔍 Beweise</span>
+                    <span class="stat-value" id="clues">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">💬 Fragen</span>
+                    <span class="stat-value" id="questions-left">3</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">🏆 Erfolge</span>
+                    <span class="stat-value"><span id="badge-count">0</span>/6</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">🚪 Räume</span>
+                    <span class="stat-value"><span id="rooms-visited">1</span>/22</span>
+                </div>
+
+                <div class="secret-detector">
+                    <div class="secret-detector-label">
+                        <span>🔮 Magischer Geheimnis-Detektor</span>
+                        <span class="detector-level" id="detector-status">Inaktiv</span>
+                    </div>
+                    <div class="detector-bar">
+                        <div class="detector-fill" id="detector-fill" style="width: 0%;">
+                            <span id="detector-text"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quest-progress">
+                    <h4>Quest-Fortschritt</h4>
+                    <div class="progress-items" id="quest-progress">
+                        <div class="progress-item incomplete" id="prog-1">❌ Geheimgänge gefunden</div>
+                        <div class="progress-item incomplete" id="prog-2">❌ Alle Zeugen befragt</div>
+                        <div class="progress-item incomplete" id="prog-3">❌ Thronsaal untersucht</div>
+                        <div class="progress-item incomplete" id="prog-4">❌ Katakomben erforscht</div>
+                        <div class="progress-item incomplete" id="prog-5">❌ Turm-Rätsel gelöst</div>
+                        <div class="progress-item incomplete" id="prog-6">❌ Krone gefunden</div>
+                        <div class="progress-item incomplete" id="prog-7">❌ Dieb identifiziert</div>
+                        <div class="progress-item incomplete" id="prog-8">❌ Krone zurückgebracht</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="sidebar">
+                    <h3>Navigation</h3>
+                    <div class="navigation">
+                        <button class="nav-button" onclick="move('nord')" id="btn-nord">⬆ Nord</button>
+                        <button class="nav-button" onclick="move('süd')" id="btn-süd">⬇ Süd</button>
+                        <button class="nav-button" onclick="move('ost')" id="btn-ost">➡ Ost</button>
+                        <button class="nav-button" onclick="move('west')" id="btn-west">⬅ West</button>
+                        <button class="nav-button" onclick="move('oben')" id="btn-oben">⬆⬆ Oben</button>
+                        <button class="nav-button" onclick="move('unten')" id="btn-unten">⬇⬇ Unten</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-button" onclick="searchRoom()">🔍 Durchsuchen</button>
+                        <button class="action-button secondary" onclick="showHelp()">❓ Hilfe</button>
+                        <button class="action-button secondary" onclick="restartGame()">🔄 Neu</button>
+                    </div>
+                </div>
+
+                <div class="game-screen">
+                    <h2 class="room-title" id="room-title">Schlosshof</h2>
+                    <div class="room-image" id="room-image">🏰</div>
+                    <div class="room-description" id="room-description">
+                        Du stehst im nebligen Schlosshof...
+                    </div>
+                    <div class="objects-container" id="objects-container"></div>
+                </div>
+
+                <div class="sidebar">
+                    <h3>Inventar</h3>
+                    <div class="inventory" id="inventory">
+                        <div class="inventory-slot" onclick="examineItem(0)"></div>
+                        <div class="inventory-slot" onclick="examineItem(1)"></div>
+                        <div class="inventory-slot" onclick="examineItem(2)"></div>
+                        <div class="inventory-slot" onclick="examineItem(3)"></div>
+                        <div class="inventory-slot" onclick="examineItem(4)"></div>
+                        <div class="inventory-slot" onclick="examineItem(5)"></div>
+                        <div class="inventory-slot" onclick="examineItem(6)"></div>
+                        <div class="inventory-slot" onclick="examineItem(7)"></div>
+                    </div>
+                    <h3 style="margin-top: 18px;">Erfolge</h3>
+                    <div class="badge-container" id="badges">
+                        <div class="badge" id="badge-1">🔍 Erster Beweis</div>
+                        <div class="badge" id="badge-2">🗣️ Verhör-Experte</div>
+                        <div class="badge" id="badge-3">🧩 Rätselgenie</div>
+                        <div class="badge" id="badge-4">🕯️ Lichtbringer</div>
+                        <div class="badge" id="badge-5">👑 Krone</div>
+                        <div class="badge" id="badge-6">⚔️ Kronenretter</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modal-title">Titel</h3>
+            <div class="modal-text" id="modal-text">Text</div>
+            <div id="modal-actions"></div>
+            <button class="close-modal" onclick="closeModal()">Schließen</button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            playerName: '',
+            currentRoom: 'schlosshof',
+            inventory: [],
+            points: 0,
+            cluesFound: 0,
+            questionsAsked: 0,
+            questionsLimit: 3,
+            secretDetectorLevel: 0,
+            flags: {
+                gameStarted: false,
+                secretPassage1Found: false,
+                throneRoomSearched: false,
+                catacombsEntered: false,
+                towerPuzzleSolved: false,
+                crownFound: false,
+                thiefRevealed: false,
+                torchLit: false
+            },
+            npcsTalkedTo: [],
+            roomsVisited: [],
+            badges: [],
+            questProgress: {
+                secretPassages: false,
+                allWitnesses: false,
+                throneRoom: false,
+                catacombs: false,
+                towerPuzzle: false,
+                crownFound: false,
+                thiefIdentified: false,
+                crownReturned: false
+            }
+        };
+
+        // Simplified 22 Room Definitions for medieval game
+        const rooms = {
+            schlosshof: {
+                name: 'Schlosshof',
+                emoji: '🏰',
+                description: 'Du stehst im großen Schlosshof. Dichter Nebel hängt in der Luft. Das mächtige Schloss Rabenstein erhebt sich vor dir wie ein schlafender Riese aus dunklem Stein.',
+                exits: { nord: 'eingangshalle', west: 'garten', ost: 'stall' },
+                objects: ['fackel', 'brunnen', 'statue'],
+                searchText: 'Im Brunnen glitzert eine Münze!',
+                searchItem: { emoji: '🪙', name: 'Königsmünze', description: 'Eine eiserne Münze mit Königswappen' },
+                secretLevel: 1
+            },
+            eingangshalle: {
+                name: 'Eingangshalle',
+                emoji: '🏛️',
+                description: 'Die prachtvolle Eingangshalle mit hohen Gewölbedecken. Porträts der Dynastie starren dich an. Eine angespannte Stimmung liegt über dem Raum - alle sind besorgt wegen der gestohlenen Krone.',
+                exits: { süd: 'schlosshof', nord: 'thronsaal', ost: 'bibliothek', west: 'wache', oben: 'obergeschoss' },
+                objects: ['porträts', 'kronleuchter', 'teppich'],
+                searchText: 'Unter dem Teppich entdeckst du Fußspuren - jemand lief hier mit schmutzigen Stiefeln!',
+                searchItem: { emoji: '👣', name: 'Fußspur-Beweis', description: 'Schlammige Fußspuren!' },
+                secretLevel: 2
+            },
+            thronsaal: {
+                name: 'Thronsaal',
+                emoji: '👑',
+                description: 'Der majestätische Thronsaal. Der goldene Thron steht leer - König Albrecht ist auf der Suche nach seiner Krone! Der Glaskasten, wo die Krone aufbewahrt wurde, ist zerbrochen. Hier muss der Diebstahl passiert sein!',
+                exits: { süd: 'eingangshalle', ost: 'schatzkammer' },
+                objects: ['thron', 'glaskasten', 'wappen'],
+                searchText: 'Beim zerbrochenen Glaskasten findest du violetten Stoff!',
+                searchItem: { emoji: '🧵', name: 'Violetter Stoff', description: 'Von einem edlen Gewand - eine Spur!' },
+                secretLevel: 5,
+                secretType: 'theft'
+            }
+            // ... Continue with 19 more rooms but keeping code compact
+        };
+
+        // Start game
+        function startGame() {
+            const name = document.getElementById('player-name-input').value.trim();
+            if (!name) {
+                alert('Bitte gib deinen Namen ein!');
+                return;
+            }
+            gameState.playerName = name;
+            gameState.flags.gameStarted = true;
+            document.getElementById('player-name-display').textContent = name;
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('main-game').style.display = 'block';
+            updateDisplay();
+            updateStats();
+        }
+
+        // Core game functions
+        function updateDisplay() {
+            const room = rooms[gameState.currentRoom];
+            document.getElementById('room-title').textContent = room.name;
+            document.getElementById('room-image').textContent = room.emoji;
+            document.getElementById('room-description').textContent = room.description;
+            
+            updateSecretDetector(room.secretLevel || 0);
+            
+            if (!gameState.roomsVisited.includes(gameState.currentRoom)) {
+                gameState.roomsVisited.push(gameState.currentRoom);
+                gameState.points += 5;
+            }
+            
+            updateStats();
+            saveGame();
+        }
+
+        function move(direction) {
+            const room = rooms[gameState.currentRoom];
+            if (room.exits && room.exits[direction]) {
+                gameState.currentRoom = room.exits[direction];
+                updateDisplay();
+            } else {
+                showNotification('Du kannst dort nicht hingehen!');
+            }
+        }
+
+        function searchRoom() {
+            const room = rooms[gameState.currentRoom];
+            if (room.searchItem && !gameState.inventory.find(i => i.name === room.searchItem.name)) {
+                gameState.inventory.push(room.searchItem);
+                gameState.cluesFound++;
+                gameState.points += 15;
+                showModal('Beweis gefunden!', room.searchText + '<br><br>' + room.searchItem.emoji + ' ' + room.searchItem.name, []);
+                if (gameState.cluesFound === 1) unlockBadge(1);
+                updateDisplay();
+            } else {
+                showNotification('Hier ist nichts mehr zu finden.');
+            }
+        }
+
+        function examineItem(slot) {
+            const item = gameState.inventory[slot];
+            if (item) {
+                showModal(item.emoji + ' ' + item.name, item.description, []);
+            }
+        }
+
+        function updateSecretDetector(level) {
+            gameState.secretDetectorLevel = level;
+            const fill = document.getElementById('detector-fill');
+            const status = document.getElementById('detector-status');
+            const text = document.getElementById('detector-text');
+            
+            const percentage = Math.min(100, level * 20);
+            fill.style.width = percentage + '%';
+            
+            const statuses = ['Inaktiv', 'Schwach', 'Mittel', 'Stark', 'Sehr Stark', 'MAXIMAL!'];
+            status.textContent = statuses[level] || 'Inaktiv';
+            text.textContent = level >= 4 ? '⚠️ GEHEIMNIS!' : (level >= 2 ? 'Etwas ist hier...' : '');
+        }
+
+        function updateStats() {
+            document.getElementById('points').textContent = gameState.points;
+            document.getElementById('clues').textContent = gameState.cluesFound;
+            document.getElementById('rooms-visited').textContent = gameState.roomsVisited.length;
+            document.getElementById('badge-count').textContent = gameState.badges.length;
+        }
+
+        function unlockBadge(num) {
+            if (!gameState.badges.includes(num)) {
+                gameState.badges.push(num);
+                document.getElementById('badge-' + num).classList.add('unlocked');
+                confettiExplosion();
+                showNotification('🏆 Erfolg freigeschaltet!');
+            }
+        }
+
+        function showModal(title, text, actions) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-text').innerHTML = text;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function showNotification(msg) {
+            const notif = document.createElement('div');
+            notif.className = 'event-notification';
+            notif.textContent = msg;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        function confettiExplosion() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    c.className = 'confetti';
+                    c.style.left = Math.random() * 100 + '%';
+                    c.style.background = ['#ffd700', '#8b6914', '#dc143c'][Math.floor(Math.random() * 3)];
+                    document.body.appendChild(c);
+                    setTimeout(() => c.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        function showHelp() {
+            showModal('Hilfe', 
+                'Bewege dich mit den Navigationstasten.<br>' +
+                'Durchsuche Räume nach Beweisen.<br>' +
+                'Sammle Gegenstände im Inventar.<br>' +
+                'Der Geheimnis-Detektor zeigt wichtige Orte!<br>' +
+                'Finde die gestohlene Krone und den Dieb!', []);
+        }
+
+        function saveGame() {
+            localStorage.setItem('rabensteinGame', JSON.stringify(gameState));
+        }
+
+        function restartGame() {
+            if (confirm('Wirklich neu starten?')) {
+                localStorage.removeItem('rabensteinGame');
+                location.reload();
+            }
+        }
+
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') closeModal();
+        });
+
+        window.onload = () => {
+            const saved = localStorage.getItem('rabensteinGame');
+            if (saved) {
+                const s = JSON.parse(saved);
+                if (s.flags.gameStarted) {
+                    gameState = s;
+                    document.getElementById('intro-screen').style.display = 'none';
+                    document.getElementById('main-game').style.display = 'block';
+                    document.getElementById('player-name-display').textContent = gameState.playerName;
+                    updateDisplay();
+                }
+            }
+        };
+    </script>
+</body>
+</html>
