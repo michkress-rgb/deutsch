@@ -727,7 +727,7 @@
         exits:{ W:'courtyard', D:'cellar' },
         lockedExits:{ D:{ key:'rusty_key', msg:'Die Kellertür ist zu. Du brauchst einen Schlüssel.' } },
         search: [{ give:'crowbar', msg:'Im Ofen steckt ein Brecheisen. Praktisch – und überraschend sauber.' }],
-        character:{ name:'Koch-Geist', dialog:'Wenn du höflich „Bitte" sagst, geben dir Dinge manchmal schneller nach. Und ja: Brecheisen hilft!' },
+        character:{ name:'Koch-Geist', dialog:'Wenn du höflich "Bitte" sagst, geben dir Dinge manchmal schneller nach. Und ja: Brecheisen hilft!' },
         actions:[
           { label:'Heißen Kakao schlürfen (lädt Schneekugel)', once:false, fn:() => {
             chargePower('snowglobe', 30);
@@ -743,14 +743,14 @@
         desc:'Kühl, aber nicht schlimm. Fässer stehen herum wie dicke Schneemänner. An einer Wand wackeln Steine verdächtig.',
         exits:{ U:'kitchen' },
         interact:[
-          { label:'Hohles Fass öffnen', req:'crowbar', result:'get_ruby', msg:'Plopp! Im Fass liegt ein Rubin – als hätte jemand ihn „versteckt-vergesse-ich" gespielt.' },
+          { label:'Hohles Fass öffnen', req:'crowbar', result:'get_ruby', msg:'Plopp! Im Fass liegt ein Rubin – als hätte jemand ihn "versteckt-vergesse-ich" gespielt.' },
           { label:'Lockere Wand freilegen', req:'crowbar', action:'open_dungeon', msg:'Mit etwas Hebeln entsteht ein geheimer Durchgang ins Verlies!' }
         ]
       },
 
       dungeon: {
         name:'Verlies', visual:'⛓️', coords:{x:3,y:1,z:-1},
-        desc:'Eher „Abstellkammer für alte Ketten" als Horror. Ein Gang führt zur Gruft. Du hörst… leises Glöckchen-Klimpern?',
+        desc:'Eher "Abstellkammer für alte Ketten" als Horror. Ein Gang führt zur Gruft. Du hörst… leises Glöckchen-Klimpern?',
         exits:{ N:'crypt', S:'cellar' }
       },
 
@@ -758,7 +758,7 @@
         name:'Familiengruft', visual:'⚰️', coords:{x:3,y:0,z:-1},
         desc:'Steinerne Sarkophage. Ein grünes Leuchten schimmert freundlich wie eine Weihnachtsbaumkugel. Hier wartet ein Rätsel auf dich.',
         exits:{ S:'dungeon' },
-        puzzle:{ q:'Eine Stimme flüstert: „Nenne meinen Namen!" (Tipp: Notiz + Rot13)', a:'ALBRECHT', reward:'emerald' }
+        puzzle:{ q:'Eine Stimme flüstert: "Nenne meinen Namen!" (Tipp: Notiz + Rot13)', a:'ALBRECHT', reward:'emerald' }
       },
 
       library_entrance: {
@@ -951,8 +951,8 @@
     }
 
     function seedLog(){
-      log('Willkommen! Das Schloss ist heute eher „Weihnachts-Escape-Room" als Grusel.', 'info');
-      log('Tipp: Scanner auf „Geheimnisse" stellen, wenn du nicht weißt, ob hier noch etwas ist.', 'info');
+      log('Willkommen! Das Schloss ist heute eher "Weihnachts-Escape-Room" als Grusel.', 'info');
+      log('Tipp: Scanner auf "Geheimnisse" stellen, wenn du nicht weißt, ob hier noch etwas ist.', 'info');
     }
 
     function log(text, type='info'){
@@ -1236,7 +1236,7 @@
         updateUI();
       }else{
         log('Knapp daneben – versuch's später nochmal.', 'warn');
-        showMsg('Nicht ganz', 'Das war's noch nicht. Tipp: Sprich mit den Geistern oder nutze „Geheimnisse"-Scanner.');
+        showMsg('Nicht ganz', 'Das war\'s noch nicht. Tipp: Sprich mit den Geistern oder nutze "Geheimnisse"-Scanner.');
         // small mischief, no punishment spiral
         changeMischief(+8);
         closePuzzle();
@@ -1336,7 +1336,7 @@
         const secret = computeSecretScore(player.room);
         const extra = secret > 0
           ? 'Hier ist definitiv noch etwas zu entdecken. Such nach einem Rätsel/Objekt oder rede mit jemandem.'
-          : 'Hier wirkt alles schon „leer". Vielleicht woanders weitermachen.';
+          : 'Hier wirkt alles schon "leer". Vielleicht woanders weitermachen.';
 
         log('✨ Schneekugel-Schutz aktiviert.', 'good');
         showMsg('Schneekugel-Schutz', 'Eine glitzernde Kugel schwebt kurz vor dir – alles wird ruhiger.\n\nExtra-Hinweis: ' + extra);
@@ -1436,7 +1436,7 @@
         const pranks = [
           { t:'🎀 Schleifen-Sturm', m:'Ein Schwung Geschenk-Schleifen fliegt vorbei. Du musst lachen.', eff:()=>changeMischief(-6) },
           { t:'⛄ Schneemann-Witz', m:'Ein Geist zeichnet dir einen Schneemann ins Logbuch. Albern, aber nett.', eff:()=>changeMischief(-8) },
-          { t:'🔔 Glöckchen-Echo', m:'Du hörst Glöckchen. Es klingt wie „Sucht doch mal da oben…"', eff:()=>{ chargePower('jump', 8); } },
+          { t:'🔔 Glöckchen-Echo', m:'Du hörst Glöckchen. Es klingt wie "Sucht doch mal da oben…"', eff:()=>{ chargePower('jump', 8); } },
         ];
         const p = pranks[Math.floor(Math.random()*pranks.length)];
         log('Ein Schloss-Kobold macht Quatsch: ' + p.t, 'info');
