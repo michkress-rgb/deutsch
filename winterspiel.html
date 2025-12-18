@@ -1,0 +1,609 @@
+<script>
+    /* --- GAME DATA --- */
+    const player = {
+        room: 'courtyard',
+        inventory: [],
+        flags: {},
+        ghostMeter: 0,
+        ghostCooldown: 0,
+        visited: ['courtyard'],
+        mapLevel: 0,
+        questStep: 0
+    };
+
+    const items = {
+        'rusty_key': { name: 'Rostiger Schlüssel', icon: '🗝️', desc: 'Ein schwerer Eisenschlüssel. Er riecht nach Moder und Erde.', type: 'key' },
+        'silver_key': { name: 'Silberschlüssel', icon: '🗝️', desc: 'Filigran gearbeitet, verziert mit einem Turm-Symbol. Eiskalt.', type: 'key' },
+        'crowbar': { name: 'Brecheisen', icon: '🔧', desc: 'Massives Eisenwerkzeug. Perfekt, um vernagelte Kisten oder morsches Mauerwerk zu öffnen.', type: 'tool' },
+        'scroll': { name: 'Alte Notiz', icon: '📜', desc: 'Eine Warnung des Hofnarren. Rot13 verschlüsselt: "Vjre fbg nyyvrf orv anzra araara: Nyoerpug"', type: 'clue' },
+        'ruby': { name: 'Blutrubin', icon: '💎', desc: 'Er pulsiert warm in deiner Hand wie ein schlagendes Herz.', type: 'gem' },
+        'sapphire': { name: 'Eissaphir', icon: '💎', desc: 'Ein Stein so klar wie ein gefrorener See im Mondlicht.', type: 'gem' },
+        'emerald': { name: 'Waldsmaragd', icon: '💎', desc: 'Er leuchtet tiefgrün, als wäre das Leben selbst darin gefangen.', type: 'gem' }
+    };
+
+    // QUEST LOGIC: Guided steps
+    const quest = [
+        { text: "Gehe in die Große Halle (N) und untersuche den Tisch (E), um den Kellerschlüssel zu finden.", done: () => player.inventory.includes('rusty_key') },
+        { text: "Gehe in die Küche (O) und untersuche den alten Ofen (E), um ein Werkzeug zu finden.", done: () => player.inventory.includes('crowbar') },
+        { text: "Öffne die Kellertür in der Küche (RUNTER). Nutze das Brecheisen beim Fass.", done: () => player.inventory.includes('ruby') },
+        { text: "Gehe zurück in den Schlosshof (E). Im Schnee glänzt nun etwas (Silberschlüssel).", done: () => player.inventory.includes('silver_key') },
+        { text: "Öffne den Turmeingang (W) und löse das Zahlenrätsel in der Bibliothek.", done: () => player.inventory.includes('sapphire') },
+        { text: "Steige zur Turmspitze (HOCH) und nimm die Notiz vom Skelett.", done: () => player.inventory.includes('scroll') },
+        { text: "Gehe zurück in den Keller. Brich die Wand auf und betritt die Gruft. Löse das Namensrätsel.", done: () => player.inventory.includes('emerald') },
+        { text: "Du hast alle Steine! Gehe zum Thronsaal (N von Halle) und setze die Krone zusammen.", done: () => ['ruby','sapphire','emerald'].every(i=>player.inventory.includes(i)) }
+    ];
+
+    const rooms = {
+        'courtyard': {
+            name: 'Schlosshof', visual: '🏰', coords: {x:2, y:2, z:0},
+            desc: 'Der Wind heult leise durch die verschneiten Zinnen. Der Vollmond wirft lange, unheimliche Schatten über den gefrorenen Brunnen. Im Norden ragt die Große Halle auf.',
+            exits: { N: 'great_hall', O: 'kitchen', W: 'library_entrance' },
+            actions: [
+                { label: "Am Brunnen lauschen", effect: () => {
+                    log("Du hörst ein Flüstern: 'Drei Steine... ein Name...'", "info");
+                    player.ghostMeter = Math.max(0, player.ghostMeter - 10);
+                    showMsg("Der Brunnen", "Das Wasser ist gefroren. Doch das Flüstern beruhigt dich seltsam. (-10 Geister-Präsenz)");
+                }}
+            ]
+        },
+        'kitchen': {
+            name: 'Alte Küche', visual: '🍳', coords: {x:3, y:2, z:0},
+            desc: 'Ein beißender Geruch von kalter Asche und verrottetem Gemüse hängt in der Luft. Kupferne Töpfe liegen verbeult am Boden.',
+            exits: { W: 'courtyard', D: 'cellar' },
+            lockedExits: { D: {key: 'rusty_key', msg: 'Die schwere Eichentür zum Keller ist fest verschlossen.'} },
+            search: [
+                { give: 'crowbar', msg: 'In einem erkalteten Ofen entdeckst du ein massives Brecheisen!' },
+                { msg: 'Du findest nur kalte Asche und Knochenreste. Ein unheimlicher Ort.' }
+            ]
+        },
+        'cellar': {
+            name: 'Weinkeller', visual: '🍷', coords: {x:3, y:2, z:-1},
+            desc: 'Es ist stockfinster und feucht. Uralte Weinfässer stapeln sich. An der Nordwand spürst du einen Luftzug.',
+            exits: { U: 'kitchen' },
+            interact: [
+                { label: 'Hohles Fass öffnen', req: 'crowbar', result: 'get_ruby', msg: 'Mit einem lauten Krachen zersplittert das Holz. Im Bodensatz funkelt der Blutrubin!' },
+                { label: 'Wand einreißen', req: 'crowbar', action: 'open_dungeon', msg: 'Du schlägst gegen die lockeren Steine. Die Wand stürzt ein!' }
+            ],
+            search: [{ msg: 'Der Boden ist klebrig vom alten Wein. Nichts weiter zu finden.' }]
+        },
+        'great_hall': {
+            name: 'Große Halle', visual: '🕯️', coords: {x:2, y:1, z:0},
+            desc: 'Staub tanzt in den Mondstrahlen. Lange Tafeln sind gedeckt für Gäste, die längst zerfallen sind.',
+            exits: { S: 'courtyard', N: 'throne_room' },
+            search: [
+                { give: 'rusty_key', msg: 'Unter einem verstaubten Zinnteller findest du einen rostigen Schlüssel.' },
+                { msg: 'Die Teller sind leer. Nur Staub und Spinnweben.' }
+            ],
+            actions: [
+                { label: "Gästebuch lesen", effect: () => {
+                    showMsg("Gästebuch", "Letzter Eintrag: 'König Albrecht schloss die Krone weg. Wer seinen Namen ausspricht, findet den letzten Stein.'");
+                    log("Du lernst: Der Name ist der Schlüssel zur Gruft.", "info");
+                }}
+            ]
+        },
+        'throne_room': {
+            name: 'Thronsaal', visual: '👑', coords: {x:2, y:0, z:0},
+            desc: 'Eine unnatürliche Kälte herrscht hier. Der goldene Thron ist leer, doch die Fassung für die Winterkrone wartet.',
+            exits: { S: 'great_hall' },
+            interact: [{ label: 'Krone zusammensetzen', action: 'win_check' }],
+            actions: [
+                { label: "Thron untersuchen", effect: () => {
+                    showMsg("Der Thron", "Eine leere Fassung. Drei Vertiefungen: rot, blau, grün. Endlich ergibt alles Sinn.");
+                    log("Hier müssen die drei Steine hin.", "info");
+                }}
+            ]
+        },
+        'library_entrance': {
+            name: 'Turmeingang', visual: '🚪', coords: {x:1, y:2, z:0},
+            desc: 'Der Vorraum zum Turm. Eine massive Tür mit Silberbeschlägen versperrt den Weg nach Westen.',
+            exits: { O: 'courtyard', W: 'library' },
+            lockedExits: { W: {key: 'silver_key', msg: 'Die Tür hat kein Schlüsselloch, nur eine silberne Vertiefung.'} }
+        },
+        'library': {
+            name: 'Bibliothek', visual: '📚', coords: {x:0, y:2, z:0},
+            desc: 'Der Geruch von altem Pergament erfüllt den Raum. Regale voller Bücher ragen bis zur Decke.',
+            exits: { O: 'library_entrance', U: 'tower_top' },
+            puzzle: { q: 'Ein Logik-Rätsel versperrt eine Vitrine: 2, 4, 8, 16, ... Welche Zahl folgt?', a: '32', reward: 'sapphire' },
+            actions: [
+                { label: "Buch 'Kryptographie' lesen", effect: () => {
+                    showMsg("Kryptographie-Band", "Hinweis: Rot13 ist ein Verschiebechiffre. A wird zu N, B zu O... (+13 Buchstaben).");
+                    log("Das hilft dir sicher bei der Notiz!", "success");
+                }}
+            ]
+        },
+        'tower_top': {
+            name: 'Turmspitze', visual: '🌙', coords: {x:0, y:2, z:1},
+            desc: 'Der eisige Wind reißt an dir. Ein Skelett sitzt an die Zinnen gelehnt.',
+            exits: { D: 'library' },
+            search: [
+                { give: 'scroll', msg: 'Du nimmst dem Skelett vorsichtig die verschlüsselte Notiz aus den Fingern.' },
+                { msg: 'Der Wind ist hier oben zu stark. Nichts weiter zu finden.' }
+            ]
+        },
+        'dungeon': {
+            name: 'Verlies', visual: '⛓️', coords: {x:3, y:1, z:-1},
+            desc: 'Rostige Ketten, glitschiger Boden. Ein enger Tunnel führt weiter nach Norden.',
+            exits: { N: 'crypt', S: 'cellar' },
+            search: [{ msg: 'Nur Ratten und alte Knochen.' }]
+        },
+        'crypt': {
+            name: 'Familiengruft', visual: '⚰️', coords: {x:3, y:0, z:-1},
+            desc: 'Die Luft ist schwer. Hier ruhen die Ahnen. Aus einem offenen Grab dringt ein grünes Leuchten.',
+            exits: { S: 'dungeon' },
+            puzzle: { q: 'Eine Stimme flüstert: "Nenne meinen Namen!" (Hinweis: Notiz + Rot13)', a: 'ALBRECHT', reward: 'emerald' }
+        }
+    };
+
+    /* --- ENGINE --- */
+    function init() {
+        createSnow();
+        updateUI();
+        
+        // Global controls
+        document.addEventListener('keydown', (e) => {
+            if (isModalOpen()) return;
+            const k = e.key.toLowerCase();
+            if(k === 'w' || k === 'arrowup') move('N');
+            if(k === 's' || k === 'arrowdown') move('S');
+            if(k === 'a' || k === 'arrowleft') move('W');
+            if(k === 'd' || k === 'arrowright') move('O');
+            if(k === 'e') explore();
+        });
+
+        // Enter key inputs
+        ['puzzle-answer', 'ghost-answer'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.addEventListener('keydown', (e) => {
+                    if(e.key === 'Enter') {
+                        if(id === 'puzzle-answer') submitPuzzleAnswer();
+                        else submitGhostAnswer();
+                    }
+                });
+            }
+        });
+    }
+
+    function isModalOpen() {
+        return ['help-overlay', 'msg-modal', 'puzzle-modal', 'ghost-modal']
+            .some(id => window.getComputedStyle(document.getElementById(id)).display === 'flex');
+    }
+
+    function createSnow() {
+        const c = document.getElementById('snow-container');
+        for(let i=0; i<60; i++){
+            let s = document.createElement('div');
+            s.className = 'snowflake'; s.innerHTML = '❄';
+            s.style.left = Math.random()*100+'vw';
+            s.style.fontSize = (8 + Math.random()*14) + 'px';
+            s.style.animationDuration = (4+Math.random()*5)+'s';
+            s.style.animationDelay = '-' + (Math.random()*5) + 's';
+            s.style.opacity = 0.2 + Math.random()*0.5;
+            c.appendChild(s);
+        }
+    }
+
+    function updateUI() {
+        const r = rooms[player.room];
+        
+        // Header Info
+        document.getElementById('room-name').innerText = r.name;
+        document.getElementById('room-coords').innerText = `Ebene ${r.coords.z} | Sektor ${r.coords.x}-${r.coords.y}`;
+        document.getElementById('room-visual').innerText = r.visual;
+        document.getElementById('room-desc').innerText = r.desc;
+        
+        // Exits Line
+        let exitText = [];
+        const labels = {N:'Norden', S:'Süden', O:'Osten', W:'Westen', U:'Oben', D:'Unten'};
+        ['N','S','O','W','U','D'].forEach(dir => {
+            if(r.exits[dir]) exitText.push(labels[dir]);
+            else if(r.lockedExits && r.lockedExits[dir]) exitText.push(`${labels[dir]} (Verschlossen)`);
+        });
+        document.getElementById('room-exits').innerText = "Ausgänge: " + (exitText.length ? exitText.join(', ') : 'Keine offensichtlichen.');
+
+        // Buttons enable/disable
+        ['n','s','o','w','u','d'].forEach(d => {
+            const btn = document.getElementById(`btn-${d}`);
+            const dir = d.toUpperCase();
+            const hasExit = r.exits[dir] || (r.lockedExits && r.lockedExits[dir]);
+            btn.disabled = !hasExit;
+            btn.style.opacity = hasExit ? 1 : 0.3;
+        });
+
+        // Interaction Area
+        const area = document.getElementById('interaction-area');
+        area.innerHTML = '';
+        
+        // Puzzle?
+        if(r.puzzle && !player.flags[r.puzzle.reward + '_got']) {
+            let b = document.createElement('button');
+            b.className = 'action-btn'; b.innerText = '🧩 Rätsel untersuchen';
+            b.onclick = () => openPuzzleModal(r.puzzle);
+            area.appendChild(b);
+        }
+
+        // Specific Interactions
+        if(r.interact) {
+            r.interact.forEach(act => {
+                if(act.action === 'open_dungeon' && rooms['cellar'].exits['N']) return;
+                if(act.result === 'get_ruby' && player.inventory.includes('ruby')) return;
+                let b = document.createElement('button');
+                b.className = 'action-btn'; b.innerText = `⚙️ ${act.label}`;
+                b.onclick = () => handleInteract(act);
+                area.appendChild(b);
+            });
+        }
+
+        // Room Actions (Lore/Flavor)
+        if(r.actions) {
+            r.actions.forEach(a => {
+                let b = document.createElement('button');
+                b.className = 'action-btn'; b.innerText = `📖 ${a.label}`;
+                b.onclick = () => { 
+                    player.ghostMeter += 6;
+                    a.effect();
+                    updateGhostMeterUI();
+                    updateUI(); // in case flags change
+                };
+                area.appendChild(b);
+            });
+        }
+
+        renderMap(player.mapLevel);
+        updateObjectives();
+        renderInventory();
+    }
+
+    function renderMap(level) {
+        const map = document.getElementById('mini-map');
+        const btnID = level === -1 ? 'lvl-btn-m1' : 'lvl-btn-' + level;
+        document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById(btnID);
+        if(activeBtn) activeBtn.classList.add('active');
+
+        map.innerHTML = '';
+        
+        for(let y=0; y<5; y++) {
+            for(let x=0; x<5; x++) {
+                let node = document.createElement('div');
+                node.className = 'map-node fog';
+                
+                let roomKey = Object.keys(rooms).find(k => 
+                    rooms[k].coords.x === x && rooms[k].coords.y === y && rooms[k].coords.z === level
+                );
+
+                if(roomKey) {
+                    const r = rooms[roomKey];
+                    const isVisited = player.visited.includes(roomKey);
+                    const isCurrent = player.room === roomKey;
+
+                    // Fog adjacency
+                    let neighborVisited = false;
+                    if (!isVisited) {
+                         const neighbors = Object.keys(rooms).filter(k => {
+                             const nr = rooms[k];
+                             if (nr.coords.z !== level) return false;
+                             return (Math.abs(nr.coords.x - x) + Math.abs(nr.coords.y - y)) === 1;
+                         });
+                         neighborVisited = neighbors.some(nk => player.visited.includes(nk));
+                    }
+
+                    if (isCurrent) {
+                        node.className = 'map-node active';
+                        node.innerText = r.visual;
+                    } else if (isVisited) {
+                        node.className = 'map-node visited';
+                        node.innerText = r.visual;
+                        node.onclick = () => fastTravel(roomKey);
+                        node.title = r.name + " (Schnellreise)";
+                        
+                        let hasLock = false;
+                        if (r.lockedExits) {
+                            hasLock = Object.values(r.lockedExits).some(lock => !player.inventory.includes(lock.key));
+                        }
+                        if (hasLock) {
+                            let lock = document.createElement('span');
+                            lock.className = 'lock-icon'; lock.innerText='🔒';
+                            node.appendChild(lock);
+                        }
+                    } else if (neighborVisited) {
+                        node.className = 'map-node seen';
+                        node.innerText = '?';
+                    }
+                }
+                map.appendChild(node);
+            }
+        }
+    }
+
+    function move(dir) {
+        const r = rooms[player.room];
+        
+        if(r.lockedExits && r.lockedExits[dir]) {
+            const lock = r.lockedExits[dir];
+            if(player.inventory.includes(lock.key)) {
+                log('Der Schlüssel passt! Die Tür öffnet sich knarrend.', 'success');
+                player.room = r.exits[dir];
+                visitRoom();
+            } else {
+                log(lock.msg, 'danger');
+            }
+            return;
+        }
+
+        if(r.exits[dir]) {
+            player.room = r.exits[dir];
+            player.ghostMeter += 5; 
+            visitRoom();
+        }
+    }
+
+    function fastTravel(targetRoom) {
+        if (targetRoom === player.room) return;
+        log('Du eilst durch bekannte Gänge...', 'info');
+        player.ghostMeter += 8; 
+        player.room = targetRoom;
+        player.mapLevel = rooms[player.room].coords.z;
+        checkGhost();
+        updateUI();
+    }
+
+    function visitRoom() {
+        if(!player.visited.includes(player.room)) {
+            player.visited.push(player.room);
+            player.ghostMeter += 10;
+        }
+        player.mapLevel = rooms[player.room].coords.z;
+        checkGhost();
+        updateUI();
+    }
+
+    function explore() {
+        const r = rooms[player.room];
+        player.ghostMeter += 12;
+        updateGhostMeterUI();
+
+        // 1. Check Search Array (Contextual)
+        if (r.search) {
+            for (const entry of r.search) {
+                if (entry.give) {
+                    const already = player.inventory.includes(entry.give);
+                    if (already) continue; // skip this entry if already got item
+                    
+                    player.inventory.push(entry.give);
+                    log(entry.msg, 'success');
+                    showMsg('Gefunden!', entry.msg);
+                    updateUI();
+                    return;
+                } else {
+                    // flavor message (always shown if no item found/left)
+                    log(entry.msg, 'info');
+                    showMsg('Untersucht', entry.msg);
+                    checkGhost(true);
+                    return;
+                }
+            }
+        }
+
+        // 2. Secret Key (Courtyard special)
+        if(player.room === 'courtyard' && player.visited.includes('great_hall') && !player.inventory.includes('silver_key')) {
+            player.inventory.push('silver_key');
+            log('Im tiefen Schnee glänzt etwas: Ein Silberschlüssel!', 'success');
+            showMsg('Gefunden', 'Der Silberschlüssel lag im Schnee vergraben.');
+            updateUI();
+            return;
+        }
+
+        // Fallback
+        log('Du findest nichts Auffälliges.', 'info');
+        checkGhost(true);
+    }
+
+    function handleInteract(act) {
+        if(act.req && !player.inventory.includes(act.req)) {
+            log('Dir fehlt das passende Werkzeug: ' + items[act.req].name, 'danger');
+            return;
+        }
+
+        if(act.action === 'open_dungeon') {
+            rooms['cellar'].exits['N'] = 'dungeon';
+            log('Die Wand stürzt ein. Ein modriger Geruch strömt dir entgegen.', 'success');
+            updateUI();
+        } 
+        else if(act.result === 'get_ruby') {
+            player.inventory.push('ruby');
+            log('Du hältst den Blutrubin in Händen!', 'success');
+            showMsg('Edelstein', 'Der Blutrubin gehört dir.');
+            updateUI();
+        }
+        else if(act.action === 'win_check') {
+            if(['ruby','sapphire','emerald'].every(i => player.inventory.includes(i))) {
+                document.body.innerHTML = '<div style="display:flex;height:100vh;justify-content:center;align-items:center;background:#050a14;color:var(--accent-gold);flex-direction:column;text-align:center;"><h1 style="font-family:Cinzel;font-size:4em;color:var(--accent-gold);text-shadow:0 0 20px gold;">FLUCH GEBROCHEN</h1><p style="font-size:1.5em;color:#ccc;max-width:600px;margin:20px;">Das Schloss erstrahlt in neuem Glanz. Die Geister finden Frieden.</p><button onclick="location.reload()" style="padding:15px 30px;font-size:1.2em;cursor:pointer;background:var(--accent-green);color:white;border:2px solid gold;">Erneut spielen</button></div>';
+            } else {
+                log('Die Krone ist noch unvollständig. Dir fehlen Edelsteine.', 'danger');
+            }
+        }
+    }
+
+    /* --- PUZZLE SYSTEM --- */
+    let activePuzzle = null;
+    function openPuzzleModal(puzzle) {
+        activePuzzle = puzzle;
+        document.getElementById('puzzle-text').innerText = puzzle.q;
+        document.getElementById('puzzle-modal').style.display = 'flex';
+        document.getElementById('puzzle-answer').value = '';
+        document.getElementById('puzzle-answer').focus();
+    }
+
+    function closePuzzle() {
+        document.getElementById('puzzle-modal').style.display = 'none';
+        activePuzzle = null;
+    }
+
+    function submitPuzzleAnswer() {
+        if(!activePuzzle) return;
+        let ans = document.getElementById('puzzle-answer').value.toUpperCase().trim();
+        closePuzzle();
+        
+        if(ans === activePuzzle.a) {
+            player.inventory.push(activePuzzle.reward);
+            player.flags[activePuzzle.reward + '_got'] = true;
+            log('Richtig! Du erhältst: ' + items[activePuzzle.reward].name, 'success');
+            showMsg('Gelöst!', 'Ein geheimes Fach öffnet sich.');
+            updateUI();
+        } else {
+            log('Falsch. Ein kaltes Lachen hallt durch den Raum...', 'danger');
+            player.ghostMeter += 25;
+            checkGhost(true);
+        }
+    }
+
+    /* --- GHOST SYSTEM --- */
+    function checkGhost(force = false) {
+        if(player.ghostCooldown > 0) {
+            player.ghostCooldown--;
+            updateGhostMeterUI();
+            return;
+        }
+
+        if(player.ghostMeter > 100) player.ghostMeter = 100;
+        updateGhostMeterUI();
+
+        if(player.ghostMeter < 15 && !force) return;
+
+        let chance = player.ghostMeter / 160; 
+        if(force) chance += 0.2;
+
+        if(Math.random() < chance && player.room !== 'dungeon' && player.room !== 'crypt') {
+            spawnGhost();
+        }
+    }
+
+    function updateGhostMeterUI() {
+        const bar = document.getElementById('ghost-meter');
+        const txt = document.getElementById('ghost-status');
+        bar.style.width = player.ghostMeter + '%';
+        
+        if(player.ghostMeter < 30) txt.innerText = "Ruhig";
+        else if(player.ghostMeter < 70) { txt.innerText = "Unheimlich"; txt.style.color="orange"; }
+        else { txt.innerText = "GEFAHR"; txt.style.color="#ff4444"; }
+    }
+
+    const riddles = [
+        {q:"Ich habe Städte, aber keine Häuser. Gebirge, aber keine Bäume. Was bin ich?", a:"KARTE", pen:"teleport"},
+        {q:"Je mehr du von mir wegnimmst, desto größer werde ich. Was bin ich?", a:"LOCH", pen:"steal"},
+        {q:"Ich habe keine Stimme, doch ich heule. Ich habe keine Flügel, doch ich fliege. Was bin ich?", a:"WIND", pen:"steal"}
+    ];
+    let currentRiddle = null;
+
+    function spawnGhost() {
+        if(document.getElementById('ghost-modal').style.display === 'flex') return;
+        currentRiddle = riddles[Math.floor(Math.random()*riddles.length)];
+        document.getElementById('ghost-riddle-text').innerText = currentRiddle.q;
+        document.getElementById('ghost-modal').style.display = 'flex';
+        document.getElementById('ghost-answer').value = '';
+        document.getElementById('ghost-answer').focus();
+    }
+
+    function submitGhostAnswer() {
+        const val = document.getElementById('ghost-answer').value.toUpperCase().trim();
+        document.getElementById('ghost-modal').style.display = 'none';
+        
+        if(val === currentRiddle.a) {
+            log('Der Geist nickt respektvoll und verschwindet im Nebel.', 'success');
+            player.ghostMeter = 0;
+            player.ghostCooldown = 6; 
+            showMsg("Albrecht", "Er flüstert: 'Suche dort, wo Feuer ruht...' (Hinweis: Untersuche den Ofen oder den Kamin).");
+        } else {
+            log('FALSCHE ANTWORT! Albrecht ist erzürnt!', 'danger');
+            if(currentRiddle.pen === 'teleport') {
+                player.room = 'dungeon';
+                player.visited.push('dungeon');
+                player.mapLevel = -1;
+                log('Alles dreht sich... Du wachst im kalten Verlies auf.', 'danger');
+            } else {
+                // Safe Steal
+                const stealable = player.inventory.filter(i => !i.includes('key') && items[i].type !== 'gem');
+                
+                if(stealable.length > 0) {
+                    let itemID = stealable[Math.floor(Math.random()*stealable.length)];
+                    player.inventory = player.inventory.filter(i => i !== itemID);
+                    rooms['courtyard'].search = [{give:itemID, msg: `Du findest dein ${items[itemID].name} im Schnee wieder.`}]; 
+                    // Note: Simplified logic to put it back as a searchable, replacing regular search or appending?
+                    // For robustness: append to front of search array if exists, or create
+                    if(!rooms['courtyard'].search) rooms['courtyard'].search = [];
+                    rooms['courtyard'].search.unshift({give:itemID, msg: `Du findest dein ${items[itemID].name} im Schnee wieder.`});
+
+                    log(`${items[itemID].name} wurde gestohlen! Der Geist hat es im Schlosshof versteckt.`, 'danger');
+                } else {
+                     player.room = 'dungeon'; 
+                     player.mapLevel = -1;
+                     log('Der Geist findet nichts zu stehlen und schleudert dich ins Verlies!', 'danger');
+                }
+            }
+            player.ghostMeter = 50;
+            player.ghostCooldown = 3;
+        }
+        updateUI();
+    }
+
+    /* --- HELPER UI --- */
+    function log(msg, type) {
+        const div = document.createElement('div');
+        div.className = `log-entry ${type}`;
+        div.innerText = '> ' + msg;
+        const area = document.getElementById('game-log');
+        area.prepend(div);
+        if(area.childElementCount > 50) area.lastChild.remove();
+    }
+
+    function updateObjectives() {
+        // Mark gems done
+        ['ruby','sapphire','emerald'].forEach(gem => {
+            const el = document.getElementById('obj-'+gem);
+            if(player.inventory.includes(gem)) el.classList.add('done');
+        });
+
+        // Advance Quest Step
+        // We loop until we find a step not yet done
+        while (player.questStep < quest.length && quest[player.questStep].done()) {
+            player.questStep++;
+        }
+
+        const h = document.getElementById('hint-display');
+        // If finished all steps
+        if(player.questStep >= quest.length) {
+            h.innerText = "Setze die Krone zusammen!";
+        } else {
+            h.innerText = "Tipp: " + quest[player.questStep].text;
+        }
+    }
+
+    function renderInventory() {
+        const g = document.getElementById('inventory-grid');
+        g.innerHTML = '';
+        player.inventory.forEach(k => {
+            let d = document.createElement('div');
+            d.className = 'inv-item filled';
+            d.innerHTML = `${items[k].icon}<span>${items[k].name}</span>`;
+            d.onclick = () => showMsg(items[k].name, items[k].desc);
+            g.appendChild(d);
+        });
+        for(let i=player.inventory.length; i<8; i++) {
+            let d = document.createElement('div');
+            d.className = 'inv-item empty';
+            g.appendChild(d);
+        }
+    }
+
+    function openHelp() { document.getElementById('help-overlay').style.display = 'flex'; }
+    function closeHelp() { document.getElementById('help-overlay').style.display = 'none'; }
+    function showMsg(t, m) {
+        document.getElementById('msg-title').innerText = t;
+        document.getElementById('msg-text').innerText = m;
+        document.getElementById('msg-modal').style.display = 'flex';
+    }
+    function closeMsg() { document.getElementById('msg-modal').style.display = 'none'; }
+
+    init();
+</script>
