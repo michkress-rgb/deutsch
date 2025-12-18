@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Das Rätsel der Winterkrone - Festive + Scroll + Manual Controls</title>
+  <title>Das Rätsel der Winterkrone - Fixed Up/Down + Locks</title>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@500;700&display=swap');
 
     :root{
-      /* Lighter / more festive */
       --bg-sky: #0b2a52;
       --bg-sky2:#113b76;
       --bg-panel:#fff7ef;
@@ -26,15 +25,13 @@
     }
 
     *{margin:0;padding:0;box-sizing:border-box;}
-
-    /* SCROLL FIX: allow page scrolling */
     html, body { height: 100%; }
     body{
       font-family:'Cormorant Garamond', serif;
       font-size: 18px;
       color: var(--text-main);
       background: linear-gradient(180deg, var(--bg-sky) 0%, var(--bg-sky2) 100%);
-      overflow:auto; /* <-- important */
+      overflow:auto;
     }
 
     .game-wrapper{
@@ -47,7 +44,6 @@
       align-items: start;
     }
 
-    /* Panels can scroll internally if zoom cuts content */
     .panel{
       background: linear-gradient(180deg, var(--bg-panel2), var(--bg-panel));
       border: 2px solid var(--border);
@@ -56,7 +52,6 @@
       padding: 16px;
       display:flex;
       flex-direction:column;
-      min-height: 200px;
       overflow: hidden;
     }
 
@@ -88,9 +83,7 @@
       font-family:'Cinzel', serif;
       font-weight:700;
     }
-    .help-btn:hover{ filter: brightness(0.95); }
 
-    /* MAP */
     .map-wrapper{ margin-bottom: 12px; }
     .map-controls{ display:flex; gap:8px; justify-content:center; margin-bottom:8px; flex-wrap:wrap; }
     .lvl-btn{
@@ -142,14 +135,12 @@
       border-color: #f0d27c;
       cursor:pointer;
     }
-    .map-node.visited:hover{ transform: translateY(-1px); }
     .map-node.active{
       background: #e6fff1;
       border-color: var(--accent-green);
       box-shadow: 0 0 0 3px #d9ffe9 inset;
     }
 
-    /* MAIN */
     .room-title{
       font-family:'Cinzel', serif;
       font-size: 2.2em;
@@ -193,7 +184,6 @@
       font-size: 1.0em;
     }
 
-    /* Buttons */
     button{
       font-family:'Cinzel', serif;
       border-radius: 14px;
@@ -214,7 +204,6 @@
       margin-bottom: 10px;
     }
 
-    /* Manual control bar */
     .manual-controls{
       display:flex;
       gap: 8px;
@@ -238,7 +227,6 @@
       font-weight: 700;
     }
 
-    /* Direction pad */
     .d-pad-grid{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
@@ -252,7 +240,6 @@
       margin-top: 10px;
     }
 
-    /* Inventory visibility */
     .inventory-title{
       font-family:'Cinzel', serif;
       color: var(--accent-green);
@@ -295,7 +282,6 @@
     .inventory-list ul{ padding-left: 18px; }
     .inventory-list li{ margin: 4px 0; }
 
-    /* Modals */
     .overlay{
       position:fixed; inset:0;
       background: rgba(0,0,0,0.45);
@@ -324,7 +310,6 @@
       font-family: system-ui, sans-serif;
     }
 
-    /* Snow */
     .snowflake{
       position: fixed;
       top: -20px;
@@ -344,26 +329,21 @@
     }
   </style>
 </head>
+
 <body>
 
   <div id="help-overlay" class="overlay" style="display:flex;">
     <div class="modal-box">
       <div class="modal-close" onclick="closeHelp()">×</div>
       <h2 style="font-family:'Cinzel'; color: var(--accent-red); text-align:center; margin-bottom: 6px;">
-        Die Winterkrone (Festive Edition)
+        Winterkrone — Steuerung (Fix)
       </h2>
       <p style="text-align:center; font-family:system-ui,sans-serif; color:#333; margin-bottom:14px;">
-        Ziel: Sammle die 3 Edelsteine und setze die Krone im Thronsaal zusammen.
+        ⬆/⬇ gehen nur dort, wo es wirklich eine Treppe gibt (z.B. Bibliothek → Turmspitze).
+        Der Keller ist von der Küche aus ⬇ erreichbar (nach Aufschließen).
       </p>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <div style="background:#fff7d6; border:2px solid #f0d27c; border-radius:12px; padding:12px;">
-          <b>Bewegen</b><br/>
-          Nutze N/S/O/W und ⬆/⬇ (Treppe) — oder die manuelle Auswahl rechts.
-        </div>
-        <div style="background:#e6fff1; border:2px solid #bfead0; border-radius:12px; padding:12px;">
-          <b>Fun</b><br/>
-          Räume haben Aktionen, kleine Hinweise und Überraschungen. Kein “Game Over”-Stress.
-        </div>
+      <div style="font-family:system-ui,sans-serif; color:#333; line-height:1.5;">
+        <b>Tasten:</b> WASD = N/S/W/O, Q = Hoch (⬆), E = Runter (⬇)
       </div>
       <button class="action-btn" onclick="closeHelp()" style="margin-top:14px; text-align:center; border-color: var(--accent-green);">
         Los geht’s
@@ -391,7 +371,6 @@
 
   <div class="game-wrapper">
 
-    <!-- LEFT: MAP + INVENTORY -->
     <div class="panel">
       <div class="panel-header">Karte</div>
       <div class="map-wrapper">
@@ -402,7 +381,7 @@
         </div>
         <div class="map-container" id="mini-map"></div>
         <div style="margin-top:8px; font-family:system-ui,sans-serif; color:#555; font-size:0.9em;">
-          Tipp: Klick auf besuchte Räume = Schnellreise
+          Klick auf besuchte Räume = Schnellreise
         </div>
       </div>
 
@@ -415,7 +394,6 @@
       </div>
     </div>
 
-    <!-- MIDDLE: MAIN (scrollable content area) -->
     <div class="panel">
       <div class="panel-header">
         Umgebung
@@ -433,11 +411,9 @@
       </div>
     </div>
 
-    <!-- RIGHT: CONTROLS -->
     <div class="panel">
       <div class="panel-header">Steuerung</div>
 
-      <!-- Manual direction selection -->
       <div class="manual-controls">
         <label style="font-family:system-ui,sans-serif; color:#444;">Richtung:</label>
         <select id="dir-select" aria-label="Richtung wählen">
@@ -450,7 +426,7 @@
         </select>
         <button class="go-btn" onclick="manualMove()">Los</button>
 
-        <input id="cmd-input" type="text" placeholder="Oder tippe: n/s/o/w/u/d" style="flex:1; min-width: 220px;">
+        <input id="cmd-input" type="text" placeholder="Tippe: n/s/o/w/u/d" style="flex:1; min-width: 220px;">
         <button class="go-btn" onclick="runCommand()">OK</button>
       </div>
 
@@ -478,7 +454,7 @@
       </div>
 
       <div style="margin-top: 14px; font-family:system-ui,sans-serif; color:#555; font-size:0.95em;">
-        Hinweis: ⬆/⬇ funktionieren nur in Räumen mit Treppe (z.B. Bibliothek → Turmspitze).
+        Q = Hoch, E = Runter (zusätzlich zu Buttons).
       </div>
     </div>
 
@@ -487,7 +463,6 @@
   <div id="snow-container"></div>
 
   <script>
-    /* ---------------- GAME DATA ---------------- */
     const player = {
       room: 'courtyard',
       inventory: [],
@@ -497,27 +472,33 @@
     };
 
     const items = {
-      'rusty_key':  { name:'Rostiger Schlüssel', icon:'🗝️', desc:'Öffnet den Keller.' },
-      'silver_key': { name:'Silberschlüssel', icon:'🗝️', desc:'Öffnet die Bibliothekstür.' },
-      'crowbar':    { name:'Brecheisen', icon:'🔧', desc:'Für Kisten und lose Steine.' },
-      'scroll':     { name:'Notiz', icon:'📜', desc:'Rot13: "Vjre fbg nyyvrf orv anzra araara: Nyoerpug"' },
-      'ruby':       { name:'Rubin', icon:'💎', desc:'Warm wie Feuer.' , type:'gem'},
-      'sapphire':   { name:'Saphir', icon:'💎', desc:'Kalt wie Eis.'   , type:'gem'},
-      'emerald':    { name:'Smaragd', icon:'💎', desc:'Tiefgrün und lebendig.' , type:'gem'},
+      rusty_key:  { name:'Rostiger Schlüssel', icon:'🗝️', desc:'Öffnet die Kellertür.' },
+      silver_key: { name:'Silberschlüssel', icon:'🗝️', desc:'Öffnet die Bibliothekstür.' },
+      crowbar:    { name:'Brecheisen', icon:'🔧', desc:'Für Kisten und lose Steine.' },
+      scroll:     { name:'Notiz', icon:'📜', desc:'Rot13: "Vjre fbg nyyvrf orv anzra araara: Nyoerpug"' },
+      ruby:       { name:'Rubin', icon:'💎', desc:'Warm wie Feuer.', type:'gem' },
+      sapphire:   { name:'Saphir', icon:'💎', desc:'Kalt wie Eis.', type:'gem' },
+      emerald:    { name:'Smaragd', icon:'💎', desc:'Tiefgrün und lebendig.', type:'gem' }
     };
 
+    // IMPORTANT FIX: lockedExits now includes "to"
     const rooms = {
       courtyard: {
         name:'Schlosshof', visual:'🏰', coords:{x:2,y:2,z:0},
         desc:'Lichterketten glitzern am Tor. Der Brunnen ist gefroren – aber darunter schimmert etwas.',
-        exits:{ N:'great_hall', O:'kitchen', W:'library_entrance' },
-        fun: [{label:'Schneeball testen', msg:'Du wirfst einen perfekten Schneeball. +10 Winter-Laune!'}]
+        exits:{ N:'great_hall', O:'kitchen', W:'library_entrance' }
+      },
+      great_hall: {
+        name:'Große Halle', visual:'🕯️', coords:{x:2,y:1,z:0},
+        desc:'Staub tanzt im Kerzenlicht. Unter einem Teller steckt etwas Metallisches.',
+        exits:{ S:'courtyard', N:'throne_room' },
+        search:{ give:'rusty_key', msg:'Du findest einen rostigen Schlüssel unter dem Teller.' }
       },
       kitchen: {
         name:'Alte Küche', visual:'🍳', coords:{x:3,y:2,z:0},
-        desc:'Es riecht nach Zimt und… Abenteuer. Ein Ofen steht halb offen.',
+        desc:'Es riecht nach Zimt und… Abenteuer. Die Kellertür ist direkt hier.',
         exits:{ W:'courtyard', D:'cellar' },
-        lockedExits:{ D:{key:'rusty_key', msg:'Die Kellertür ist abgeschlossen.'} },
+        lockedExits:{ D:{ key:'rusty_key', to:'cellar', msg:'Die Kellertür ist abgeschlossen.' } },
         search:{ give:'crowbar', msg:'Im Ofen liegt ein Brecheisen. Praktisch!' }
       },
       cellar: {
@@ -529,12 +510,6 @@
           {label:'Lockere Wand prüfen', req:'crowbar', action:'open_dungeon', msg:'Du öffnest einen Gang ins Verlies!'}
         ]
       },
-      great_hall: {
-        name:'Große Halle', visual:'🕯️', coords:{x:2,y:1,z:0},
-        desc:'Staub tanzt im Kerzenlicht. Unter einem Teller steckt etwas Metallisches.',
-        exits:{ S:'courtyard', N:'throne_room' },
-        search:{ give:'rusty_key', msg:'Du findest einen rostigen Schlüssel unter dem Teller.' }
-      },
       throne_room: {
         name:'Thronsaal', visual:'👑', coords:{x:2,y:0,z:0},
         desc:'Der Thron wartet. In der Krone fehlen drei Edelsteine.',
@@ -545,7 +520,7 @@
         name:'Turmeingang', visual:'🚪', coords:{x:1,y:2,z:0},
         desc:'Eine Tür mit Silberbeschlägen. Dahinter: Bücher und Geheimnisse.',
         exits:{ O:'courtyard', W:'library' },
-        lockedExits:{ W:{key:'silver_key', msg:'Die Tür ist verschlossen. Silberschlüssel benötigt.'} }
+        lockedExits:{ W:{ key:'silver_key', to:'library', msg:'Die Tür ist verschlossen. Silberschlüssel benötigt.' } }
       },
       library: {
         name:'Bibliothek', visual:'📚', coords:{x:0,y:2,z:0},
@@ -561,7 +536,7 @@
       },
       dungeon: {
         name:'Verlies', visual:'⛓️', coords:{x:3,y:1,z:-1},
-        desc:'Zum Glück nur gruselig-alt, nicht gefährlich. Ein Gang führt zur Gruft.',
+        desc:'Ein alter Gang, aber du bist sicher. Weiter geht es zur Gruft.',
         exits:{ N:'crypt', S:'cellar' }
       },
       crypt: {
@@ -572,45 +547,38 @@
       }
     };
 
-    /* ---------------- ENGINE ---------------- */
     function init(){
       createSnow();
       updateUI();
 
-      // Keyboard: add U/D support too
       document.addEventListener('keydown', (e) => {
         if (isModalOpen()) return;
         const k = e.key.toLowerCase();
 
-        // Classic movement
         if(k === 'w') move('N');
         if(k === 's') move('S');
         if(k === 'a') move('W');
         if(k === 'd') move('O');
 
-        // Up/Down via Q/E or PageUp/PageDown for convenience
+        // Up/Down supported
         if(k === 'q') move('U');
         if(k === 'e') move('D');
 
-        // Also allow Arrow keys: arrows for N/S/W/O
         if(k === 'arrowup') move('N');
         if(k === 'arrowdown') move('S');
         if(k === 'arrowleft') move('W');
         if(k === 'arrowright') move('O');
 
-        // Enter to run command line quickly
         if(k === 'enter') {
           const inp = document.getElementById('cmd-input');
           if (document.activeElement === inp) runCommand();
         }
       });
 
-      // Enter in puzzle input
       document.getElementById('puzzle-answer').addEventListener('keydown', (e)=>{
         if(e.key === 'Enter') submitPuzzleAnswer();
       });
 
-      // Command input: keep focus friendly
       document.getElementById('cmd-input').addEventListener('keydown', (e)=>{
         if(e.key === 'Enter') runCommand();
       });
@@ -644,7 +612,6 @@
       document.getElementById('room-icon').innerText = r.visual;
       document.getElementById('room-desc').innerText = r.desc;
 
-      // Exits
       const labels = {N:'Norden', S:'Süden', O:'Osten', W:'Westen', U:'Hoch (⬆)', D:'Runter (⬇)'};
       const parts = [];
       ['N','S','O','W','U','D'].forEach(dir=>{
@@ -654,7 +621,6 @@
       document.getElementById('room-exits').innerText =
         parts.length ? ('Ausgänge: ' + parts.join(', ')) : 'Ausgänge: Keine sichtbaren.';
 
-      // Enable/disable buttons
       const btnMap = {n:'N', s:'S', o:'O', w:'W', u:'U', d:'D'};
       Object.keys(btnMap).forEach(k=>{
         const el = document.getElementById('btn-'+k);
@@ -664,7 +630,6 @@
         el.disabled = !has;
       });
 
-      // Interaction area
       const area = document.getElementById('interaction-area');
       area.innerHTML = '';
 
@@ -686,7 +651,7 @@
 
       if(r.interact){
         r.interact.forEach(act=>{
-          if(act.action === 'open_dungeon' && rooms['cellar'].exits['N']) return;
+          if(act.action === 'open_dungeon' && rooms.cellar.exits.N) return;
           if(act.result === 'get_ruby' && player.inventory.includes('ruby')) return;
           const b = document.createElement('button');
           b.className = 'action-btn';
@@ -696,36 +661,24 @@
         });
       }
 
-      if(r.fun){
-        r.fun.forEach(f=>{
-          const b = document.createElement('button');
-          b.className = 'action-btn';
-          b.textContent = '🎄 ' + f.label;
-          b.onclick = ()=> showMsg('Winter-Laune', f.msg);
-          area.appendChild(b);
-        });
-      }
-
       renderMap(player.mapLevel);
       renderInventory();
     }
 
-    /* Manual direction selection */
     function manualMove(){
       const dir = document.getElementById('dir-select').value;
       move(dir);
     }
 
-    /* Command line: n/s/o/w/u/d or words */
     function runCommand(){
       const inp = document.getElementById('cmd-input');
       const raw = (inp.value || '').trim().toLowerCase();
       if(!raw) return;
 
       const map = {
-        n:'N', nord:'N', north:'N',
-        s:'S', sued:'S', süd:'S', south:'S',
-        o:'O', ost:'O', east:'O',
+        n:'N', nord:'N',
+        s:'S', sued:'S', süd:'S',
+        o:'O', ost:'O',
         w:'W', west:'W',
         u:'U', up:'U', hoch:'U',
         d:'D', down:'D', runter:'D'
@@ -737,76 +690,27 @@
       else showMsg('Befehl', 'Unbekannt. Nutze n/s/o/w/u/d (oder nord/sued/ost/west/hoch/runter).');
     }
 
-    function renderMap(level){
-      const map = document.getElementById('mini-map');
-
-      const btnID = level === -1 ? 'lvl-btn-m1' : 'lvl-btn-' + level;
-      document.querySelectorAll('.lvl-btn').forEach(b=> b.classList.remove('active'));
-      const activeBtn = document.getElementById(btnID);
-      if(activeBtn) activeBtn.classList.add('active');
-
-      map.innerHTML = '';
-
-      for(let y=0;y<5;y++){
-        for(let x=0;x<5;x++){
-          const node = document.createElement('div');
-          node.className='map-node fog';
-
-          const roomKey = Object.keys(rooms).find(k=>{
-            const c = rooms[k].coords;
-            return c.x===x && c.y===y && c.z===level;
-          });
-
-          if(roomKey){
-            const rr = rooms[roomKey];
-            const isVisited = player.visited.includes(roomKey);
-            const isCurrent = player.room === roomKey;
-
-            // Fog-of-war adjacency
-            let neighborVisited = false;
-            if(!isVisited){
-              const neighbors = Object.keys(rooms).filter(k=>{
-                const c = rooms[k].coords;
-                if(c.z !== level) return false;
-                return (Math.abs(c.x-x)+Math.abs(c.y-y))===1;
-              });
-              neighborVisited = neighbors.some(nk => player.visited.includes(nk));
-            }
-
-            if(isCurrent){
-              node.className='map-node active';
-              node.textContent = rr.visual;
-            } else if(isVisited){
-              node.className='map-node visited';
-              node.textContent = rr.visual;
-              node.title = rr.name + ' (Schnellreise)';
-              node.onclick = ()=> fastTravel(roomKey);
-            } else if(neighborVisited){
-              node.className='map-node seen';
-              node.textContent='?';
-            }
-          }
-
-          map.appendChild(node);
-        }
-      }
-    }
-
+    // KEY FIX: unlock uses lock.to, and converts lock into normal exit
     function move(dir){
       const r = rooms[player.room];
 
-      // Locked exit handling
       if(r.lockedExits && r.lockedExits[dir]){
         const lock = r.lockedExits[dir];
         if(player.inventory.includes(lock.key)){
-          showMsg('Tür', 'Der Schlüssel passt. Du gehst hindurch.');
-          // important: ensure destination exists
-          if(r.exits && r.exits[dir]) {
-            player.room = r.exits[dir];
-            visitRoom();
-          } else {
-            showMsg('Bug', 'Diese Tür hat kein Ziel (exit fehlt). Bitte Exit setzen.');
+          const target = lock.to || (r.exits ? r.exits[dir] : null);
+          if(!target || !rooms[target]){
+            showMsg('Bug', 'Diese Tür hat kein gültiges Ziel (to/exits).');
+            return;
           }
+
+          // convert locked exit -> normal exit
+          r.exits = r.exits || {};
+          r.exits[dir] = target;
+          delete r.lockedExits[dir];
+
+          showMsg('Tür geöffnet', 'Der Schlüssel passt! Du gehst hinunter/hinüber.');
+          player.room = target;
+          visitRoom();
         } else {
           showMsg('Verschlossen', lock.msg);
         }
@@ -814,12 +718,12 @@
       }
 
       if(r.exits && r.exits[dir]){
-        player.room = r.exits[dir];
+        const target = r.exits[dir];
+        player.room = target;
         visitRoom();
         return;
       }
 
-      // Friendly feedback if the user tries U/D in a room without it
       if(dir === 'U' || dir === 'D'){
         showMsg('Keine Treppe', 'Hier gibt es keine Treppe nach oben/unten.');
         return;
@@ -838,12 +742,14 @@
       if(countVisited && !player.visited.includes(player.room)){
         player.visited.push(player.room);
       }
+      // IMPORTANT: map level always tracks current room z
       player.mapLevel = rooms[player.room].coords.z;
       updateUI();
     }
 
     function explore(){
       const r = rooms[player.room];
+
       if(r.search && r.search.give){
         const id = r.search.give;
         if(!player.inventory.includes(id)){
@@ -856,7 +762,7 @@
         return;
       }
 
-      // Courtyard secret: silver key after visiting great hall
+      // Courtyard silver key after visiting great hall
       if(player.room === 'courtyard' && player.visited.includes('great_hall') && !player.inventory.includes('silver_key')){
         player.inventory.push('silver_key');
         showMsg('Gefunden!', 'Im Schnee glitzert ein Silberschlüssel.');
@@ -874,7 +780,7 @@
       }
 
       if(act.action === 'open_dungeon'){
-        rooms['cellar'].exits['N'] = 'dungeon';
+        rooms.cellar.exits.N = 'dungeon';
         showMsg('Gang frei!', act.msg || 'Ein neuer Gang ist offen.');
         updateUI();
         return;
@@ -909,7 +815,6 @@
       }
     }
 
-    /* Puzzle system */
     let activePuzzle = null;
     function openPuzzleModal(p){
       activePuzzle = p;
@@ -938,7 +843,60 @@
       }
     }
 
-    /* Inventory */
+    function renderMap(level){
+      const map = document.getElementById('mini-map');
+
+      const btnID = level === -1 ? 'lvl-btn-m1' : 'lvl-btn-' + level;
+      document.querySelectorAll('.lvl-btn').forEach(b=> b.classList.remove('active'));
+      const activeBtn = document.getElementById(btnID);
+      if(activeBtn) activeBtn.classList.add('active');
+
+      map.innerHTML = '';
+
+      for(let y=0;y<5;y++){
+        for(let x=0;x<5;x++){
+          const node = document.createElement('div');
+          node.className='map-node fog';
+
+          const roomKey = Object.keys(rooms).find(k=>{
+            const c = rooms[k].coords;
+            return c.x===x && c.y===y && c.z===level;
+          });
+
+          if(roomKey){
+            const rr = rooms[roomKey];
+            const isVisited = player.visited.includes(roomKey);
+            const isCurrent = player.room === roomKey;
+
+            let neighborVisited = false;
+            if(!isVisited){
+              const neighbors = Object.keys(rooms).filter(k=>{
+                const c = rooms[k].coords;
+                if(c.z !== level) return false;
+                return (Math.abs(c.x-x)+Math.abs(c.y-y))===1;
+              });
+              neighborVisited = neighbors.some(nk => player.visited.includes(nk));
+            }
+
+            if(isCurrent){
+              node.className='map-node active';
+              node.textContent = rr.visual;
+            } else if(isVisited){
+              node.className='map-node visited';
+              node.textContent = rr.visual;
+              node.title = rr.name + ' (Schnellreise)';
+              node.onclick = ()=> fastTravel(roomKey);
+            } else if(neighborVisited){
+              node.className='map-node seen';
+              node.textContent='?';
+            }
+          }
+
+          map.appendChild(node);
+        }
+      }
+    }
+
     function renderInventory(){
       const grid = document.getElementById('inventory-grid');
       const listUl = document.getElementById('inventory-list-ul');
@@ -961,7 +919,6 @@
         listUl.appendChild(li);
       });
 
-      // fill empty slots
       for(let i=inv.length;i<8;i++){
         const d = document.createElement('div');
         d.className = 'inv-item';
@@ -976,7 +933,6 @@
       }
     }
 
-    /* Modals */
     function openHelp(){ document.getElementById('help-overlay').style.display = 'flex'; }
     function closeHelp(){ document.getElementById('help-overlay').style.display = 'none'; }
     function showMsg(t,m){
