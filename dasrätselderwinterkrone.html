@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Das Rätsel der Winterkrone</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@400;600&display=swap');
+        
+        :root {
+            --bg-dark: #0a0f14;
+            --bg-panel: #161b22;
+            --text-main: #c9d1d9;
+            --accent-red: #8b0000;
+            --accent-green: #1a472a;
+            --accent-gold: #b8860b;
+            --ghost-purple: #483d8b;
+            --border-color: #30363d;
+            --map-node: #2a2f38;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1a2332 0%, #0a0f14 100%);
+            user-select: none;
+        }
+
+        /* --- LAYOUT --- */
+        .game-wrapper {
+            display: grid;
+            grid-template-columns: 320px 1fr 300px;
+            gap: 20px;
+            max-width: 1600px;
+            height: 95vh;
+            margin: 2.5vh auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            border: 2px solid var(--accent-green);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-gold);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+
+        .help-btn {
+            background: none; border: 1px solid var(--border-color); color: var(--text-main);
+            width: 25px; height: 25px; border-radius: 50%; cursor: pointer; font-size: 0.8em;
+        }
+
+        /* --- MAP SYSTEM --- */
+        .map-wrapper { position: relative; margin-bottom: 15px; }
+        .map-controls { display: flex; gap: 5px; margin-bottom: 5px; justify-content: center; }
+        .lvl-btn { 
+            background: #21262d; border: 1px solid #30363d; color: #8b949e; 
+            padding: 2px 8px; font-size: 0.8em; cursor: pointer; font-family: 'Cinzel';
+        }
+        .lvl-btn.active { background: var(--accent-green); color: white; border-color: white; }
+
+        .map-container {
+            height: 200px;
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 2px;
+            padding: 5px;
+        }
+        
+        .map-node {
+            background: transparent;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #555;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .map-node.visited { background: #222; border: 1px solid #333; cursor: pointer; }
+        .map-node.visited:hover { background: #333; border-color: #666; }
+        
+        /* Fog of War */
+        .map-node.fog { opacity: 0; pointer-events: none; }
+        .map-node.seen { background: rgba(255,255,255,0.03); color: #444; font-size: 1em; }
+        
+        .map-node.active { background: var(--accent-gold); color: #000; box-shadow: 0 0 15px var(--accent-gold); z-index: 2; border-color: white; cursor: default;}
+        
+        .lock-icon {
+            position: absolute; bottom: 0; right: 0; font-size: 0.6em; 
+            background: rgba(0,0,0,0.8); border-radius: 50%; padding: 1px; color: #ff7b72;
+        }
+
+        /* --- CONTROLS --- */
+        .d-pad-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 15px;
+        }
+
+        .vert-controls {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 15px;
+        }
+
+        button {
+            background: #21262d; border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 10px; font-family: 'Cinzel', serif; cursor: pointer; transition: all 0.2s; font-size: 0.9em;
+        }
+        button:hover:not(:disabled) {
+            background: var(--accent-green); border-color: var(--text-main); transform: translateY(-2px);
+        }
+        button:disabled { opacity: 0.3; cursor: not-allowed; border-color: #30363d; }
+        .action-btn { width: 100%; margin-bottom: 10px; border-color: var(--accent-gold); padding: 12px; }
+
+        /* --- MAIN VIEW --- */
+        .room-title { font-family: 'Cinzel', serif; font-size: 2.2em; color: var(--accent-red); text-align: center; margin-bottom: 5px; }
+        .room-coords { text-align: center; color: #666; font-size: 0.9em; margin-bottom: 15px; font-family: sans-serif; }
+        .room-visual {
+            height: 180px; background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.2));
+            border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
+            font-size: 5em; margin-bottom: 10px; box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+        .room-desc { font-size: 1.15em; line-height: 1.5; margin-bottom: 15px; text-align: justify; }
+        .exits-line { font-size: 0.9em; color: #8b949e; margin-bottom: 20px; border-left: 3px solid var(--accent-gold); padding-left: 10px; }
+
+        /* --- METERS & TRACKERS --- */
+        .meter-container { margin: 15px 0; }
+        .meter-label { display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; }
+        .meter-bar { height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
+        .meter-fill { height: 100%; transition: width 0.5s; }
+        .ghost-fill { background: linear-gradient(90deg, #483d8b, #ff4444); width: 0%; }
+        
+        .objective-box {
+            background: rgba(0,0,0,0.2); border: 1px solid var(--accent-gold); padding: 10px; margin-bottom: 15px;
+        }
+        .obj-title { color: var(--accent-gold); font-weight: bold; font-family: 'Cinzel'; margin-bottom: 5px; }
+        .obj-list { list-style: none; font-size: 0.9em; }
+        .obj-item::before { content: '❌ '; }
+        .obj-item.done { color: #7ee787; text-decoration: line-through; }
+        .obj-item.done::before { content: '✅ '; }
+        .hint-text { font-style: italic; color: #8b949e; font-size: 0.85em; margin-top: 8px; border-top: 1px dashed #333; padding-top: 5px;}
+
+        /* --- INVENTORY --- */
+        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .inv-item {
+            aspect-ratio: 1; border: 1px dashed var(--border-color);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: help; background: rgba(0,0,0,0.2); transition: 0.3s;
+        }
+        .inv-item.filled { border-style: solid; border-color: var(--accent-gold); background: rgba(184, 134, 11, 0.1); }
+        .inv-item.empty { opacity: 0.3; cursor: default; }
+        .inv-item span { font-size: 0.7em; margin-top: 5px; text-align: center;}
+
+        /* --- MODALS --- */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 100;
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal-box {
+            background: #161b22; border: 2px solid var(--accent-gold); padding: 30px;
+            max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;
+            position: relative; animation: slideIn 0.3s ease;
+        }
+        .modal-box.puzzle { border-color: #8b949e; box-shadow: 0 0 30px rgba(139, 148, 158, 0.2); }
+        
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-close { position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 1.5em; color: #ff7b72; }
+        .howto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .key-hint { background: #333; padding: 2px 6px; border-radius: 4px; font-family: monospace; border: 1px solid #555; }
+        
+        .input-dark { width: 100%; padding: 15px; background: #000; color: white; border: 1px solid #555; font-family: 'Cinzel'; text-align: center; font-size: 1.2em; margin-top: 15px; }
+
+        /* --- LOG AREA --- */
+        .log-area {
+            flex-grow: 1; overflow-y: auto; font-size: 0.9em; color: #8b949e;
+            border-top: 1px solid var(--border-color); padding-top: 10px;
+        }
+        .log-entry { margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2px;}
+        .log-entry.danger { color: #ff7b72; }
+        .log-entry.success { color: #7ee787; }
+        .log-entry.info { color: #a5d6ff; }
+
+        .snowflake { position: absolute; color: rgba(255, 255, 255, 0.3); animation: fall linear infinite; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(100vh); } }
+
+        @media (max-width: 1000px) {
+            .game-wrapper { grid-template-columns: 1fr; height: auto; overflow-y: auto; display: block; }
+            .panel { margin-bottom: 20px; height: auto; }
+            .map-container { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="help-overlay" class="overlay" style="display: flex;">
+        <div class="modal-box">
+            <div class="modal-close" onclick="closeHelp()">×</div>
+            <h2 style="color: var(--accent-gold); font-family: 'Cinzel'; text-align: center;">Anleitung</h2>
+            <p style="text-align: center; margin-bottom: 20px; color: #8b949e;">Schloss Winterkrone birgt alte Geheimnisse.</p>
+            <div class="howto-grid">
+                <div>
+                    <h3 style="color: var(--accent-red)">💎 Dein Ziel</h3>
+                    <p>Finde die 3 Edelsteine (Rubin, Saphir, Smaragd) und bringe sie zum Thronsaal.</p>
+                </div>
+                <div>
+                    <h3 style="color: var(--ghost-purple)">👻 Die Gefahr</h3>
+                    <p>Der Geist beobachtet dich. Je mehr Lärm (Bewegung/Untersuchen) du machst, desto eher erscheint er.</p>
+                </div>
+            </div>
+            <h3 style="border-bottom: 1px solid #333; padding-bottom: 5px;">Steuerung</h3>
+            <ul style="list-style: none; line-height: 2;">
+                <li><span class="key-hint">W</span> <span class="key-hint">A</span> <span class="key-hint">S</span> <span class="key-hint">D</span> zum Bewegen</li>
+                <li><span class="key-hint">E</span> zum Untersuchen</li>
+                <li>Klicke auf <strong>besuchte Räume</strong> auf der Karte für Schnellreise.</li>
+            </ul>
+            <button class="action-btn" onclick="closeHelp()" style="margin-top: 20px; background: var(--accent-green); color: white;">Verstanden</button>
+        </div>
+    </div>
+
+    <div id="msg-modal" class="overlay" onclick="closeMsg()">
+        <div class="modal-content modal-box" onclick="event.stopPropagation()" style="text-align: center;">
+            <h3 id="msg-title" style="color: var(--accent-gold); margin-bottom: 15px; font-size: 1.5em; font-family: 'Cinzel';"></h3>
+            <p id="msg-text" style="font-size: 1.2em; line-height: 1.6;"></p>
+            <button onclick="closeMsg()" class="action-btn" style="margin-top: 25px;">Weiter</button>
+        </div>
+    </div>
+
+    <div id="puzzle-modal" class="overlay">
+        <div class="modal-box puzzle">
+            <div class="modal-close" onclick="closePuzzle()">×</div>
+            <h2 style="color: #8b949e; font-family: 'Cinzel'; text-align: center;">RÄTSEL</h2>
+            <p id="puzzle-text" style="font-size: 1.2em; margin: 20px 0; text-align: center;">...</p>
+            <input type="text" id="puzzle-answer" class="input-dark" placeholder="Antwort..." autocomplete="off">
+            <button onclick="submitPuzzleAnswer()" class="action-btn" style="margin-top: 15px;">Lösen</button>
+        </div>
+    </div>
+
+    <div id="ghost-modal" class="overlay">
+        <div class="modal-box" style="border-color: var(--ghost-purple); box-shadow: 0 0 30px var(--ghost-purple);">
+            <h2 style="color: var(--ghost-purple); font-family: 'Cinzel'; text-align: center;">👁️ ALBRECHT ERSCHEINT</h2>
+            <p id="ghost-riddle-text" style="font-size: 1.3em; margin: 20px 0; text-align: center; font-style: italic;">...</p>
+            <input type="text" id="ghost-answer" class="input-dark" style="border-color: var(--ghost-purple);" placeholder="Deine Antwort..." autocomplete="off">
+            <button onclick="submitGhostAnswer()" class="action-btn" style="background: var(--ghost-purple); margin-top: 15px; color: white;">Antworten</button>
+        </div>
+    </div>
+
+    <div class="game-wrapper">
+        <div class="panel">
+            <div class="panel-header">Karte</div>
+            <div class="map-wrapper">
+                <div class="map-controls">
+                    <button class="lvl-btn" id="lvl-btn-m1" onclick="player.mapLevel=-1; updateUI()">Ebene -1</button>
+                    <button class="lvl-btn" id="lvl-btn-0" onclick="player.mapLevel=0; updateUI()">Ebene 0</button>
+                    <button class="lvl-btn" id="lvl-btn-1" onclick="player.mapLevel=1; updateUI()">Ebene 1</button>
+                </div>
+                <div class="map-container" id="mini-map"></div>
+                <div style="text-align: center; font-size: 0.8em; color: #666; margin-top: 5px;">Klicke auf besuchte Räume für Schnellreise</div>
+            </div>
+            
+            <div class="panel-header" style="margin-top: 10px;">Logbuch</div>
+            <div class="log-area" id="game-log">
+                <div class="log-entry info">Willkommen in Schloss Winterkrone...</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                Umgebung
+                <button class="help-btn" onclick="openHelp()">?</button>
+            </div>
+            
+            <h2 id="room-name" class="room-title">Schlosshof</h2>
+            <div id="room-coords" class="room-coords">Ebene 0 | Sektor 2-2</div>
+            <div id="room-visual" class="room-visual">🏰</div>
+            <div id="room-desc" class="room-desc">...</div>
+            <div id="room-exits" class="exits-line">Ausgänge: ...</div>
+            
+            <div id="interaction-area" style="border-top: 1px solid var(--border-color); padding-top: 15px;"></div>
+        </div>
+
+        <div class="panel">
+            <div class="objective-box">
+                <div class="obj-title">Quest: Die Krone</div>
+                <ul class="obj-list">
+                    <li id="obj-ruby" class="obj-item">Blutrubin</li>
+                    <li id="obj-sapphire" class="obj-item">Eissaphir</li>
+                    <li id="obj-emerald" class="obj-item">Waldsmaragd</li>
+                </ul>
+                <div id="hint-display" class="hint-text">Tipp: Beginne im Schlosshof.</div>
+            </div>
+
+            <div class="meter-container">
+                <div class="meter-label">
+                    <span>Spuk-Gefahr</span>
+                    <span id="ghost-status">Ruhig</span>
+                </div>
+                <div class="meter-bar">
+                    <div id="ghost-meter" class="meter-fill ghost-fill"></div>
+                </div>
+            </div>
+
+            <div class="d-pad-grid">
+                <div></div>
+                <button id="btn-n" onclick="move('N')">N</button>
+                <div></div>
+                <button id="btn-w" onclick="move('W')">W</button>
+                <button onclick="explore()" title="Untersuchen (E)" style="background: var(--bg-dark); border-color: var(--accent-gold);">👁️</button>
+                <button id="btn-o" onclick="move('O')">O</button>
+                <div></div>
+                <button id="btn-s" onclick="move('S')">S</button>
+                <div></div>
+            </div>
+
+            <div class="vert-controls">
+                <button id="btn-u" onclick="move('U')">⬆ HOCH</button>
+                <button id="btn-d" onclick="move('D')">⬇ RUNTER</button>
+            </div>
+
+            <div class="panel-header">Inventar</div>
+            <div class="inventory-grid" id="inventory-grid"></div>
+        </div>
+    </div>
+
+    <div id="snow-container"></div>
+
+    <script>
+        /* --- GAME DATA --- */
+        const player = {
+            room: 'courtyard',
+            inventory: [],
+            flags: {},
+            ghostMeter: 0,
+            ghostCooldown: 0,
+            visited: ['courtyard'],
+            mapLevel: 0
+        };
+
+        const items = {
+            'rusty_key': { name: 'Rostiger Schlüssel', icon: '🗝️', desc: 'Öffnet den Keller.' },
+            'silver_key': { name: 'Silberschlüssel', icon: '🗝️', desc: 'Öffnet den Bibliotheksturm.' },
+            'crowbar': { name: 'Brecheisen', icon: '🔧', desc: 'Gut für Kisten und lose Steine.' },
+            'scroll': { name: 'Notiz', icon: '📜', desc: 'Rot13: "Vjre fbg nyyvrf orv anzra araara: Nyoerpug"' },
+            'ruby': { name: 'Blutrubin', icon: '💎', desc: 'Der erste Stein.', type: 'gem' },
+            'sapphire': { name: 'Eissaphir', icon: '💎', desc: 'Der zweite Stein.', type: 'gem' },
+            'emerald': { name: 'Waldsmaragd', icon: '💎', desc: 'Der dritte Stein.', type: 'gem' }
+        };
+
+        const rooms = {
+            'courtyard': {
+                name: 'Schlosshof', visual: '🏰', coords: {x:2, y:2, z:0},
+                desc: 'Der zentrale Hof. Wege führen in alle Richtungen.',
+                exits: { N: 'great_hall', O: 'kitchen', W: 'library_entrance' }
+            },
+            'kitchen': {
+                name: 'Alte Küche', visual: '🍳', coords: {x:3, y:2, z:0},
+                desc: 'Kalte Asche und verrostete Töpfe.',
+                exits: { W: 'courtyard', D: 'cellar' },
+                lockedExits: { D: {key: 'rusty_key', msg: 'Die Kellertür klemmt.'} },
+                search: { item: 'crowbar', msg: 'Ein Brecheisen im alten Ofen!' }
+            },
+            'cellar': {
+                name: 'Weinkeller', visual: '🍷', coords: {x:3, y:2, z:-1},
+                desc: 'Stockfinster. Fässer stapeln sich. Eine Wand sieht brüchig aus.',
+                exits: { U: 'kitchen' },
+                interact: [
+                    { label: 'Fass öffnen', req: 'crowbar', result: 'get_ruby', msg: 'Du zerschlägst das Fass. Der Rubin!' },
+                    { label: 'Wand einreißen', req: 'crowbar', action: 'open_dungeon', msg: 'Du brichst durch die Wand ins Verlies!' }
+                ]
+            },
+            'great_hall': {
+                name: 'Große Halle', visual: '🕯️', coords: {x:2, y:1, z:0},
+                desc: 'Lange Tafeln und Staub. Im Norden der Thron.',
+                exits: { S: 'courtyard', N: 'throne_room' },
+                search: { item: 'rusty_key', msg: 'Unter einem Teller: Ein rostiger Schlüssel.' }
+            },
+            'throne_room': {
+                name: 'Thronsaal', visual: '👑', coords: {x:2, y:0, z:0},
+                desc: 'Der Thron ist leer. Hier gehört die Krone hin.',
+                exits: { S: 'great_hall' },
+                interact: [{ label: 'Krone zusammensetzen', action: 'win_check' }]
+            },
+            'library_entrance': {
+                name: 'Turmeingang', visual: '🚪', coords: {x:1, y:2, z:0},
+                desc: 'Eine massive Tür versperrt den Weg nach Westen.',
+                exits: { O: 'courtyard', W: 'library' },
+                lockedExits: { W: {key: 'silver_key', msg: 'Braucht einen Silberschlüssel.'} }
+            },
+            'library': {
+                name: 'Bibliothek', visual: '📚', coords: {x:0, y:2, z:0},
+                desc: 'Tausende Bücher. Eine Wendeltreppe führt nach oben.',
+                exits: { O: 'library_entrance', U: 'tower_top' },
+                puzzle: { q: '2, 4, 8, 16, ...?', a: '32', reward: 'sapphire' }
+            },
+            'tower_top': {
+                name: 'Turmspitze', visual: '🌙', coords: {x:0, y:2, z:1},
+                desc: 'Der Wind pfeift. Ein Skelett hält eine Notiz.',
+                exits: { D: 'library' },
+                search: { item: 'scroll', msg: 'Du nimmst die verschlüsselte Notiz.' }
+            },
+            'dungeon': {
+                name: 'Verlies', visual: '⛓️', coords: {x:3, y:1, z:-1},
+                desc: 'Gitterstäbe und Elend. Ein Tunnel führt zur Gruft.',
+                exits: { N: 'crypt', S: 'cellar' }
+            },
+            'crypt': {
+                name: 'Familiengruft', visual: '⚰️', coords: {x:3, y:0, z:-1},
+                desc: 'Hier ruhen die Ahnen. Etwas Grünes leuchtet im Sarg.',
+                exits: { S: 'dungeon' },
+                puzzle: { q: 'Der Geist fragt: "Wie ist mein Name?" (Tipp: Notiz + Rot13)', a: 'ALBRECHT', reward: 'emerald' }
+            }
+        };
+
+        /* --- ENGINE --- */
+        function init() {
+            createSnow();
+            updateUI();
+            
+            // Global controls
+            document.addEventListener('keydown', (e) => {
+                // Check if any critical modal is actually visible using computed style
+                if (isModalOpen()) return;
+
+                const k = e.key.toLowerCase();
+                if(k === 'w' || k === 'arrowup') move('N');
+                if(k === 's' || k === 'arrowdown') move('S');
+                if(k === 'a' || k === 'arrowleft') move('W');
+                if(k === 'd' || k === 'arrowright') move('O');
+                if(k === 'e') explore();
+            });
+
+            // Enter key for inputs
+            ['puzzle-answer', 'ghost-answer'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.addEventListener('keydown', (e) => {
+                        if(e.key === 'Enter') {
+                            if(id === 'puzzle-answer') submitPuzzleAnswer();
+                            else submitGhostAnswer();
+                        }
+                    });
+                }
+            });
+        }
+
+        function isModalOpen() {
+            return ['help-overlay', 'msg-modal', 'puzzle-modal', 'ghost-modal']
+                .some(id => window.getComputedStyle(document.getElementById(id)).display === 'flex');
+        }
+
+        function createSnow() {
+            const c = document.getElementById('snow-container');
+            for(let i=0; i<50; i++){
+                let s = document.createElement('div');
+                s.className = 'snowflake'; s.innerHTML = '❄';
+                s.style.left = Math.random()*100+'vw';
+                // Randomize size, delay and opacity
+                s.style.fontSize = (10 + Math.random()*20) + 'px';
+                s.style.animationDuration = (3+Math.random()*4)+'s';
+                s.style.animationDelay = '-' + (Math.random()*5) + 's';
+                s.style.opacity = 0.3 + Math.random()*0.4;
+                c.appendChild(s);
+            }
+        }
+
+        function updateUI() {
+            const r = rooms[player.room];
+            
+            // Header Info
+            document.getElementById('room-name').innerText = r.name;
+            document.getElementById('room-coords').innerText = `Ebene ${r.coords.z} | Sektor ${r.coords.x}-${r.coords.y}`;
+            document.getElementById('room-visual').innerText = r.visual;
+            document.getElementById('room-desc').innerText = r.desc;
+            
+            // Exits Line
+            let exitText = [];
+            const labels = {N:'Norden', S:'Süden', O:'Osten', W:'Westen', U:'Oben', D:'Unten'};
+            ['N','S','O','W','U','D'].forEach(dir => {
+                if(r.exits[dir]) exitText.push(labels[dir]);
+                else if(r.lockedExits && r.lockedExits[dir]) exitText.push(`${labels[dir]} (🔒)`);
+            });
+            document.getElementById('room-exits').innerText = "Ausgänge: " + (exitText.length ? exitText.join(', ') : 'Keine');
+
+            // Buttons enable/disable
+            ['n','s','o','w','u','d'].forEach(d => {
+                const btn = document.getElementById(`btn-${d}`);
+                const dir = d.toUpperCase();
+                const hasExit = r.exits[dir] || (r.lockedExits && r.lockedExits[dir]);
+                btn.disabled = !hasExit;
+                btn.style.opacity = hasExit ? 1 : 0.3;
+            });
+
+            // Interaction Area
+            const area = document.getElementById('interaction-area');
+            area.innerHTML = '';
+            
+            if(r.puzzle && !player.flags[r.puzzle.reward + '_got']) {
+                let b = document.createElement('button');
+                b.className = 'action-btn'; b.innerText = '🧩 Rätsel lösen';
+                b.onclick = () => openPuzzleModal(r.puzzle);
+                area.appendChild(b);
+            }
+
+            if(r.interact) {
+                r.interact.forEach(act => {
+                    if(act.action === 'open_dungeon' && rooms['cellar'].exits['N']) return;
+                    if(act.result === 'get_ruby' && player.inventory.includes('ruby')) return;
+                    let b = document.createElement('button');
+                    b.className = 'action-btn'; b.innerText = `⚙️ ${act.label}`;
+                    b.onclick = () => handleInteract(act);
+                    area.appendChild(b);
+                });
+            }
+
+            renderMap(player.mapLevel);
+            updateObjectives();
+            renderInventory();
+        }
+
+        function renderMap(level) {
+            const map = document.getElementById('mini-map');
+            
+            // Handle ID lookup safely (avoid --1)
+            const btnID = level === -1 ? 'lvl-btn-m1' : 'lvl-btn-' + level;
+            document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById(btnID);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            map.innerHTML = '';
+            
+            for(let y=0; y<5; y++) {
+                for(let x=0; x<5; x++) {
+                    let node = document.createElement('div');
+                    node.className = 'map-node fog'; // Default invisible
+                    
+                    // Find room at this coord
+                    let roomKey = Object.keys(rooms).find(k => 
+                        rooms[k].coords.x === x && 
+                        rooms[k].coords.y === y && 
+                        rooms[k].coords.z === level
+                    );
+
+                    if(roomKey) {
+                        const r = rooms[roomKey];
+                        const isVisited = player.visited.includes(roomKey);
+                        const isCurrent = player.room === roomKey;
+
+                        // Check adjacency for Fog of War
+                        // If any neighbor on this level is visited, show this node as "seen" (unvisited)
+                        let neighborVisited = false;
+                        if (!isVisited) {
+                             const neighbors = Object.keys(rooms).filter(k => {
+                                 const nr = rooms[k];
+                                 if (nr.coords.z !== level) return false;
+                                 return (Math.abs(nr.coords.x - x) + Math.abs(nr.coords.y - y)) === 1;
+                             });
+                             neighborVisited = neighbors.some(nk => player.visited.includes(nk));
+                        }
+
+                        if (isCurrent) {
+                            node.className = 'map-node active';
+                            node.innerText = r.visual;
+                        } else if (isVisited) {
+                            node.className = 'map-node visited';
+                            node.innerText = r.visual;
+                            node.onclick = () => fastTravel(roomKey); // Fast Travel
+                            node.title = r.name + " (Klicken für Schnellreise)";
+                            
+                            // Smart Lock: Only show if locked AND player has no key
+                            let hasLock = false;
+                            if (r.lockedExits) {
+                                hasLock = Object.values(r.lockedExits).some(lock => !player.inventory.includes(lock.key));
+                            }
+                            if (hasLock) {
+                                let lock = document.createElement('span');
+                                lock.className = 'lock-icon'; lock.innerText='🔒';
+                                node.appendChild(lock);
+                            }
+                        } else if (neighborVisited) {
+                            node.className = 'map-node seen';
+                            node.innerText = '?';
+                        }
+                    }
+                    map.appendChild(node);
+                }
+            }
+        }
+
+        function move(dir) {
+            const r = rooms[player.room];
+            
+            if(r.lockedExits && r.lockedExits[dir]) {
+                const lock = r.lockedExits[dir];
+                if(player.inventory.includes(lock.key)) {
+                    log('Du schließt die Tür auf.', 'success');
+                    player.room = r.exits[dir];
+                    visitRoom();
+                } else {
+                    log(lock.msg, 'danger');
+                }
+                return;
+            }
+
+            if(r.exits[dir]) {
+                player.room = r.exits[dir];
+                player.ghostMeter += 5; 
+                visitRoom();
+            }
+        }
+
+        function fastTravel(targetRoom) {
+            if (targetRoom === player.room) return;
+            log('Schnellreise...', 'info');
+            player.ghostMeter += 8; // Slight penalty for convenience
+            player.room = targetRoom;
+            // visitRoom logic (without adding loudness for "new" room since it's visited)
+            player.mapLevel = rooms[player.room].coords.z;
+            checkGhost();
+            updateUI();
+        }
+
+        function visitRoom() {
+            if(!player.visited.includes(player.room)) {
+                player.visited.push(player.room);
+                player.ghostMeter += 10;
+            }
+            player.mapLevel = rooms[player.room].coords.z; // Auto switch map to current level
+            checkGhost();
+            updateUI();
+        }
+
+        function explore() {
+            const r = rooms[player.room];
+            player.ghostMeter += 15;
+            updateGhostMeterUI();
+
+            if(r.search) {
+                if(!player.inventory.includes(r.search.item)) {
+                    player.inventory.push(r.search.item);
+                    log(r.search.msg, 'success');
+                    showMsg('Gefunden!', r.search.msg);
+                    updateUI();
+                    return;
+                }
+            }
+            
+            // Courtyard key secret
+            if(player.room === 'courtyard' && player.visited.includes('great_hall') && !player.inventory.includes('silver_key')) {
+                player.inventory.push('silver_key');
+                log('Im Schnee glänzt ein Silberschlüssel!', 'success');
+                showMsg('Gefunden', 'Der Silberschlüssel lag im Schnee.');
+                updateUI();
+                return;
+            }
+
+            log('Du findest nichts weiter.', 'info');
+            checkGhost(true); // Exploration triggers randomness
+        }
+
+        function handleInteract(act) {
+            if(act.req && !player.inventory.includes(act.req)) {
+                log('Dir fehlt: ' + items[act.req].name, 'danger');
+                return;
+            }
+
+            if(act.action === 'open_dungeon') {
+                rooms['cellar'].exits['N'] = 'dungeon';
+                log('Die Wand stürzt ein. Der Weg ist frei.', 'success');
+                updateUI();
+            } 
+            else if(act.result === 'get_ruby') {
+                player.inventory.push('ruby');
+                log('Rubin gefunden!', 'success');
+                showMsg('Edelstein', 'Der Blutrubin gehört dir.');
+                updateUI();
+            }
+            else if(act.action === 'win_check') {
+                if(['ruby','sapphire','emerald'].every(i => player.inventory.includes(i))) {
+                    document.body.innerHTML = '<div style="display:flex;height:100vh;justify-content:center;align-items:center;background:#000;color:var(--accent-gold);flex-direction:column;"><h1 style="font-family:Cinzel;font-size:3em">FLUCH GEBROCHEN</h1><p>Du hast die Krone wiederhergestellt.</p><br><button onclick="location.reload()" style="padding:10px;">Neustart</button></div>';
+                } else {
+                    log('Die Krone ist unvollständig.', 'danger');
+                }
+            }
+        }
+
+        /* --- PUZZLE SYSTEM --- */
+        let activePuzzle = null;
+        function openPuzzleModal(puzzle) {
+            activePuzzle = puzzle;
+            document.getElementById('puzzle-text').innerText = puzzle.q;
+            document.getElementById('puzzle-modal').style.display = 'flex';
+            document.getElementById('puzzle-answer').value = '';
+            document.getElementById('puzzle-answer').focus();
+        }
+
+        function closePuzzle() {
+            document.getElementById('puzzle-modal').style.display = 'none';
+            activePuzzle = null;
+        }
+
+        function submitPuzzleAnswer() {
+            if(!activePuzzle) return;
+            let ans = document.getElementById('puzzle-answer').value.toUpperCase().trim();
+            closePuzzle();
+            
+            if(ans === activePuzzle.a) {
+                player.inventory.push(activePuzzle.reward);
+                player.flags[activePuzzle.reward + '_got'] = true;
+                log('Richtig! Du erhältst: ' + items[activePuzzle.reward].name, 'success');
+                showMsg('Gelöst!', 'Das Fach öffnet sich.');
+                updateUI();
+            } else {
+                log('Falsch. Ein kaltes Lachen...', 'danger');
+                player.ghostMeter += 20;
+                checkGhost(true);
+            }
+        }
+
+        /* --- GHOST SYSTEM --- */
+        function checkGhost(force = false) {
+            if(player.ghostCooldown > 0) {
+                player.ghostCooldown--;
+                updateGhostMeterUI();
+                return;
+            }
+
+            // Cap
+            if(player.ghostMeter > 100) player.ghostMeter = 100;
+            updateGhostMeterUI();
+
+            // Threshold: Don't spawn if meter is low (<15) unless it's a forced event story trigger
+            if(player.ghostMeter < 15 && !force) return;
+
+            // Probability logic
+            let chance = player.ghostMeter / 160; 
+            if(force) chance += 0.2;
+
+            if(Math.random() < chance && player.room !== 'dungeon' && player.room !== 'crypt') {
+                spawnGhost();
+            }
+        }
+
+        function updateGhostMeterUI() {
+            const bar = document.getElementById('ghost-meter');
+            const txt = document.getElementById('ghost-status');
+            bar.style.width = player.ghostMeter + '%';
+            
+            if(player.ghostMeter < 30) txt.innerText = "Ruhig";
+            else if(player.ghostMeter < 70) { txt.innerText = "Unheimlich"; txt.style.color="orange"; }
+            else { txt.innerText = "GEFAHR"; txt.style.color="red"; }
+        }
+
+        const riddles = [
+            {q:"Ich habe Städte, aber keine Häuser. Was bin ich?", a:"KARTE", pen:"teleport"},
+            {q:"Je mehr du wegnimmst, desto größer werde ich.", a:"LOCH", pen:"steal"}
+        ];
+        let currentRiddle = null;
+
+        function spawnGhost() {
+            if(document.getElementById('ghost-modal').style.display === 'flex') return;
+            currentRiddle = riddles[Math.floor(Math.random()*riddles.length)];
+            document.getElementById('ghost-riddle-text').innerText = currentRiddle.q;
+            document.getElementById('ghost-modal').style.display = 'flex';
+            document.getElementById('ghost-answer').value = '';
+            document.getElementById('ghost-answer').focus();
+        }
+
+        function submitGhostAnswer() {
+            const val = document.getElementById('ghost-answer').value.toUpperCase().trim();
+            document.getElementById('ghost-modal').style.display = 'none';
+            
+            if(val === currentRiddle.a) {
+                log('Der Geist verschwindet.', 'success');
+                player.ghostMeter = 0;
+                player.ghostCooldown = 5; 
+            } else {
+                log('FALSCHE ANTWORT!', 'danger');
+                if(currentRiddle.pen === 'teleport') {
+                    player.room = 'dungeon';
+                    player.visited.push('dungeon');
+                    player.mapLevel = -1;
+                    log('Du wurdest ins Verlies verschleppt.', 'danger');
+                } else {
+                    // Steal logic: Safe Keys AND Safe Gems (No Softlock)
+                    const stealable = player.inventory.filter(i => !i.includes('key') && items[i].type !== 'gem');
+                    
+                    if(stealable.length > 0) {
+                        let itemID = stealable[Math.floor(Math.random()*stealable.length)];
+                        player.inventory = player.inventory.filter(i => i !== itemID);
+                        // Place in Courtyard
+                        rooms['courtyard'].search = { item: itemID, msg: `Du findest dein ${items[itemID].name} wieder.` };
+                        log(`${items[itemID].name} wurde gestohlen! (Suche im Hof)`, 'danger');
+                    } else {
+                         player.room = 'dungeon'; 
+                         player.mapLevel = -1;
+                         log('Der Geist hat nichts zu stehlen und wirft dich ins Verlies.', 'danger');
+                    }
+                }
+                player.ghostMeter = 50;
+                player.ghostCooldown = 3;
+            }
+            updateUI();
+        }
+
+        /* --- HELPER UI --- */
+        function log(msg, type) {
+            const div = document.createElement('div');
+            div.className = `log-entry ${type}`;
+            div.innerText = '> ' + msg;
+            const area = document.getElementById('game-log');
+            area.prepend(div);
+            if(area.childElementCount > 50) area.lastChild.remove();
+        }
+
+        function updateObjectives() {
+            ['ruby','sapphire','emerald'].forEach(gem => {
+                const el = document.getElementById('obj-'+gem);
+                if(player.inventory.includes(gem)) el.classList.add('done');
+            });
+            const h = document.getElementById('hint-display');
+            if(!player.inventory.includes('ruby')) h.innerText = "Tipp: Untersuche den Keller genau.";
+            else if(!player.inventory.includes('sapphire')) h.innerText = "Tipp: Der Bibliotheksturm birgt Wissen.";
+            else if(!player.inventory.includes('emerald')) h.innerText = "Tipp: Die Gruft ist nun zugänglich.";
+            else h.innerText = "Kehre zum Thronsaal zurück!";
+        }
+
+        function renderInventory() {
+            const g = document.getElementById('inventory-grid');
+            g.innerHTML = '';
+            player.inventory.forEach(k => {
+                let d = document.createElement('div');
+                d.className = 'inv-item filled';
+                d.innerHTML = `${items[k].icon}<span>${items[k].name}</span>`;
+                d.onclick = () => showMsg(items[k].name, items[k].desc);
+                g.appendChild(d);
+            });
+            for(let i=player.inventory.length; i<8; i++) {
+                let d = document.createElement('div');
+                d.className = 'inv-item empty';
+                g.appendChild(d);
+            }
+        }
+
+        function openHelp() { document.getElementById('help-overlay').style.display = 'flex'; }
+        function closeHelp() { document.getElementById('help-overlay').style.display = 'none'; }
+        function showMsg(t, m) {
+            document.getElementById('msg-title').innerText = t;
+            document.getElementById('msg-text').innerText = m;
+            document.getElementById('msg-modal').style.display = 'flex';
+        }
+        function closeMsg() { document.getElementById('msg-modal').style.display = 'none'; }
+
+        init();
+    </script>
+</body>
+</html>
