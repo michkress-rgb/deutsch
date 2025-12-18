@@ -1,949 +1,1509 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Das Rätsel der Winterkrone - Extended</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@500;700&display=swap');
-        
-        :root {
-            /* Palette */
-            --bg-dark: #0b1026; 
-            --bg-panel: #1a0505; 
-            --text-main: #f0f4f8; /* Brighter white */
-            --accent-red: #ff3333; 
-            --accent-green: #2d8a56; 
-            --accent-gold: #ffd700; 
-            --ghost-purple: #9d8cff; 
-            --border-color: #5c1818; 
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Das Rätsel der Winterkrone – Festive Edition</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@500;700&display=swap');
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root{
+      /* Festive / Winter Day Palette */
+      --bg-sky-1:#eaf6ff;
+      --bg-sky-2:#cfe9ff;
+      --panel:#ffffffcc;
+      --panel-strong:#ffffffee;
+      --ink:#1f2a37;
+      --muted:#5b728a;
 
-        body {
-            /* 1) BIGGER FONT */
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 18px; 
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            background-image: linear-gradient(to bottom, #050a14 0%, #111936 100%);
-            user-select: none;
-        }
+      --red:#d13a3a;
+      --green:#2a8c5a;
+      --gold:#f2c94c;
+      --blue:#2f80ed;
+      --purple:#7b68ee;
 
-        /* --- LAYOUT --- */
-        .game-wrapper {
-            display: grid;
-            grid-template-columns: 350px 1fr 350px; /* Wider side panels */
-            grid-template-rows: 1fr auto; /* Added row for history */
-            gap: 20px;
-            max-width: 1800px;
-            height: 98vh;
-            margin: 1vh auto;
-            padding: 10px 20px;
-            position: relative;
-            z-index: 2;
-        }
+      --border:#b8d7ee;
+      --shadow: 0 10px 30px rgba(31,42,55,.12);
+      --shadow-strong: 0 16px 50px rgba(31,42,55,.16);
 
-        .panel {
-            background: var(--bg-panel);
-            border: 4px double var(--border-color);
-            box-shadow: 0 0 25px rgba(0,0,0,0.6);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-        }
+      --btn:#f7fbff;
+      --btn-border:#9fc9e6;
 
-        .panel-header {
-            font-family: 'Cinzel', serif;
-            color: var(--accent-gold);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.4em; /* Bigger */
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
+      --danger:#ff6b6b;
+      --safe:#2a8c5a;
+      --secret:#2f80ed;
+    }
 
-        /* --- MAP SYSTEM --- */
-        .map-wrapper { position: relative; margin-bottom: 15px; }
-        .map-controls { display: flex; gap: 5px; margin-bottom: 5px; justify-content: center; }
-        .lvl-btn { 
-            background: #2a1a1a; border: 1px solid var(--border-color); color: #aaa; 
-            padding: 5px 10px; font-size: 1em; cursor: pointer; font-family: 'Cinzel';
-        }
-        .lvl-btn.active { background: var(--accent-green); color: white; border-color: var(--accent-gold); }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Cormorant Garamond', serif;
+      font-size:18px;
+      color:var(--ink);
+      height:100vh;
+      overflow:hidden;
+      background: radial-gradient(circle at 30% 20%, var(--bg-sky-1), var(--bg-sky-2));
+      user-select:none;
+    }
 
-        .map-container {
-            height: 220px; /* Bigger map */
-            background: rgba(0,0,0,0.4);
-            border: 2px solid var(--border-color);
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 4px;
-            padding: 5px;
-        }
-        
-        .map-node {
-            background: transparent; border-radius: 4px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.4em; color: #555; position: relative; transition: all 0.3s;
-        }
-        .map-node.visited { background: #3d1e1e; border: 1px solid #5c2b2b; cursor: pointer; } 
-        .map-node.visited:hover { background: #5c2b2b; border-color: var(--accent-gold); }
-        .map-node.fog { opacity: 0; pointer-events: none; }
-        .map-node.seen { background: rgba(255,255,255,0.05); color: #666; font-size: 1em; border: 1px dashed #444; }
-        .map-node.active { background: var(--accent-gold); color: #000; box-shadow: 0 0 15px var(--accent-gold); z-index: 2; border-color: white; cursor: default;}
+    .game-wrapper{
+      display:grid;
+      grid-template-columns: 330px 1fr 330px;
+      gap:16px;
+      max-width: 1700px;
+      height: 96vh;
+      margin: 2vh auto;
+      padding: 0 16px;
+      position:relative;
+      z-index:2;
+    }
 
-        .lock-icon {
-            position: absolute; bottom: -4px; right: -4px; font-size: 0.7em; 
-            background: #000; border-radius: 50%; padding: 3px; color: var(--accent-red); border: 1px solid var(--accent-red);
-        }
+    .panel{
+      background: var(--panel);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      backdrop-filter: blur(8px);
+    }
 
-        /* --- CONTROLS --- */
-        .d-pad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .vert-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+    .panel-header{
+      font-family:'Cinzel', serif;
+      font-weight:700;
+      letter-spacing:.5px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding-bottom:10px;
+      margin-bottom:12px;
+      border-bottom: 2px dashed rgba(159,201,230,.7);
+      color: var(--red);
+      text-shadow: 0 1px 0 rgba(255,255,255,.8);
+    }
 
-        button {
-            background: #2a1a1a; border: 1px solid var(--border-color); color: var(--text-main);
-            padding: 15px; font-family: 'Cinzel', serif; cursor: pointer; transition: all 0.2s; font-size: 1.1em; /* Bigger */
-            box-shadow: 0 4px 0 rgba(0,0,0,0.5); border-radius: 6px;
-        }
-        button:active { transform: translateY(4px); box-shadow: none; }
-        button:hover:not(:disabled) {
-            background: var(--accent-green); border-color: var(--accent-gold); color: white;
-        }
-        button:disabled { opacity: 0.4; cursor: not-allowed; border-color: #333; box-shadow: none; transform: none;}
-        
-        .action-btn { width: 100%; margin-bottom: 10px; border-color: var(--accent-gold); padding: 15px; background: linear-gradient(45deg, #2a1a1a, #3d1e1e); text-align: left; }
+    .help-btn{
+      background: var(--btn);
+      border: 2px solid var(--btn-border);
+      border-radius: 999px;
+      width: 34px;
+      height: 34px;
+      cursor:pointer;
+      font-family: 'Cinzel';
+      font-weight:700;
+      color: var(--ink);
+      box-shadow: 0 4px 0 rgba(31,42,55,.08);
+    }
+    .help-btn:active{ transform: translateY(2px); box-shadow:none; }
 
-        /* 6) SPECIAL POWER BUTTON */
-        #special-power-btn {
-            background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: bold;
-            border: 2px solid #fff; margin-bottom: 15px; width: 100%; display: flex; justify-content: space-between; align-items: center;
-        }
-        #special-power-btn:disabled { background: #333; color: #777; border-color: #555; }
+    /* MAP */
+    .map-controls{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
+    .lvl-btn{
+      background: var(--btn);
+      border: 2px solid var(--btn-border);
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-family:'Cinzel';
+      cursor:pointer;
+      box-shadow: 0 4px 0 rgba(31,42,55,.08);
+      font-size:.95em;
+    }
+    .lvl-btn.active{
+      border-color: var(--gold);
+      color: var(--ink);
+      background: #fff7db;
+    }
+    .lvl-btn:active{ transform: translateY(2px); box-shadow:none; }
 
-        /* --- MAIN VIEW --- */
-        .main-panel { grid-column: 2; display: flex; flex-direction: column; }
-        
-        .room-title { font-family: 'Cinzel', serif; font-size: 3em; color: var(--accent-red); text-align: center; margin-bottom: 5px; text-shadow: 0 0 15px rgba(255,0,0,0.3); }
-        .room-coords { text-align: center; color: #888; font-size: 1em; margin-bottom: 15px; letter-spacing: 2px; }
-        
-        .room-visual {
-            height: 220px; background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(20,69,47,0.3));
-            border: 3px solid var(--accent-green); display: flex; align-items: center; justify-content: center;
-            font-size: 6em; margin-bottom: 20px; box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
-            border-radius: 8px; position: relative; overflow: hidden;
-        }
-        
-        /* 5) ANIMATIONS */
-        .anim-layer { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; display: flex; justify-content: center; align-items: center; font-size: 4rem; opacity: 0; }
-        @keyframes walkNorth { 0% { transform: translateY(50px) scale(0.5); opacity: 0;} 50% { opacity: 1; } 100% { transform: translateY(-50px) scale(1); opacity: 0; } }
-        @keyframes walkStairs { 0% { transform: translateY(20px); opacity:0;} 50% { opacity:1; transform: translateY(0px);} 100% { transform: translateY(-20px); opacity:0;} }
-        
-        .room-desc { font-size: 1.3em; line-height: 1.6; margin-bottom: 20px; text-align: justify; color: #eee; padding: 0 10px; }
-        .exits-line { font-size: 1.1em; color: var(--accent-gold); margin-bottom: 20px; border-left: 4px solid var(--accent-red); padding-left: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 0 8px 8px 0;}
+    .map-container{
+      height: 220px;
+      background: #ffffffaa;
+      border: 2px solid rgba(159,201,230,.9);
+      border-radius: 14px;
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 6px;
+      padding: 10px;
+    }
+    .map-node{
+      border-radius: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 1.35em;
+      transition: .2s;
+      border: 2px dashed transparent;
+      background: transparent;
+      color: rgba(31,42,55,.25);
+      position:relative;
+    }
+    .map-node.fog{ opacity:0; pointer-events:none; }
+    .map-node.seen{
+      background: rgba(47,128,237,.08);
+      border-color: rgba(47,128,237,.25);
+      color: rgba(31,42,55,.5);
+    }
+    .map-node.visited{
+      background: rgba(42,140,90,.12);
+      border-color: rgba(42,140,90,.35);
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(31,42,55,.06);
+    }
+    .map-node.visited:hover{
+      transform: translateY(-2px);
+      border-color: rgba(242,201,76,.8);
+    }
+    .map-node.active{
+      background: #fff7db;
+      border: 2px solid rgba(242,201,76,.95);
+      box-shadow: 0 10px 18px rgba(242,201,76,.25);
+      color: var(--ink);
+    }
+    .lock-icon{
+      position:absolute;
+      bottom:-7px; right:-7px;
+      background:#fff;
+      border: 2px solid rgba(209,58,58,.55);
+      border-radius:999px;
+      width: 24px; height: 24px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.85em;
+    }
 
-        /* --- METERS & TRACKERS --- */
-        .meter-container { margin: 15px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid #444;}
-        .meter-label { display: flex; justify-content: space-between; font-size: 1.1em; margin-bottom: 5px; font-weight: bold; }
-        .meter-bar { height: 15px; background: #111; border-radius: 8px; overflow: hidden; border: 1px solid #555; }
-        .meter-fill { height: 100%; transition: width 0.5s; }
-        .ghost-fill { background: linear-gradient(90deg, #483d8b, #ff4444); width: 0%; }
-        
-        .objective-box {
-            background: rgba(0,0,0,0.3); border: 2px solid var(--accent-gold); padding: 15px; margin-bottom: 15px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5); border-radius: 8px;
-        }
-        .obj-title { color: var(--accent-gold); font-weight: bold; font-family: 'Cinzel'; margin-bottom: 10px; font-size: 1.3em; text-align: center; border-bottom: 1px solid #555; padding-bottom: 5px;}
-        .obj-list { list-style: none; font-size: 1.1em; }
-        .obj-item { margin-bottom: 8px; padding-left: 5px;}
-        .obj-item.done { color: #7ee787; text-decoration: line-through; opacity: 0.7; }
-        .hint-text { font-style: italic; color: #aaa; font-size: 1em; margin-top: 10px; border-top: 1px dashed #444; padding-top: 8px; text-align: center;}
+    /* MAIN VIEW */
+    .main-panel{ display:flex; flex-direction:column; }
+    .room-title{
+      font-family:'Cinzel', serif;
+      font-size: 2.6em;
+      text-align:center;
+      margin-bottom:6px;
+      color: var(--red);
+    }
+    .room-coords{
+      text-align:center;
+      color: var(--muted);
+      margin-bottom:12px;
+      letter-spacing: 1px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size: .92em;
+    }
+    .room-visual{
+      height: 210px;
+      border-radius: 18px;
+      border: 3px solid rgba(159,201,230,.9);
+      background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(234,246,255,.95));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 6em;
+      box-shadow: inset 0 0 40px rgba(47,128,237,.10);
+      position:relative;
+      overflow:hidden;
+      margin-bottom: 14px;
+    }
+    .sparkle{
+      position:absolute;
+      top:-20px;
+      left:-20px;
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(circle at 20% 30%, rgba(242,201,76,.25), transparent 40%),
+                  radial-gradient(circle at 70% 60%, rgba(47,128,237,.18), transparent 45%),
+                  radial-gradient(circle at 50% 80%, rgba(42,140,90,.15), transparent 45%);
+      filter: blur(0px);
+      pointer-events:none;
+      opacity:.9;
+      animation: floaty 6s ease-in-out infinite;
+    }
+    @keyframes floaty{ 0%{transform:translate(0,0)} 50%{transform:translate(10px,8px)} 100%{transform:translate(0,0)} }
 
-        /* --- INVENTORY --- */
-        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .inv-item {
-            aspect-ratio: 1; border: 2px dashed var(--accent-green);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: help; background: rgba(0,0,0,0.2); transition: 0.3s; border-radius: 8px;
-        }
-        .inv-item.filled { border-style: solid; border-color: var(--accent-gold); background: radial-gradient(circle, #3d1e1e 0%, #1a0505 100%); }
-        .inv-item.empty { opacity: 0.2; cursor: default; }
-        .inv-item span { font-size: 0.85em; margin-top: 5px; text-align: center; color: #ddd; font-weight: bold;}
+    .room-desc{
+      background: var(--panel-strong);
+      border: 2px solid rgba(159,201,230,.55);
+      border-radius: 14px;
+      padding: 12px 14px;
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+    .exits-line{
+      background: #fff;
+      border: 2px dashed rgba(209,58,58,.35);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      color: var(--ink);
+    }
 
-        /* --- 1) ADVENTURE HISTORY (BOTTOM) --- */
-        .history-panel {
-            grid-column: 1 / -1; /* Span all columns */
-            height: 160px;
-            background: #111;
-            border-top: 4px solid var(--accent-gold);
-            display: flex;
-            align-items: center;
-            padding: 10px 20px;
-            overflow-x: auto;
-            gap: 15px;
-            border-radius: 8px;
-        }
-        
-        .history-box {
-            min-width: 200px;
-            height: 120px;
-            background: #222;
-            border: 1px solid #444;
-            padding: 10px;
-            font-size: 0.9em;
-            border-radius: 6px;
-            color: #aaa;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            animation: popIn 0.3s ease;
-        }
-        .history-box.new { border-color: var(--accent-green); color: #fff; background: #2a3a2a; }
-        .history-box.danger { border-color: var(--accent-red); background: #3a1a1a; }
-        @keyframes popIn { from { transform: scale(0.8); opacity:0; } to { transform: scale(1); opacity:1;} }
+    /* CONTROLS */
+    button{
+      background: var(--btn);
+      border: 2px solid var(--btn-border);
+      border-radius: 14px;
+      padding: 12px 12px;
+      cursor:pointer;
+      font-family:'Cinzel', serif;
+      font-size: 1em;
+      color: var(--ink);
+      box-shadow: 0 6px 0 rgba(31,42,55,.08);
+      transition:.15s;
+    }
+    button:hover:not(:disabled){ transform: translateY(-2px); }
+    button:active{ transform: translateY(2px); box-shadow:none; }
+    button:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
 
-        /* --- MODALS --- */
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 100;
-            display: none; align-items: center; justify-content: center;
-        }
-        .modal-box {
-            background: #1a0505; border: 4px solid var(--accent-gold); padding: 40px;
-            max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto;
-            position: relative; animation: slideIn 0.4s ease;
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
-            text-align: center;
-        }
-        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 2em; color: var(--accent-red); }
-        .input-dark { width: 80%; padding: 15px; background: #000; color: white; border: 2px solid var(--accent-gold); font-family: 'Cinzel'; text-align: center; font-size: 1.4em; margin: 20px auto; display:block; }
+    .action-btn{
+      width:100%;
+      margin-bottom:10px;
+      text-align:left;
+      background: #ffffff;
+    }
 
-        .snowflake { position: absolute; color: white; animation: fall linear infinite; pointer-events: none; text-shadow: 0 0 5px white;}
-        @keyframes fall { to { transform: translateY(100vh); } }
-        
-        /* Game Over Style */
-        .game-over-text { font-family: 'Cinzel'; font-size: 4em; color: var(--accent-red); margin-bottom: 20px; text-shadow: 0 0 20px red; }
+    .d-pad-grid{
+      display:grid;
+      grid-template-columns: repeat(3,1fr);
+      gap:10px;
+      margin-top: 10px;
+      margin-bottom:10px;
+    }
+    .vert-controls{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .search-btn{
+      border-color: rgba(242,201,76,.9);
+      background: #fff7db;
+      font-size: 1.25em;
+    }
 
-        @media (max-width: 1000px) {
-            .game-wrapper { grid-template-columns: 1fr; height: auto; overflow-y: auto; display: block; }
-            .panel { margin-bottom: 20px; height: auto; }
-            .history-panel { height: auto; flex-wrap: wrap; justify-content: center; }
-        }
-    </style>
+    /* RIGHT PANEL: QUEST + SCANNER + POWERS */
+    .objective-box{
+      background: #ffffff;
+      border: 2px solid rgba(242,201,76,.7);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 18px rgba(242,201,76,.12);
+    }
+    .obj-title{
+      font-family:'Cinzel';
+      text-align:center;
+      color: var(--ink);
+      margin-bottom:10px;
+    }
+    .obj-list{ list-style:none; }
+    .obj-item{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding: 7px 8px;
+      border-radius: 12px;
+      border: 2px solid rgba(159,201,230,.35);
+      margin-bottom:8px;
+      background: rgba(234,246,255,.7);
+    }
+    .obj-item.done{
+      border-color: rgba(42,140,90,.35);
+      background: rgba(42,140,90,.10);
+      opacity:.95;
+      text-decoration: line-through;
+    }
+    .hint-text{
+      margin-top:10px;
+      padding-top:10px;
+      border-top: 2px dashed rgba(159,201,230,.6);
+      color: var(--muted);
+      font-style: italic;
+      text-align:center;
+    }
+
+    .scanner-box{
+      background:#fff;
+      border: 2px solid rgba(159,201,230,.65);
+      border-radius:16px;
+      padding: 12px;
+      margin-bottom:12px;
+    }
+    .scanner-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .seg{
+      display:flex; gap:8px; flex-wrap:wrap;
+      justify-content:center;
+      margin-bottom:10px;
+    }
+    .seg label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 2px solid rgba(159,201,230,.5);
+      background: rgba(234,246,255,.55);
+      font-family: 'Cinzel';
+      font-size: .92em;
+    }
+    .seg input{ accent-color: var(--blue); }
+
+    .meter-bar{
+      height: 14px;
+      background: rgba(31,42,55,.08);
+      border-radius: 999px;
+      overflow:hidden;
+      border: 2px solid rgba(159,201,230,.5);
+    }
+    .meter-fill{
+      height:100%;
+      width:0%;
+      transition: width .4s;
+    }
+    .meter-fill.danger{ background: linear-gradient(90deg, rgba(255,107,107,.55), rgba(255,107,107,.95)); }
+    .meter-fill.secret{ background: linear-gradient(90deg, rgba(47,128,237,.45), rgba(47,128,237,.95)); }
+
+    .powers{
+      background:#fff;
+      border: 2px solid rgba(159,201,230,.65);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .powers h3{
+      font-family:'Cinzel';
+      text-align:center;
+      margin-bottom:10px;
+      color: var(--purple);
+    }
+    .power-btn{
+      width:100%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+      background: #f6f3ff;
+      border-color: rgba(123,104,238,.35);
+    }
+    .power-btn strong{ font-family:'Cinzel'; }
+
+    /* INVENTORY */
+    .inv-header{ margin-top: 10px; }
+    .inventory-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+    }
+    .inv-item{
+      aspect-ratio: 1;
+      border-radius: 14px;
+      border: 2px dashed rgba(159,201,230,.9);
+      background: rgba(234,246,255,.55);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding: 8px;
+      cursor: help;
+      text-align:center;
+    }
+    .inv-item.filled{
+      border-style: solid;
+      border-color: rgba(242,201,76,.9);
+      background: #fff7db;
+      box-shadow: 0 10px 16px rgba(242,201,76,.12);
+    }
+    .inv-item.empty{ opacity:.35; cursor: default; }
+    .inv-item span{ font-size:.85em; font-weight:700; margin-top:6px; }
+
+    /* LOG */
+    .log-area{
+      margin-top: 10px;
+      flex-grow: 1;
+      overflow:auto;
+      padding-right: 4px;
+    }
+    .log-entry{
+      background: rgba(255,255,255,.75);
+      border: 2px solid rgba(159,201,230,.45);
+      border-radius: 12px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      font-size: .95em;
+    }
+    .log-entry.good{ border-color: rgba(42,140,90,.35); }
+    .log-entry.warn{ border-color: rgba(209,58,58,.35); }
+    .log-entry.info{ border-color: rgba(47,128,237,.25); }
+
+    /* MODALS */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(15,23,42,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:100;
+      padding: 18px;
+    }
+    .modal-box{
+      width:min(760px, 96vw);
+      max-height: 90vh;
+      overflow:auto;
+      background: #ffffffee;
+      border: 3px solid rgba(242,201,76,.85);
+      border-radius: 18px;
+      box-shadow: var(--shadow-strong);
+      padding: 18px 18px 16px;
+      position:relative;
+    }
+    .modal-close{
+      position:absolute;
+      top: 10px; right: 12px;
+      border: none;
+      background: transparent;
+      font-size: 28px;
+      cursor:pointer;
+      color: var(--red);
+      box-shadow:none;
+      padding: 6px 10px;
+      border-radius: 12px;
+    }
+    .modal-close:hover{ background: rgba(209,58,58,.08); }
+
+    .input-dark{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 2px solid rgba(159,201,230,.85);
+      font-family: 'Cinzel';
+      font-size: 1.1em;
+      text-align:center;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    /* Snow */
+    .snowflake{
+      position:absolute;
+      top:-20px;
+      color: rgba(255,255,255,.95);
+      text-shadow: 0 2px 8px rgba(47,128,237,.25);
+      pointer-events:none;
+      animation: fall linear infinite;
+    }
+    @keyframes fall{ to{ transform: translateY(110vh); } }
+
+    @media (max-width: 1100px){
+      body{ overflow:auto; height:auto; }
+      .game-wrapper{ grid-template-columns: 1fr; height:auto; }
+    }
+  </style>
 </head>
 <body>
 
-    <div id="help-overlay" class="overlay" style="display: flex;">
-        <div class="modal-box">
-            <div class="modal-close" onclick="closeHelp()">×</div>
-            <h2 style="color: var(--accent-gold); font-family: 'Cinzel'; font-size: 2.5em; margin-bottom: 15px;">Die Legende der Winterkrone</h2>
-            <p style="font-size: 1.2em; color: #ccc; margin-bottom: 30px;">
-                Finde die 3 Edelsteine. Setze die Krone zusammen. Überlebe den Geist.
+  <!-- HELP MODAL -->
+  <div id="help-overlay" class="overlay" style="display:flex;">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeHelp()" aria-label="Schließen">×</button>
+      <h2 style="font-family:'Cinzel'; color: var(--red); text-align:center; margin-bottom:8px;">
+        Das Rätsel der Winterkrone – Festive Edition
+      </h2>
+      <p style="text-align:center; color: var(--muted); margin-bottom:14px;">
+        Ein kurzes, leichtes Abschluss-Abenteuer für die letzte Stunde: sammeln, knobeln, lachen.
+      </p>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div style="background:#fff; border:2px solid rgba(42,140,90,.25); border-radius:14px; padding:12px;">
+          <h3 style="font-family:'Cinzel'; color: var(--green); margin-bottom:6px;">Ziel</h3>
+          <p>Finde <strong>Rubin</strong>, <strong>Saphir</strong>, <strong>Smaragd</strong> und setze im <strong>Thronsaal</strong> die Krone zusammen.</p>
+        </div>
+        <div style="background:#fff; border:2px solid rgba(47,128,237,.25); border-radius:14px; padding:12px;">
+          <h3 style="font-family:'Cinzel'; color: var(--blue); margin-bottom:6px;">Scanner</h3>
+          <p>Wähle <strong>Gefahr</strong> oder <strong>Geheimnisse</strong> – nur eins gleichzeitig. Geheimnisse zeigt dir, ob hier noch etwas zu entdecken ist.</p>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:2px solid rgba(123,104,238,.25); border-radius:14px; padding:12px; margin-bottom:12px;">
+        <h3 style="font-family:'Cinzel'; color: var(--purple); margin-bottom:6px;">Superkräfte</h3>
+        <ul style="margin-left: 18px; line-height:1.45;">
+          <li><strong>🎁 Geschenk-Sprung</strong>: Teleport zu jedem besuchten Raum. Lädt sich im <strong>Schlosshof</strong> wieder auf.</li>
+          <li><strong>✨ Schneekugel-Schutz</strong>: senkt Unfug-Meter & gibt extra Hinweise. Lädt sich in der <strong>Küche</strong> auf.</li>
+        </ul>
+      </div>
+
+      <p style="text-align:center; color: var(--muted);">
+        Steuerung: <strong>W A S D</strong> bewegen, <strong>E</strong> suchen, oder Buttons klicken.
+      </p>
+
+      <button class="action-btn" onclick="closeHelp()" style="text-align:center; border-color: rgba(42,140,90,.6);">
+        Los geht’s
+      </button>
+    </div>
+  </div>
+
+  <!-- MESSAGE MODAL -->
+  <div id="msg-modal" class="overlay" onclick="closeMsg()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeMsg()">×</button>
+      <h3 id="msg-title" style="font-family:'Cinzel'; color: var(--red); text-align:center; margin-bottom:8px;"></h3>
+      <p id="msg-text" style="line-height:1.6; text-align:center;"></p>
+      <button class="action-btn" onclick="closeMsg()" style="text-align:center; margin-top:12px;">Weiter</button>
+    </div>
+  </div>
+
+  <!-- PUZZLE MODAL -->
+  <div id="puzzle-modal" class="overlay">
+    <div class="modal-box" style="border-color: rgba(47,128,237,.55);">
+      <button class="modal-close" onclick="closePuzzle()">×</button>
+      <h2 style="font-family:'Cinzel'; color: var(--blue); text-align:center;">Rätsel</h2>
+      <p id="puzzle-text" style="margin-top:10px; text-align:center; font-size:1.15em;"></p>
+      <input id="puzzle-answer" class="input-dark" type="text" placeholder="Antwort eingeben…" autocomplete="off"/>
+      <button class="action-btn" onclick="submitPuzzleAnswer()" style="text-align:center; border-color: rgba(47,128,237,.5);">Lösen</button>
+    </div>
+  </div>
+
+  <div class="game-wrapper">
+    <!-- LEFT: MAP + LOG -->
+    <div class="panel">
+      <div class="panel-header">Karte</div>
+      <div class="map-controls">
+        <button class="lvl-btn" id="lvl-btn-m1" onclick="player.mapLevel=-1; updateUI()">Keller (-1)</button>
+        <button class="lvl-btn" id="lvl-btn-0"  onclick="player.mapLevel=0;  updateUI()">Ebene 0</button>
+        <button class="lvl-btn" id="lvl-btn-1"  onclick="player.mapLevel=1;  updateUI()">Turm (1)</button>
+      </div>
+      <div class="map-container" id="mini-map"></div>
+      <div style="text-align:center; margin-top:8px; color:var(--muted); font-size:.9em;">
+        Tipp: Auf <strong>besuchte</strong> Räume klicken = Schnellreise
+      </div>
+
+      <div class="panel-header" style="margin-top:14px;">Logbuch</div>
+      <div class="log-area" id="game-log"></div>
+    </div>
+
+    <!-- CENTER: ROOM -->
+    <div class="panel main-panel">
+      <div class="panel-header">
+        <span>Umgebung</span>
+        <button class="help-btn" onclick="openHelp()">?</button>
+      </div>
+
+      <h2 id="room-name" class="room-title">Schlosshof</h2>
+      <div id="room-coords" class="room-coords">Ebene 0</div>
+
+      <div id="room-visual" class="room-visual">
+        <div class="sparkle"></div>
+        <span id="room-icon">🏰</span>
+      </div>
+
+      <div id="room-desc" class="room-desc">…</div>
+      <div id="room-exits" class="exits-line">Ausgänge: …</div>
+
+      <div id="interaction-area"></div>
+    </div>
+
+    <!-- RIGHT: QUEST + SCANNER + POWERS + INVENTORY -->
+    <div class="panel">
+      <div class="objective-box">
+        <div class="obj-title">Quest: Winterkrone</div>
+        <ul class="obj-list">
+          <li id="obj-ruby" class="obj-item"><span>💎</span><span>Rubin</span></li>
+          <li id="obj-sapphire" class="obj-item"><span>💎</span><span>Saphir</span></li>
+          <li id="obj-emerald" class="obj-item"><span>💎</span><span>Smaragd</span></li>
+        </ul>
+        <div id="hint-display" class="hint-text">Tipp: …</div>
+      </div>
+
+      <div class="scanner-box">
+        <div class="scanner-row">
+          <strong style="font-family:'Cinzel'; color: var(--ink);">Scanner</strong>
+          <span id="scanner-label" style="color:var(--muted); font-family:'Cinzel'; font-size:.95em;">Gefahr</span>
+        </div>
+
+        <div class="seg">
+          <label><input type="radio" name="scan" value="danger" checked onchange="setScanner('danger')"> Gefahr</label>
+          <label><input type="radio" name="scan" value="secrets" onchange="setScanner('secrets')"> Geheimnisse</label>
+        </div>
+
+        <div class="meter-bar" title="Scanner-Meter">
+          <div id="scanner-fill" class="meter-fill danger"></div>
+        </div>
+        <div id="scanner-note" style="margin-top:8px; color:var(--muted); text-align:center; font-size:.95em;">
+          …
+        </div>
+      </div>
+
+      <div class="powers">
+        <h3>Superkräfte</h3>
+
+        <button class="power-btn" id="power-jump" onclick="usePower('jump')">
+          <span><strong>🎁 Geschenk-Sprung</strong></span>
+          <span id="jump-charge">0%</span>
+        </button>
+
+        <button class="power-btn" id="power-snowglobe" onclick="usePower('snowglobe')">
+          <span><strong>✨ Schneekugel-Schutz</strong></span>
+          <span id="snow-charge">0%</span>
+        </button>
+
+        <div style="color:var(--muted); text-align:center; font-size:.92em;">
+          Aufladung: <strong>Sprung</strong> im Hof, <strong>Schneekugel</strong> in der Küche
+        </div>
+      </div>
+
+      <div class="panel-header inv-header">Inventar</div>
+      <div class="inventory-grid" id="inventory-grid"></div>
+    </div>
+  </div>
+
+  <div id="snow-container"></div>
+
+  <script>
+    /* -----------------------------
+       DATA
+    ------------------------------*/
+
+    const player = {
+      room: 'courtyard',
+      inventory: [],
+      flags: {},
+      visited: ['courtyard'],
+      mapLevel: 0,
+
+      // Mischief instead of death
+      mischief: 10, // 0..100 (but no game over)
+      mischiefCooldown: 0,
+
+      // Scanner mode
+      scannerMode: 'danger',
+
+      // Powers
+      powerJump: 30,      // 0..100
+      powerSnowglobe: 30  // 0..100
+    };
+
+    const items = {
+      rusty_key:  { name:'Rostiger Schlüssel', icon:'🗝️', desc:'Öffnet die Kellertür. Sieht alt aus, funktioniert aber.', type:'key' },
+      silver_key: { name:'Silberschlüssel',   icon:'🗝️', desc:'Öffnet die Turmtür zur Bibliothek.', type:'key' },
+      crowbar:    { name:'Brecheisen',        icon:'🔧', desc:'Für Kisten, Bretter und lockere Steine.', type:'tool' },
+      scroll:     { name:'Notiz',             icon:'📜', desc:'Rot13: "Vjre fbg nyyvrf orv anzra araara: Nyoerpug"', type:'clue' },
+      ruby:       { name:'Rubin',             icon:'💎', desc:'Warm wie Kakao am Kamin.', type:'gem' },
+      sapphire:   { name:'Saphir',            icon:'💎', desc:'Klar wie Eis – aber freundlich.', type:'gem' },
+      emerald:    { name:'Smaragd',           icon:'💎', desc:'Grün wie Tannen im Schnee.', type:'gem' },
+    };
+
+    const rooms = {
+      courtyard: {
+        name:'Schlosshof', visual:'🏰', coords:{x:2,y:2,z:0},
+        desc:'Schneeflocken glitzern. Der Brunnen ist gefroren – und irgendwie wirkt der Hof erstaunlich gemütlich. Hier lädst du deine Superkräfte am besten auf.',
+        exits:{ N:'great_hall', O:'kitchen', W:'library_entrance' },
+        actions:[
+          { label:'Am Brunnen Wunschmünze werfen', once:false, fn:() => {
+            changeMischief(-10);
+            chargePower('jump', 25);
+            log('Du wirfst eine Wunschmünze – der Hof fühlt sich sicherer an. (+Sprung)', 'good');
+            showMsg('Wunschmünze', 'Du fühlst dich ermutigt. Der Geschenk-Sprung lädt sich schneller auf.');
+          }}
+        ]
+      },
+
+      great_hall: {
+        name:'Große Halle', visual:'🕯️', coords:{x:2,y:1,z:0},
+        desc:'Eine lange Tafel mit festlichen Servietten (okay, leicht staubig). Ein Hofnarr-Geist winkt und kichert – eher lustig als gruselig.',
+        exits:{ S:'courtyard', N:'throne_room' },
+        search: [{ give:'rusty_key', msg:'Unter einem Teller liegt ein rostiger Schlüssel. Klassiker!' }],
+        character:{ name:'Hofnarr', dialog:'Pssst! Wenn du später den Namen suchst: ROT13 dreht Buchstaben wie ein Karussell. A wird zu N. N wird zu A.' }
+      },
+
+      kitchen: {
+        name:'Alte Küche', visual:'🍳', coords:{x:3,y:2,z:0},
+        desc:'Hier riecht es nach Zimt und… na ja, auch nach altem Topf. Ein Koch-Geist rührt unsichtbar in einer Suppe. In der Küche lädt sich die Schneekugel-Kraft.',
+        exits:{ W:'courtyard', D:'cellar' },
+        lockedExits:{ D:{ key:'rusty_key', msg:'Die Kellertür ist zu. Du brauchst einen Schlüssel.' } },
+        search: [{ give:'crowbar', msg:'Im Ofen steckt ein Brecheisen. Praktisch – und überraschend sauber.' }],
+        character:{ name:'Koch-Geist', dialog:'Wenn du höflich „Bitte“ sagst, geben dir Dinge manchmal schneller nach. Und ja: Brecheisen hilft!' },
+        actions:[
+          { label:'Heißen Kakao schlürfen (lädt Schneekugel)', once:false, fn:() => {
+            chargePower('snowglobe', 30);
+            changeMischief(-8);
+            log('Kakao! Das hilft immer. (+Schneekugel)', 'good');
+            showMsg('Kakao', 'Wärmend. Deine Schneekugel-Kraft lädt sich deutlich auf.');
+          }}
+        ]
+      },
+
+      cellar: {
+        name:'Weinkeller', visual:'🍷', coords:{x:3,y:2,z:-1},
+        desc:'Kühl, aber nicht schlimm. Fässer stehen herum wie dicke Schneemänner. An einer Wand wackeln Steine verdächtig.',
+        exits:{ U:'kitchen' },
+        interact:[
+          { label:'Hohles Fass öffnen', req:'crowbar', result:'get_ruby', msg:'Plopp! Im Fass liegt ein Rubin – als hätte jemand ihn „versteckt-vergesse-ich“ gespielt.' },
+          { label:'Lockere Wand freilegen', req:'crowbar', action:'open_dungeon', msg:'Mit etwas Hebeln entsteht ein geheimer Durchgang ins Verlies!' }
+        ]
+      },
+
+      dungeon: {
+        name:'Verlies', visual:'⛓️', coords:{x:3,y:1,z:-1},
+        desc:'Eher „Abstellkammer für alte Ketten“ als Horror. Ein Gang führt zur Gruft. Du hörst… leises Glöckchen-Klimpern?',
+        exits:{ N:'crypt', S:'cellar' }
+      },
+
+      crypt: {
+        name:'Familiengruft', visual:'⚰️', coords:{x:3,y:0,z:-1},
+        desc:'Steinerne Sarkophage. Ein grünes Leuchten schimmert freundlich wie eine Weihnachtsbaumkugel. Hier wartet ein Rätsel auf dich.',
+        exits:{ S:'dungeon' },
+        puzzle:{ q:'Eine Stimme flüstert: „Nenne meinen Namen!“ (Tipp: Notiz + Rot13)', a:'ALBRECHT', reward:'emerald' }
+      },
+
+      library_entrance: {
+        name:'Turmeingang', visual:'🚪', coords:{x:1,y:2,z:0},
+        desc:'Eine Silbertür mit Turmsymbol. Dahinter wartet Wissen – und vermutlich Staub.',
+        exits:{ O:'courtyard', W:'library' },
+        lockedExits:{ W:{ key:'silver_key', msg:'Die Silbertür bleibt zu. Du brauchst den Silberschlüssel.' } }
+      },
+
+      library: {
+        name:'Bibliothek', visual:'📚', coords:{x:0,y:2,z:0},
+        desc:'Regale voller Bücher. Ein Archivar-Geist liest und nickt dir freundlich zu. In einer Vitrine steckt ein Edelstein.',
+        exits:{ O:'library_entrance', U:'tower_top' },
+        puzzle:{ q:'Zahlenfolge: 2, 4, 8, 16, … ?', a:'32', reward:'sapphire' },
+        character:{ name:'Archivar', dialog:'Wenn du unsicher bist: Verdoppeln ist hier das Motto. (Und bitte nicht die Seiten knicken.)' }
+      },
+
+      tower_top: {
+        name:'Turmspitze', visual:'🌙', coords:{x:0,y:2,z:1},
+        desc:'Du siehst Sterne. Ein Skelett hält ein Pergament – wirkt eher wie Deko. Du kannst es untersuchen.',
+        exits:{ D:'library' },
+        search: [{ give:'scroll', msg:'Du nimmst die Notiz. Sie ist verschlüsselt (Rot13) – wie ein Rätsel-Adventskalender!' }]
+      },
+
+      throne_room: {
+        name:'Thronsaal', visual:'👑', coords:{x:2,y:0,z:0},
+        desc:'Ein leerer Thron. Eine Halterung wartet auf die Winterkrone. Wenn du alle Edelsteine hast: zusammensetzen!',
+        exits:{ S:'great_hall' },
+        interact:[ { label:'Krone zusammensetzen', action:'win_check' } ]
+      }
+    };
+
+    const questSteps = [
+      { text:'Gehe zur Großen Halle und suche den Kellerschlüssel.', done: () => player.inventory.includes('rusty_key') },
+      { text:'Gehe zur Küche und finde das Brecheisen.', done: () => player.inventory.includes('crowbar') },
+      { text:'Öffne im Keller das Fass und finde den Rubin.', done: () => player.inventory.includes('ruby') },
+      { text:'Suche im Hof nach dem Silberschlüssel (nachdem du die Halle besucht hast).', done: () => player.inventory.includes('silver_key') },
+      { text:'Öffne die Bibliothek und löse das Zahlenrätsel (Saphir).', done: () => player.inventory.includes('sapphire') },
+      { text:'Gehe zur Turmspitze und nimm die Notiz.', done: () => player.inventory.includes('scroll') },
+      { text:'Finde die Gruft und löse das Namensrätsel (Smaragd).', done: () => player.inventory.includes('emerald') },
+      { text:'Zurück zum Thronsaal: Setze die Krone zusammen.', done: () => false }
+    ];
+
+    /* -----------------------------
+       INIT + INPUT
+    ------------------------------*/
+    function init(){
+      createSnow();
+      seedLog();
+      updateUI();
+
+      document.addEventListener('keydown', (e)=>{
+        if(isAnyModalOpen()) return;
+        const k = e.key.toLowerCase();
+        if(k==='w' || k==='arrowup') move('N');
+        if(k==='s' || k==='arrowdown') move('S');
+        if(k==='a' || k==='arrowleft') move('W');
+        if(k==='d' || k==='arrowright') move('O');
+        if(k==='e') explore();
+        if(k==='escape') closeAllModals();
+      });
+
+      ['puzzle-answer'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el){
+          el.addEventListener('keydown', (e)=>{
+            if(e.key==='Enter') submitPuzzleAnswer();
+          });
+        }
+      });
+    }
+
+    function isAnyModalOpen(){
+      const overlays = document.querySelectorAll('.overlay');
+      for(const o of overlays){
+        if(getComputedStyle(o).display === 'flex') return true;
+      }
+      return false;
+    }
+
+    function closeAllModals(){
+      ['help-overlay','msg-modal','puzzle-modal'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+      });
+    }
+
+    /* -----------------------------
+       UI
+    ------------------------------*/
+    function updateUI(){
+      const r = rooms[player.room];
+
+      document.getElementById('room-name').innerText = r.name;
+      document.getElementById('room-coords').innerText = `Ebene ${r.coords.z} | Sektor ${r.coords.x}-${r.coords.y}`;
+      document.getElementById('room-icon').innerText = r.visual;
+      document.getElementById('room-desc').innerText = r.desc;
+
+      // exits line
+      const labels = {N:'Norden',S:'Süden',O:'Osten',W:'Westen',U:'Oben',D:'Unten'};
+      const out = [];
+      for(const d of ['N','S','O','W','U','D']){
+        if(r.exits && r.exits[d]) out.push(labels[d]);
+        else if(r.lockedExits && r.lockedExits[d]) out.push(labels[d] + ' (🔒)');
+      }
+      document.getElementById('room-exits').innerText = 'Ausgänge: ' + (out.length? out.join(', ') : 'Keine');
+
+      // move buttons
+      ['n','s','o','w','u','d'].forEach(dd=>{
+        const btn = document.getElementById('btn-'+dd);
+        const dir = dd.toUpperCase();
+        const has = (r.exits && r.exits[dir]) || (r.lockedExits && r.lockedExits[dir]);
+        if(btn){
+          btn.disabled = !has;
+          btn.style.opacity = has ? 1 : .5;
+        }
+      });
+
+      // interaction area
+      const area = document.getElementById('interaction-area');
+      area.innerHTML = '';
+
+      // talk
+      if(r.character){
+        const b = mkBtn(`🗣️ Mit ${r.character.name} reden`, ()=>{
+          log(`Du sprichst mit ${r.character.name}.`, 'info');
+          showMsg(r.character.name, `"${r.character.dialog}"`);
+          // talking reduces mischief a bit
+          changeMischief(-6);
+        });
+        area.appendChild(b);
+      }
+
+      // search prompt
+      const bSearch = mkBtn('🔎 Umgebung durchsuchen (E)', explore);
+      area.appendChild(bSearch);
+
+      // puzzles
+      if(r.puzzle && !player.flags[r.puzzle.reward + '_got']){
+        const b = mkBtn('🧩 Rätsel anschauen', ()=>openPuzzleModal(r.puzzle));
+        area.appendChild(b);
+      }
+
+      // interact
+      if(r.interact){
+        r.interact.forEach(act=>{
+          if(act.action === 'open_dungeon' && rooms.cellar.exits.N) return;
+          if(act.result === 'get_ruby' && player.inventory.includes('ruby')) return;
+          area.appendChild(mkBtn(`⚙️ ${act.label}`, ()=>handleInteract(act)));
+        });
+      }
+
+      // room actions
+      if(r.actions){
+        r.actions.forEach(a=>{
+          area.appendChild(mkBtn(`🎄 ${a.label}`, ()=>{
+            if(a.fn) a.fn();
+            updateUI();
+          }));
+        });
+      }
+
+      // throne assemble
+      if(r.interact){
+        r.interact.forEach(act=>{
+          if(act.action === 'win_check'){
+            // already added above by interact loop
+          }
+        });
+      }
+
+      // map & inventory & quest
+      renderMap(player.mapLevel);
+      renderInventory();
+      updateObjectives();
+
+      // power UI
+      updatePowersUI();
+
+      // scanner UI
+      updateScannerUI();
+    }
+
+    function mkBtn(text, fn){
+      const b = document.createElement('button');
+      b.className = 'action-btn';
+      b.innerText = text;
+      b.onclick = fn;
+      return b;
+    }
+
+    function seedLog(){
+      log('Willkommen! Das Schloss ist heute eher „Weihnachts-Escape-Room“ als Grusel.', 'info');
+      log('Tipp: Scanner auf „Geheimnisse“ stellen, wenn du nicht weißt, ob hier noch etwas ist.', 'info');
+    }
+
+    function log(text, type='info'){
+      const area = document.getElementById('game-log');
+      const div = document.createElement('div');
+      div.className = 'log-entry ' + type;
+      div.innerText = '• ' + text;
+      area.prepend(div);
+      if(area.children.length > 40) area.lastChild.remove();
+    }
+
+    function showMsg(title, text){
+      document.getElementById('msg-title').innerText = title;
+      document.getElementById('msg-text').innerText = text;
+      document.getElementById('msg-modal').style.display = 'flex';
+    }
+    function closeMsg(){ document.getElementById('msg-modal').style.display = 'none'; }
+
+    function openHelp(){ document.getElementById('help-overlay').style.display = 'flex'; }
+    function closeHelp(){ document.getElementById('help-overlay').style.display = 'none'; }
+
+    /* -----------------------------
+       MAP
+    ------------------------------*/
+    function renderMap(level){
+      const map = document.getElementById('mini-map');
+
+      // active btn
+      document.querySelectorAll('.lvl-btn').forEach(b=>b.classList.remove('active'));
+      const btnId = (level===-1) ? 'lvl-btn-m1' : 'lvl-btn-' + level;
+      const ab = document.getElementById(btnId);
+      if(ab) ab.classList.add('active');
+
+      map.innerHTML = '';
+
+      for(let y=0;y<5;y++){
+        for(let x=0;x<5;x++){
+          const node = document.createElement('div');
+          node.className = 'map-node fog';
+
+          const roomKey = Object.keys(rooms).find(k=>{
+            const c = rooms[k].coords;
+            return c.x===x && c.y===y && c.z===level;
+          });
+
+          if(roomKey){
+            const r = rooms[roomKey];
+            const isVisited = player.visited.includes(roomKey);
+            const isCurrent = player.room === roomKey;
+
+            let neighborVisited = false;
+            if(!isVisited){
+              neighborVisited = Object.keys(rooms).some(k=>{
+                const nr = rooms[k].coords;
+                if(nr.z!==level) return false;
+                const man = Math.abs(nr.x-x)+Math.abs(nr.y-y);
+                return man===1 && player.visited.includes(k);
+              });
+            }
+
+            if(isCurrent){
+              node.className = 'map-node active';
+              node.innerText = r.visual;
+            }else if(isVisited){
+              node.className = 'map-node visited';
+              node.innerText = r.visual;
+              node.title = r.name + ' (Schnellreise)';
+              node.onclick = ()=>fastTravel(roomKey);
+
+              // lock icon if any locked exits and missing key
+              let hasLock = false;
+              if(r.lockedExits){
+                hasLock = Object.values(r.lockedExits).some(lock => !player.inventory.includes(lock.key));
+              }
+              if(hasLock){
+                const lock = document.createElement('div');
+                lock.className = 'lock-icon';
+                lock.innerText = '🔒';
+                node.appendChild(lock);
+              }
+            }else if(neighborVisited){
+              node.className = 'map-node seen';
+              node.innerText = '?';
+            }
+          }
+
+          map.appendChild(node);
+        }
+      }
+    }
+
+    function fastTravel(target){
+      if(target === player.room) return;
+      log('Schnellreise: Du huschst durch bekannte Flure.', 'info');
+      // small mischief increase, but not scary
+      changeMischief(+4);
+      player.room = target;
+      player.mapLevel = rooms[player.room].coords.z;
+      visitRoom(false);
+    }
+
+    /* -----------------------------
+       MOVEMENT + VISIT
+    ------------------------------*/
+    function move(dir){
+      const r = rooms[player.room];
+
+      // locked?
+      if(r.lockedExits && r.lockedExits[dir]){
+        const lock = r.lockedExits[dir];
+        if(player.inventory.includes(lock.key)){
+          log('Du nutzt den Schlüssel – klick! Auf geht’s.', 'good');
+          player.room = r.exits[dir];
+          visitRoom();
+        }else{
+          log(lock.msg, 'warn');
+          showMsg('Verschlossen', lock.msg);
+        }
+        return;
+      }
+
+      if(r.exits && r.exits[dir]){
+        player.room = r.exits[dir];
+        // moving adds a tiny bit of mischief, but manageable
+        changeMischief(+3);
+        visitRoom();
+      }
+    }
+
+    function visitRoom(isNewMove=true){
+      const key = player.room;
+
+      if(!player.visited.includes(key)){
+        player.visited.push(key);
+        log('Neuer Raum entdeckt: ' + rooms[key].name, 'good');
+        // reward: small power charge
+        chargePower('jump', 10);
+        chargePower('snowglobe', 10);
+      }else if(isNewMove){
+        log('Du bist jetzt in: ' + rooms[key].name, 'info');
+      }
+
+      player.mapLevel = rooms[key].coords.z;
+
+      // location-based recharge
+      if(key === 'courtyard') chargePower('jump', 18);
+      if(key === 'kitchen')   chargePower('snowglobe', 18);
+
+      // occasional playful sprite event
+      maybeSpritePrank();
+
+      updateUI();
+    }
+
+    /* -----------------------------
+       SEARCH / INTERACT / PUZZLES
+    ------------------------------*/
+    function explore(){
+      const r = rooms[player.room];
+
+      // searching increases mischief a bit
+      changeMischief(+6);
+
+      // room search entries
+      if(r.search){
+        for(const entry of r.search){
+          if(entry.give){
+            if(player.inventory.includes(entry.give)) continue;
+            player.inventory.push(entry.give);
+            log('Gefunden: ' + items[entry.give].name, 'good');
+            showMsg('Gefunden!', entry.msg);
+            // reward: secret-sense calming + power
+            chargePower('snowglobe', 12);
+            chargePower('jump', 12);
+            updateUI();
+            return;
+          }
+        }
+      }
+
+      // special: silver key in courtyard after visiting hall
+      if(player.room === 'courtyard' && player.visited.includes('great_hall') && !player.inventory.includes('silver_key')){
+        player.inventory.push('silver_key');
+        log('Im Schnee blitzt etwas: Silberschlüssel!', 'good');
+        showMsg('Silberschlüssel', 'Du findest den Silberschlüssel im Schnee. Die Turmtür wartet.');
+        updateUI();
+        return;
+      }
+
+      log('Du suchst – aber hier ist gerade nichts Neues.', 'info');
+      updateUI();
+    }
+
+    function handleInteract(act){
+      if(act.req && !player.inventory.includes(act.req)){
+        showMsg('Hm…', 'Dir fehlt: ' + items[act.req].name);
+        log('Fehlt: ' + items[act.req].name, 'warn');
+        return;
+      }
+
+      if(act.action === 'open_dungeon'){
+        rooms.cellar.exits.N = 'dungeon';
+        log('Geheimgang freigelegt! (Keller → Verlies)', 'good');
+        showMsg('Geheimgang', 'Ein Durchgang ist offen. Du kannst nach Norden ins Verlies.');
+        updateUI();
+        return;
+      }
+
+      if(act.result === 'get_ruby'){
+        if(!player.inventory.includes('ruby')){
+          player.inventory.push('ruby');
+          log('Rubin eingesammelt!', 'good');
+          showMsg('Rubin', 'Der Rubin funkelt wie ein Weihnachtsstern.');
+          // reward power
+          chargePower('jump', 20);
+          chargePower('snowglobe', 20);
+          updateUI();
+        }
+        return;
+      }
+
+      if(act.action === 'win_check'){
+        const ok = ['ruby','sapphire','emerald'].every(g=>player.inventory.includes(g));
+        if(ok){
+          winScreen();
+        }else{
+          showMsg('Fast!', 'Dir fehlen noch Edelsteine. Schau in die Quest-Box rechts.');
+          log('Krone noch unvollständig.', 'warn');
+        }
+      }
+    }
+
+    let activePuzzle = null;
+    function openPuzzleModal(puzzle){
+      activePuzzle = puzzle;
+      document.getElementById('puzzle-text').innerText = puzzle.q;
+      document.getElementById('puzzle-answer').value = '';
+      document.getElementById('puzzle-modal').style.display = 'flex';
+      setTimeout(()=>document.getElementById('puzzle-answer').focus(), 50);
+    }
+    function closePuzzle(){
+      document.getElementById('puzzle-modal').style.display = 'none';
+      activePuzzle = null;
+    }
+    function submitPuzzleAnswer(){
+      if(!activePuzzle) return;
+      const ans = document.getElementById('puzzle-answer').value.toUpperCase().trim();
+      closePuzzle();
+
+      if(ans === activePuzzle.a){
+        if(!player.inventory.includes(activePuzzle.reward)){
+          player.inventory.push(activePuzzle.reward);
+        }
+        player.flags[activePuzzle.reward + '_got'] = true;
+
+        log('Rätsel gelöst! (' + items[activePuzzle.reward].name + ')', 'good');
+        showMsg('Richtig!', 'Du bekommst: ' + items[activePuzzle.reward].name);
+        // reward
+        changeMischief(-10);
+        chargePower('jump', 25);
+        chargePower('snowglobe', 25);
+        updateUI();
+      }else{
+        log('Knapp daneben – versuch’s später nochmal.', 'warn');
+        showMsg('Nicht ganz', 'Das war’s noch nicht. Tipp: Sprich mit den Geistern oder nutze „Geheimnisse“-Scanner.');
+        // small mischief, no punishment spiral
+        changeMischief(+8);
+        updateUI();
+      }
+    }
+
+    /* -----------------------------
+       QUEST / INVENTORY / POWERS
+    ------------------------------*/
+    function renderInventory(){
+      const g = document.getElementById('inventory-grid');
+      g.innerHTML = '';
+
+      const slots = 8;
+      for(let i=0;i<slots;i++){
+        const d = document.createElement('div');
+        if(i < player.inventory.length){
+          const id = player.inventory[i];
+          d.className = 'inv-item filled';
+          d.innerHTML = `${items[id].icon}<span>${items[id].name}</span>`;
+          d.onclick = ()=>showMsg(items[id].name, items[id].desc);
+        }else{
+          d.className = 'inv-item empty';
+          d.innerHTML = `🎁<span>Leer</span>`;
+        }
+        g.appendChild(d);
+      }
+    }
+
+    function updateObjectives(){
+      ['ruby','sapphire','emerald'].forEach(g=>{
+        const el = document.getElementById('obj-'+g);
+        if(player.inventory.includes(g)) el.classList.add('done');
+      });
+
+      // compute quest step
+      let step = 0;
+      while(step < questSteps.length && questSteps[step].done()) step++;
+
+      const hint = document.getElementById('hint-display');
+      hint.innerText = (step >= questSteps.length)
+        ? 'Setze die Krone zusammen!'
+        : 'Nächster Schritt: ' + questSteps[step].text;
+    }
+
+    function updatePowersUI(){
+      // jump
+      document.getElementById('jump-charge').innerText = player.powerJump + '%';
+      document.getElementById('power-jump').disabled = (player.powerJump < 100);
+
+      // snowglobe
+      document.getElementById('snow-charge').innerText = player.powerSnowglobe + '%';
+      document.getElementById('power-snowglobe').disabled = (player.powerSnowglobe < 100);
+    }
+
+    function chargePower(which, amount){
+      if(which==='jump') player.powerJump = Math.min(100, player.powerJump + amount);
+      if(which==='snowglobe') player.powerSnowglobe = Math.min(100, player.powerSnowglobe + amount);
+    }
+
+    function usePower(which){
+      if(which==='jump'){
+        if(player.powerJump < 100) return;
+
+        // Pick a target (simple prompt list)
+        const options = player.visited.map(k => rooms[k].name);
+        const targetName = prompt(
+          'Geschenk-Sprung: Wohin willst du?\n' +
+          options.map((n,i)=>`${i+1}) ${n}`).join('\n') +
+          '\n\nGib die Nummer ein:'
+        );
+        if(!targetName) return;
+
+        const idx = parseInt(targetName, 10) - 1;
+        if(Number.isNaN(idx) || idx < 0 || idx >= player.visited.length){
+          showMsg('Ups', 'Bitte eine gültige Nummer eingeben.');
+          return;
+        }
+
+        player.powerJump = 0;
+        const targetKey = player.visited[idx];
+        log('🎁 Geschenk-Sprung! Du teleportierst dich.', 'good');
+        changeMischief(-6);
+        player.room = targetKey;
+        player.mapLevel = rooms[player.room].coords.z;
+        visitRoom(false);
+      }
+
+      if(which==='snowglobe'){
+        if(player.powerSnowglobe < 100) return;
+        player.powerSnowglobe = 0;
+
+        // effect: calm + reveal hint
+        changeMischief(-18);
+
+        const secret = computeSecretScore(player.room);
+        const extra = secret > 0
+          ? 'Hier ist definitiv noch etwas zu entdecken. Such nach einem Rätsel/Objekt oder rede mit jemandem.'
+          : 'Hier wirkt alles schon „leer“. Vielleicht woanders weitermachen.';
+
+        log('✨ Schneekugel-Schutz aktiviert.', 'good');
+        showMsg('Schneekugel-Schutz', 'Eine glitzernde Kugel schwebt kurz vor dir – alles wird ruhiger.\n\nExtra-Hinweis: ' + extra);
+        updateUI();
+      }
+    }
+
+    /* -----------------------------
+       SCANNER
+    ------------------------------*/
+    function setScanner(mode){
+      player.scannerMode = mode;
+      updateScannerUI();
+    }
+
+    function updateScannerUI(){
+      const fill = document.getElementById('scanner-fill');
+      const label = document.getElementById('scanner-label');
+      const note = document.getElementById('scanner-note');
+
+      if(player.scannerMode === 'danger'){
+        label.innerText = 'Gefahr';
+        fill.classList.remove('secret');
+        fill.classList.add('danger');
+
+        // map mischief 0..100 to % (but it’s just “mood”)
+        const pct = Math.max(0, Math.min(100, player.mischief));
+        fill.style.width = pct + '%';
+
+        const mood = (pct < 25) ? 'Sehr ruhig'
+                  : (pct < 50) ? 'Kichert ein bisschen'
+                  : (pct < 75) ? 'Frecher Unfug'
+                  : 'Richtig albern';
+        note.innerText = `Unfug-Level: ${mood} (${pct}%)`;
+      }else{
+        label.innerText = 'Geheimnisse';
+        fill.classList.remove('danger');
+        fill.classList.add('secret');
+
+        const score = computeSecretScore(player.room); // 0..100ish
+        fill.style.width = score + '%';
+        note.innerText = score >= 60 ? 'Hier steckt noch viel!'
+                      : score >= 30 ? 'Vielleicht ist noch etwas da…'
+                      : score > 0   ? 'Nur noch Kleinkram.'
+                      : 'Hier ist alles entdeckt.';
+      }
+    }
+
+    function computeSecretScore(roomKey){
+      const r = rooms[roomKey];
+      let score = 0;
+
+      // undiscovered search items
+      if(r.search){
+        for(const entry of r.search){
+          if(entry.give && !player.inventory.includes(entry.give)) score += 40;
+        }
+      }
+
+      // undiscovered puzzle reward
+      if(r.puzzle && !player.flags[r.puzzle.reward + '_got']) score += 50;
+
+      // undiscovered interact outcomes
+      if(r.interact){
+        for(const act of r.interact){
+          if(act.result === 'get_ruby' && !player.inventory.includes('ruby')) score += 35;
+          if(act.action === 'open_dungeon' && !rooms.cellar.exits.N) score += 25;
+        }
+      }
+
+      // special silver key rule
+      if(roomKey === 'courtyard' && player.visited.includes('great_hall') && !player.inventory.includes('silver_key')) score += 50;
+
+      // cap
+      return Math.max(0, Math.min(100, score));
+    }
+
+    /* -----------------------------
+       MISCHIEF SPRITE (Playful)
+    ------------------------------*/
+    function changeMischief(delta){
+      player.mischief = Math.max(0, Math.min(100, player.mischief + delta));
+      updateScannerUI();
+    }
+
+    function maybeSpritePrank(){
+      if(player.mischiefCooldown > 0){
+        player.mischiefCooldown--;
+        return;
+      }
+
+      // small chance, scaled by mischief
+      const chance = (player.mischief / 220); // low
+      if(Math.random() < chance){
+        player.mischiefCooldown = 3;
+
+        const pranks = [
+          { t:'🎀 Schleifen-Sturm', m:'Ein Schwung Geschenk-Schleifen fliegt vorbei. Du musst lachen.', eff:()=>changeMischief(-6) },
+          { t:'⛄ Schneemann-Witz', m:'Ein Geist zeichnet dir einen Schneemann ins Logbuch. Albern, aber nett.', eff:()=>changeMischief(-8) },
+          { t:'🔔 Glöckchen-Echo', m:'Du hörst Glöckchen. Es klingt wie „Sucht doch mal da oben…“', eff:()=>{ chargePower('jump', 8); } },
+        ];
+        const p = pranks[Math.floor(Math.random()*pranks.length)];
+        log('Ein Schloss-Kobold macht Quatsch: ' + p.t, 'info');
+        if(p.eff) p.eff();
+      }
+    }
+
+    /* -----------------------------
+       WIN
+    ------------------------------*/
+    function winScreen(){
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+                    background: radial-gradient(circle at 30% 20%, #eaf6ff, #cfe9ff);">
+          <div style="background:#ffffffee; border:3px solid rgba(242,201,76,.9); border-radius:20px;
+                      padding:22px; box-shadow: 0 18px 60px rgba(31,42,55,.18); text-align:center; max-width:820px;">
+            <h1 style="font-family:Cinzel; color:#d13a3a; font-size:3.2em; margin-bottom:10px;">Krone vollendet!</h1>
+            <p style="font-size:1.35em; line-height:1.5; color:#1f2a37;">
+              Die Edelsteine klicken ein – und das Schloss leuchtet plötzlich wie ein riesiger Adventskalender.
+              Der Kobold-Geist verbeugt sich … und wirft dir zum Abschied Konfetti-Schnee zu.
             </p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border: 1px solid var(--accent-green);">
-                    <h3 style="color: var(--accent-green);">✨ Neu: Magie</h3>
-                    <p>Nutze die <strong>Laterne</strong>, um den Geist zu beruhigen. Sie lädt sich auf, wenn du Rätsel löst.</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border: 1px solid var(--accent-gold);">
-                    <h3 style="color: var(--accent-gold);">🗣️ Neu: Gespräche</h3>
-                    <p>Sprich mit den Geistern des Schlosses (Koch, Narr), um Hinweise zu erhalten.</p>
-                </div>
-            </div>
-            <button class="action-btn" onclick="closeHelp()" style="margin-top: 30px; background: var(--accent-green); color: white; font-size: 1.3em; text-align: center;">Spiel Starten</button>
-        </div>
-    </div>
-
-    <div id="msg-modal" class="overlay">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <h3 id="msg-title" style="color: var(--accent-gold); margin-bottom: 20px; font-size: 2em; font-family: 'Cinzel';"></h3>
-            <p id="msg-text" style="font-size: 1.4em; line-height: 1.6; margin-bottom: 30px;"></p>
-            <button onclick="closeMsg()" class="action-btn" style="text-align: center;">Weiter</button>
-        </div>
-    </div>
-
-    <div id="puzzle-modal" class="overlay">
-        <div class="modal-box" style="border-color: #8b949e;">
-            <div class="modal-close" onclick="closePuzzle()">×</div>
-            <h2 style="color: #ccc; font-family: 'Cinzel';">RÄTSEL</h2>
-            <p id="puzzle-text" style="font-size: 1.4em; margin: 20px 0; color: #fff;">...</p>
-            <input type="text" id="puzzle-answer" class="input-dark" placeholder="Deine Antwort..." autocomplete="off">
-            <button onclick="submitPuzzleAnswer()" class="action-btn" style="text-align: center;">Lösen</button>
-        </div>
-    </div>
-
-    <div id="ghost-modal" class="overlay">
-        <div class="modal-box" style="border-color: var(--ghost-purple); box-shadow: 0 0 50px var(--ghost-purple);">
-            <h2 style="color: var(--ghost-purple); font-family: 'Cinzel'; font-size: 2.5em;">👁️ ALBRECHT ERSCHEINT</h2>
-            <p style="color: #aaa;">Die Kälte greift nach deinem Herzen...</p>
-            <p id="ghost-riddle-text" style="font-size: 1.5em; margin: 30px 0; font-style: italic; color: #fff;">...</p>
-            <input type="text" id="ghost-answer" class="input-dark" style="border-color: var(--ghost-purple);" placeholder="Antwort..." autocomplete="off">
-            <button onclick="submitGhostAnswer()" class="action-btn" style="background: var(--ghost-purple); color: white; text-align: center;">Antworten</button>
-        </div>
-    </div>
-
-    <div id="game-over-modal" class="overlay">
-        <div class="modal-box" style="border-color: red; background: #000;">
-            <h1 class="game-over-text">GAME OVER</h1>
-            <p style="font-size: 1.5em; margin-bottom: 30px;">Der Geist hat dich in die ewige Dunkelheit gezogen.</p>
-            <button onclick="location.reload()" class="action-btn" style="background: var(--accent-red); color: white; text-align: center;">Neustart</button>
-        </div>
-    </div>
-
-    <div class="game-wrapper">
-        <div class="panel">
-            <div class="panel-header">Karte</div>
-            <div class="map-wrapper">
-                <div class="map-controls">
-                    <button class="lvl-btn" id="lvl-btn-m1" onclick="player.mapLevel=-1; updateUI()">Keller</button>
-                    <button class="lvl-btn" id="lvl-btn-0" onclick="player.mapLevel=0; updateUI()">Erdgeschoss</button>
-                    <button class="lvl-btn" id="lvl-btn-1" onclick="player.mapLevel=1; updateUI()">Turm</button>
-                </div>
-                <div class="map-container" id="mini-map"></div>
-                <div style="text-align: center; font-size: 0.9em; color: #888; margin-top: 10px;">Klick = Schnellreise</div>
-            </div>
-            
-            <div class="panel-header" style="margin-top: 20px;">Rucksack</div>
-            <div class="inventory-grid" id="inventory-grid"></div>
-        </div>
-
-        <div class="panel main-panel">
-            <div class="panel-header">
-                <span>Umgebung</span>
-                <button class="help-btn" onclick="openHelp()">?</button>
-            </div>
-            
-            <h2 id="room-name" class="room-title">Schlosshof</h2>
-            <div id="room-coords" class="room-coords">Ebene 0</div>
-            
-            <div id="room-visual" class="room-visual">
-                <span id="room-icon">🏰</span>
-                <div id="anim-layer" class="anim-layer"></div>
-            </div>
-            
-            <div id="room-desc" class="room-desc">...</div>
-            <div id="room-exits" class="exits-line">Ausgänge: ...</div>
-            
-            <div id="interaction-area" style="border-top: 2px solid var(--border-color); padding-top: 20px;"></div>
-        </div>
-
-        <div class="panel">
-            <div class="objective-box">
-                <div class="obj-title">Quest: Die Krone</div>
-                <ul class="obj-list">
-                    <li id="obj-ruby" class="obj-item">Blutrubin</li>
-                    <li id="obj-sapphire" class="obj-item">Eissaphir</li>
-                    <li id="obj-emerald" class="obj-item">Waldsmaragd</li>
-                </ul>
-                <div id="hint-display" class="hint-text">Tipp: ...</div>
-            </div>
-
-            <div class="meter-container">
-                <div class="meter-label">
-                    <span>Geister-Zorn</span>
-                    <span id="ghost-status">Ruhig</span>
-                </div>
-                <div class="meter-bar">
-                    <div id="ghost-meter" class="meter-fill ghost-fill"></div>
-                </div>
-                <div style="font-size: 0.8em; color: #888; text-align: right; margin-top: 3px;">Bei 100% ist das Spiel vorbei.</div>
-            </div>
-
-            <button id="special-power-btn" onclick="usePower()" disabled>
-                <span>✨ Laterne</span>
-                <span id="power-charge">0%</span>
+            <div style="font-size:4.5em; margin:14px 0;">👑❄️🎁</div>
+            <button onclick="location.reload()"
+              style="padding:12px 18px; border-radius:14px; border:2px solid #9fc9e6; background:#fff; font-family:Cinzel; font-size:1.1em; cursor:pointer;">
+              Nochmal spielen
             </button>
-
-            <div class="d-pad-grid">
-                <div></div>
-                <button id="btn-n" onclick="move('N')">N</button>
-                <div></div>
-                <button id="btn-w" onclick="move('W')">W</button>
-                <button onclick="explore()" title="Suchen" style="background: #3d1e1e; border-color: var(--accent-gold); font-size: 1.5em;">👁️</button>
-                <button id="btn-o" onclick="move('O')">O</button>
-                <div></div>
-                <button id="btn-s" onclick="move('S')">S</button>
-                <div></div>
-            </div>
-
-            <div class="vert-controls">
-                <button id="btn-u" onclick="move('U')">⬆ TREPPE</button>
-                <button id="btn-d" onclick="move('D')">⬇ TREPPE</button>
-            </div>
+          </div>
         </div>
+      `;
+    }
 
-        <div class="history-panel" id="history-container">
-            <div class="history-box">Das Abenteuer beginnt...</div>
+    /* -----------------------------
+       SNOW
+    ------------------------------*/
+    function createSnow(){
+      const c = document.getElementById('snow-container');
+      const count = 55;
+      for(let i=0;i<count;i++){
+        const s = document.createElement('div');
+        s.className = 'snowflake';
+        s.innerText = Math.random() < 0.15 ? '✶' : '❄';
+        s.style.left = (Math.random()*100) + 'vw';
+        s.style.fontSize = (10 + Math.random()*18) + 'px';
+        s.style.opacity = (0.25 + Math.random()*0.6).toFixed(2);
+        s.style.animationDuration = (5 + Math.random()*7) + 's';
+        s.style.animationDelay = (-Math.random()*7) + 's';
+        c.appendChild(s);
+      }
+    }
+
+    /* -----------------------------
+       START
+    ------------------------------*/
+    init();
+    // initial visit
+    updateScannerUI();
+
+    // Build movement controls dynamically into right panel? We already have in center interaction + WASD.
+    // Add D-pad controls below interaction:
+    // (Small injection so you don't need to scroll for buttons on laptops.)
+    (function injectControls(){
+      const area = document.getElementById('interaction-area');
+      const wrap = document.createElement('div');
+      wrap.style.marginTop = '10px';
+      wrap.innerHTML = `
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px;">
+          <div></div>
+          <button id="btn-n" onclick="move('N')">N</button>
+          <div></div>
+          <button id="btn-w" onclick="move('W')">W</button>
+          <button class="search-btn" onclick="explore()" title="Suchen (E)">👁️</button>
+          <button id="btn-o" onclick="move('O')">O</button>
+          <div></div>
+          <button id="btn-s" onclick="move('S')">S</button>
+          <div></div>
         </div>
-    </div>
-
-    <div id="snow-container"></div>
-
-    <script>
-        /* --- GAME DATA --- */
-        const player = {
-            room: 'courtyard',
-            inventory: [],
-            flags: {},
-            ghostMeter: 0,
-            ghostCooldown: 0,
-            visited: ['courtyard'],
-            mapLevel: 0,
-            questStep: 0,
-            powerCharge: 100 // Starts full
-        };
-
-        const items = {
-            'rusty_key': { name: 'Rostiger Schlüssel', icon: '🗝️', desc: 'Riecht nach Moder.', type: 'key' },
-            'silver_key': { name: 'Silberschlüssel', icon: '🗝️', desc: 'Turm-Symbol eingraviert.', type: 'key' },
-            'crowbar': { name: 'Brecheisen', icon: '🔧', desc: 'Massives Werkzeug.', type: 'tool' },
-            'scroll': { name: 'Notiz', icon: '📜', desc: 'Rot13: "Vjre fbg nyyvrf orv anzra araara: Nyoerpug"', type: 'clue' },
-            'ruby': { name: 'Rubin', icon: '💎', desc: 'Warm wie Feuer.', type: 'gem' },
-            'sapphire': { name: 'Saphir', icon: '💎', desc: 'Kalt wie Eis.', type: 'gem' },
-            'emerald': { name: 'Smaragd', icon: '💎', desc: 'Leuchtet lebendig.', type: 'gem' }
-        };
-
-        // 3) NPC DIALOGS ADDED TO ROOMS
-        const rooms = {
-            'courtyard': {
-                name: 'Schlosshof', visual: '🏰', coords: {x:2, y:2, z:0},
-                desc: 'Der Wind heult. Der Brunnen ist gefroren. Ein sicherer Ort.',
-                exits: { N: 'great_hall', O: 'kitchen', W: 'library_entrance' },
-                actions: [
-                    { label: "Am Brunnen ausruhen", effect: () => {
-                        addToHistory("Du ruhst dich aus.", "new");
-                        changeGhostMeter(-15);
-                        showMsg("Der Brunnen", "Das Plätschern beruhigt dich. (-15 Zorn)");
-                    }}
-                ]
-            },
-            'kitchen': {
-                name: 'Alte Küche', visual: '🍳', coords: {x:3, y:2, z:0},
-                desc: 'Kalte Asche. Ein Geist-Koch schwebt traurig über den Töpfen.',
-                exits: { W: 'courtyard', D: 'cellar' },
-                lockedExits: { D: {key: 'rusty_key', msg: 'Kellertür ist verschlossen.'} },
-                search: [{ give: 'crowbar', msg: 'Im Ofen liegt ein Brecheisen!' }],
-                character: { name: "Geist-Koch", dialog: "Meine Ratten... sie haben den Schlüssel unter einen Teller in der Großen Halle geschleppt!" }
-            },
-            'cellar': {
-                name: 'Weinkeller', visual: '🍷', coords: {x:3, y:2, z:-1},
-                desc: 'Dunkel und feucht. Fässer stapeln sich.',
-                exits: { U: 'kitchen' },
-                interact: [
-                    { label: 'Fass öffnen', req: 'crowbar', result: 'get_ruby', msg: 'Rubin gefunden!' },
-                    { label: 'Wand einreißen', req: 'crowbar', action: 'open_dungeon', msg: 'Weg zum Verlies frei!' }
-                ]
-            },
-            'great_hall': {
-                name: 'Große Halle', visual: '🕯️', coords: {x:2, y:1, z:0},
-                desc: 'Eine riesige Tafel. Der Geist eines Hofnarren kichert in der Ecke.',
-                exits: { S: 'courtyard', N: 'throne_room' },
-                search: [{ give: 'rusty_key', msg: 'Schlüssel unter dem Teller gefunden!' }],
-                character: { name: "Hofnarr", dialog: "Hihi! Der Name des Königs? Dreh die Buchstaben! A wird zu N... alles dreht sich!" }
-            },
-            'throne_room': {
-                name: 'Thronsaal', visual: '👑', coords: {x:2, y:0, z:0},
-                desc: 'Der leere Thron wartet auf die Krone.',
-                exits: { S: 'great_hall' },
-                interact: [{ label: 'Krone zusammensetzen', action: 'win_check' }]
-            },
-            'library_entrance': {
-                name: 'Turmeingang', visual: '🚪', coords: {x:1, y:2, z:0},
-                desc: 'Eine verschlossene Silbertür.',
-                exits: { O: 'courtyard', W: 'library' },
-                lockedExits: { W: {key: 'silver_key', msg: 'Braucht Silberschlüssel.'} }
-            },
-            'library': {
-                name: 'Bibliothek', visual: '📚', coords: {x:0, y:2, z:0},
-                desc: 'Bücher bis zur Decke. Ein alter Geist liest.',
-                exits: { O: 'library_entrance', U: 'tower_top' },
-                puzzle: { q: 'Zahlenfolge: 2, 4, 8, 16...?', a: '32', reward: 'sapphire' },
-                character: { name: "Archivar", dialog: "Zahlen sind die Sprache des Universums. Verdopple dein Wissen." }
-            },
-            'tower_top': {
-                name: 'Turmspitze', visual: '🌙', coords: {x:0, y:2, z:1},
-                desc: 'Eisiger Wind. Ein Skelett hält eine Notiz.',
-                exits: { D: 'library' },
-                search: [{ give: 'scroll', msg: 'Notiz genommen.' }]
-            },
-            'dungeon': {
-                name: 'Verlies', visual: '⛓️', coords: {x:3, y:1, z:-1},
-                desc: 'Ketten und Dunkelheit.',
-                exits: { N: 'crypt', S: 'cellar' }
-            },
-            'crypt': {
-                name: 'Familiengruft', visual: '⚰️', coords: {x:3, y:0, z:-1},
-                desc: 'Hier ruhen die Ahnen. Grünes Leuchten.',
-                exits: { S: 'dungeon' },
-                puzzle: { q: 'Nenne den Namen! (Hinweis: Notiz + Rot13)', a: 'ALBRECHT', reward: 'emerald' }
-            }
-        };
-
-        const quest = [
-            { text: "Suche Schlüssel in der Großen Halle.", done: () => player.inventory.includes('rusty_key') },
-            { text: "Suche Brecheisen in der Küche.", done: () => player.inventory.includes('crowbar') },
-            { text: "Hole Rubin aus dem Keller.", done: () => player.inventory.includes('ruby') },
-            { text: "Finde Silberschlüssel im Hof.", done: () => player.inventory.includes('silver_key') },
-            { text: "Löse Bibliotheks-Rätsel.", done: () => player.inventory.includes('sapphire') },
-            { text: "Hole Notiz vom Turm.", done: () => player.inventory.includes('scroll') },
-            { text: "Löse Gruft-Rätsel (Smaragd).", done: () => player.inventory.includes('emerald') },
-            { text: "Zum Thronsaal!", done: () => false }
-        ];
-
-        /* --- ENGINE --- */
-        function init() {
-            createSnow();
-            updateUI();
-            
-            document.addEventListener('keydown', (e) => {
-                if (isModalOpen()) return;
-                const k = e.key.toLowerCase();
-                if(k === 'w' || k === 'arrowup') move('N');
-                if(k === 's' || k === 'arrowdown') move('S');
-                if(k === 'a' || k === 'arrowleft') move('W');
-                if(k === 'd' || k === 'arrowright') move('O');
-                if(k === 'e') explore();
-            });
-
-            ['puzzle-answer', 'ghost-answer'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.addEventListener('keydown', (e) => { if(e.key==='Enter') (id==='puzzle-answer'?submitPuzzleAnswer():submitGhostAnswer()); });
-            });
-        }
-
-        function isModalOpen() {
-            return document.querySelectorAll('.overlay[style*="flex"]').length > 0;
-        }
-
-        // 5) ANIMATION FUNCTION
-        function playAnimation(type) {
-            const layer = document.getElementById('anim-layer');
-            layer.innerHTML = '';
-            
-            if (type === 'walk') layer.innerHTML = '👣';
-            else if (type === 'stairs') layer.innerHTML = '🪜';
-            
-            // Trigger reflow
-            void layer.offsetWidth;
-            
-            layer.style.animation = 'none';
-            setTimeout(() => {
-                layer.style.animation = type === 'walk' ? 'walkNorth 0.8s ease' : 'walkStairs 1s ease';
-            }, 10);
-        }
-
-        function updateUI() {
-            const r = rooms[player.room];
-            document.getElementById('room-name').innerText = r.name;
-            document.getElementById('room-coords').innerText = `Ebene ${r.coords.z}`;
-            document.getElementById('room-visual').querySelector('#room-icon').innerText = r.visual;
-            document.getElementById('room-desc').innerText = r.desc;
-            
-            let exitText = [];
-            const labels = {N:'Norden', S:'Süden', O:'Osten', W:'Westen', U:'Oben', D:'Unten'};
-            for(let d in labels) {
-                if(r.exits[d]) exitText.push(labels[d]);
-                else if(r.lockedExits && r.lockedExits[d]) exitText.push(labels[d] + " (🔒)");
-            }
-            document.getElementById('room-exits').innerText = "Ausgänge: " + exitText.join(', ');
-
-            // Buttons
-            ['n','s','o','w','u','d'].forEach(d => {
-                const btn = document.getElementById(`btn-${d}`);
-                const dir = d.toUpperCase();
-                const hasExit = r.exits[dir] || (r.lockedExits && r.lockedExits[dir]);
-                btn.disabled = !hasExit;
-                btn.style.opacity = hasExit ? 1 : 0.3;
-            });
-
-            const area = document.getElementById('interaction-area');
-            area.innerHTML = '';
-            
-            // NPC Button
-            if(r.character) {
-                let b = document.createElement('button');
-                b.className = 'action-btn'; b.innerText = `🗣️ Mit ${r.character.name} reden`;
-                b.onclick = () => {
-                    addToHistory(`Gespräch: ${r.character.name}`, "new");
-                    showMsg(r.character.name, `"${r.character.dialog}"`);
-                };
-                area.appendChild(b);
-            }
-
-            if(r.puzzle && !player.flags[r.puzzle.reward + '_got']) {
-                let b = document.createElement('button');
-                b.className = 'action-btn'; b.innerText = '🧩 Rätsel ansehen';
-                b.onclick = () => openPuzzleModal(r.puzzle);
-                area.appendChild(b);
-            }
-
-            if(r.interact) {
-                r.interact.forEach(act => {
-                    if(act.action === 'open_dungeon' && rooms['cellar'].exits['N']) return;
-                    if(act.result === 'get_ruby' && player.inventory.includes('ruby')) return;
-                    let b = document.createElement('button');
-                    b.className = 'action-btn'; b.innerText = `⚙️ ${act.label}`;
-                    b.onclick = () => handleInteract(act);
-                    area.appendChild(b);
-                });
-            }
-
-            if(r.actions) {
-                r.actions.forEach(a => {
-                    let b = document.createElement('button');
-                    b.className = 'action-btn'; b.innerText = `📖 ${a.label}`;
-                    b.onclick = () => { changeGhostMeter(-5); a.effect(); updateUI(); };
-                    area.appendChild(b);
-                });
-            }
-
-            // Power Button
-            const pBtn = document.getElementById('special-power-btn');
-            pBtn.disabled = player.powerCharge < 100;
-            document.getElementById('power-charge').innerText = player.powerCharge + '%';
-
-            renderMap(player.mapLevel);
-            updateObjectives();
-            renderInventory();
-        }
-
-        // 6) SPECIAL POWER
-        function usePower() {
-            if(player.powerCharge >= 100) {
-                player.powerCharge = 0;
-                changeGhostMeter(-30);
-                addToHistory("Laterne benutzt (-30 Zorn)", "new");
-                showMsg("Magisches Licht", "Die Laterne vertreibt die Schatten. Der Geist zieht sich zurück.");
-                updateUI();
-            }
-        }
-
-        function rechargePower(amount) {
-            player.powerCharge = Math.min(100, player.powerCharge + amount);
-        }
-
-        function renderMap(level) {
-            const map = document.getElementById('mini-map');
-            const btnID = level === -1 ? 'lvl-btn-m1' : 'lvl-btn-' + level;
-            document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('active'));
-            const activeBtn = document.getElementById(btnID);
-            if(activeBtn) activeBtn.classList.add('active');
-
-            map.innerHTML = '';
-            
-            for(let y=0; y<5; y++) {
-                for(let x=0; x<5; x++) {
-                    let node = document.createElement('div');
-                    node.className = 'map-node fog';
-                    
-                    let roomKey = Object.keys(rooms).find(k => 
-                        rooms[k].coords.x === x && rooms[k].coords.y === y && rooms[k].coords.z === level
-                    );
-
-                    if(roomKey) {
-                        const r = rooms[roomKey];
-                        const isVisited = player.visited.includes(roomKey);
-                        const isCurrent = player.room === roomKey;
-                        
-                        let neighborVisited = !isVisited && Object.keys(rooms).some(k => {
-                             const nr = rooms[k];
-                             return nr.coords.z === level && (Math.abs(nr.coords.x-x)+Math.abs(nr.coords.y-y))===1 && player.visited.includes(k);
-                        });
-
-                        if (isCurrent) { node.className = 'map-node active'; node.innerText = r.visual; } 
-                        else if (isVisited) { 
-                            node.className = 'map-node visited'; node.innerText = r.visual; 
-                            node.onclick = () => fastTravel(roomKey);
-                            if (r.lockedExits && Object.values(r.lockedExits).some(l => !player.inventory.includes(l.key))) {
-                                node.innerHTML += '<span class="lock-icon">🔒</span>';
-                            }
-                        } 
-                        else if (neighborVisited) { node.className = 'map-node seen'; node.innerText = '?'; }
-                    }
-                    map.appendChild(node);
-                }
-            }
-        }
-
-        function move(dir) {
-            const r = rooms[player.room];
-            if(r.lockedExits && r.lockedExits[dir]) {
-                const lock = r.lockedExits[dir];
-                if(player.inventory.includes(lock.key)) {
-                    addToHistory("Tür aufgeschlossen", "new");
-                    player.room = r.exits[dir];
-                    visitRoom();
-                } else {
-                    addToHistory("Tür verschlossen!", "danger");
-                }
-                return;
-            }
-
-            if(r.exits[dir]) {
-                player.room = r.exits[dir];
-                
-                // Animation
-                if(dir === 'U' || dir === 'D') playAnimation('stairs');
-                else playAnimation('walk');
-
-                changeGhostMeter(5); 
-                visitRoom();
-            }
-        }
-
-        function fastTravel(targetRoom) {
-            if (targetRoom === player.room) return;
-            addToHistory("Schnellreise...", "new");
-            changeGhostMeter(8);
-            player.room = targetRoom;
-            player.mapLevel = rooms[player.room].coords.z;
-            checkGhost();
-            updateUI();
-        }
-
-        function visitRoom() {
-            if(!player.visited.includes(player.room)) {
-                player.visited.push(player.room);
-                rechargePower(20); // Reward for exploration
-                changeGhostMeter(10);
-            }
-            player.mapLevel = rooms[player.room].coords.z;
-            
-            // 2) GHOST CALMS DOWN SOMETIMES
-            if(player.room === 'courtyard') changeGhostMeter(-5); 
-            
-            addToHistory("Betrete: " + rooms[player.room].name);
-            checkGhost();
-            updateUI();
-        }
-
-        function explore() {
-            const r = rooms[player.room];
-            changeGhostMeter(10);
-
-            if (r.search) {
-                for (const entry of r.search) {
-                    if (entry.give) {
-                        if (player.inventory.includes(entry.give)) continue;
-                        player.inventory.push(entry.give);
-                        addToHistory("Gefunden: " + items[entry.give].name, "new");
-                        rechargePower(30);
-                        showMsg('Gefunden!', entry.msg);
-                        updateUI();
-                        return;
-                    } else {
-                        addToHistory("Untersucht...", "new");
-                        showMsg('Untersucht', entry.msg);
-                        checkGhost(true);
-                        return;
-                    }
-                }
-            }
-
-            if(player.room === 'courtyard' && player.visited.includes('great_hall') && !player.inventory.includes('silver_key')) {
-                player.inventory.push('silver_key');
-                addToHistory("Gefunden: Silberschlüssel", "new");
-                showMsg('Gefunden', 'Der Silberschlüssel lag im Schnee vergraben.');
-                updateUI();
-                return;
-            }
-
-            addToHistory("Nichts gefunden.");
-            checkGhost(true);
-        }
-
-        // 1) ADVENTURE HISTORY BOXES
-        function addToHistory(text, type="normal") {
-            const container = document.getElementById('history-container');
-            const box = document.createElement('div');
-            box.className = 'history-box ' + type;
-            box.innerText = text;
-            container.prepend(box);
-            if(container.children.length > 8) container.lastChild.remove();
-        }
-
-        function handleInteract(act) {
-            if(act.req && !player.inventory.includes(act.req)) {
-                addToHistory("Fehlt: " + items[act.req].name, "danger");
-                return;
-            }
-
-            if(act.action === 'open_dungeon') {
-                rooms['cellar'].exits['N'] = 'dungeon';
-                addToHistory("Wand eingerissen!", "new");
-                updateUI();
-            } 
-            else if(act.result === 'get_ruby') {
-                player.inventory.push('ruby');
-                addToHistory("Rubin erhalten!", "new");
-                rechargePower(50);
-                showMsg('Edelstein', 'Der Blutrubin gehört dir.');
-                updateUI();
-            }
-            else if(act.action === 'win_check') {
-                if(['ruby','sapphire','emerald'].every(i => player.inventory.includes(i))) {
-                    document.body.innerHTML = '<div style="display:flex;height:100vh;justify-content:center;align-items:center;background:#050a14;color:gold;flex-direction:column;text-align:center;"><h1 style="font-family:Cinzel;font-size:5em;text-shadow:0 0 30px gold;">FLUCH GEBROCHEN</h1><p style="font-size:2em;margin:20px;">Das Schloss ist frei!</p><button onclick="location.reload()" style="padding:20px;font-size:1.5em;cursor:pointer;">Neustart</button></div>';
-                } else {
-                    addToHistory("Krone unvollständig!", "danger");
-                }
-            }
-        }
-
-        let activePuzzle = null;
-        function openPuzzleModal(puzzle) {
-            activePuzzle = puzzle;
-            document.getElementById('puzzle-text').innerText = puzzle.q;
-            document.getElementById('puzzle-modal').style.display = 'flex';
-            document.getElementById('puzzle-answer').value = '';
-            document.getElementById('puzzle-answer').focus();
-        }
-        function closePuzzle() { document.getElementById('puzzle-modal').style.display = 'none'; activePuzzle = null; }
-
-        function submitPuzzleAnswer() {
-            if(!activePuzzle) return;
-            let ans = document.getElementById('puzzle-answer').value.toUpperCase().trim();
-            closePuzzle();
-            if(ans === activePuzzle.a) {
-                player.inventory.push(activePuzzle.reward);
-                player.flags[activePuzzle.reward + '_got'] = true;
-                addToHistory("Rätsel gelöst!", "new");
-                rechargePower(100);
-                showMsg('Gelöst!', 'Du erhältst: ' + items[activePuzzle.reward].name);
-                updateUI();
-            } else {
-                addToHistory("Falsche Antwort!", "danger");
-                changeGhostMeter(20);
-                checkGhost(true);
-            }
-        }
-
-        // 7) LOSE CONDITION & METER LOGIC
-        function changeGhostMeter(amount) {
-            player.ghostMeter = Math.max(0, Math.min(100, player.ghostMeter + amount));
-            const bar = document.getElementById('ghost-meter');
-            const txt = document.getElementById('ghost-status');
-            bar.style.width = player.ghostMeter + '%';
-            
-            if(player.ghostMeter < 30) { txt.innerText = "Ruhig"; txt.style.color="white"; }
-            else if(player.ghostMeter < 70) { txt.innerText = "Unheimlich"; txt.style.color="orange"; }
-            else { txt.innerText = "GEFAHR"; txt.style.color="#ff4444"; }
-
-            if(player.ghostMeter >= 100) {
-                document.getElementById('game-over-modal').style.display = 'flex';
-            }
-        }
-
-        function checkGhost(force = false) {
-            if(player.ghostCooldown > 0) { player.ghostCooldown--; return; }
-            if(player.ghostMeter < 20 && !force) return; // Safer early game
-
-            let chance = player.ghostMeter / 150; 
-            if(force) chance += 0.25;
-
-            if(Math.random() < chance && player.room !== 'dungeon' && player.room !== 'crypt') {
-                spawnGhost();
-            }
-        }
-
-        const riddles = [
-            {q:"Ich habe Städte, aber keine Häuser. Was bin ich?", a:"KARTE", pen:"teleport"},
-            {q:"Je mehr du von mir wegnimmst, desto größer werde ich.", a:"LOCH", pen:"steal"}
-        ];
-        let currentRiddle = null;
-
-        function spawnGhost() {
-            if(isModalOpen()) return;
-            currentRiddle = riddles[Math.floor(Math.random()*riddles.length)];
-            document.getElementById('ghost-riddle-text').innerText = currentRiddle.q;
-            document.getElementById('ghost-modal').style.display = 'flex';
-            document.getElementById('ghost-answer').value = '';
-            document.getElementById('ghost-answer').focus();
-        }
-
-        function submitGhostAnswer() {
-            const val = document.getElementById('ghost-answer').value.toUpperCase().trim();
-            document.getElementById('ghost-modal').style.display = 'none';
-            if(val === currentRiddle.a) {
-                addToHistory("Geist vertrieben", "new");
-                changeGhostMeter(-50);
-                player.ghostCooldown = 5; 
-            } else {
-                if(currentRiddle.pen === 'teleport') {
-                    player.room = 'dungeon';
-                    player.visited.push('dungeon');
-                    player.mapLevel = -1;
-                    addToHistory("Verschleppt!", "danger");
-                } else {
-                    addToHistory("Geist greift an!", "danger");
-                    changeGhostMeter(30);
-                }
-                player.ghostCooldown = 3;
-            }
-            updateUI();
-        }
-
-        function updateObjectives() {
-            ['ruby','sapphire','emerald'].forEach(gem => {
-                if(player.inventory.includes(gem)) document.getElementById('obj-'+gem).classList.add('done');
-            });
-            while (player.questStep < quest.length && quest[player.questStep].done()) {
-                player.questStep++;
-            }
-            const h = document.getElementById('hint-display');
-            h.innerText = (player.questStep >= quest.length) ? "Setze die Krone zusammen!" : "Tipp: " + quest[player.questStep].text;
-        }
-
-        function renderInventory() {
-            const g = document.getElementById('inventory-grid');
-            g.innerHTML = '';
-            player.inventory.forEach(k => {
-                let d = document.createElement('div');
-                d.className = 'inv-item filled';
-                d.innerHTML = `${items[k].icon}<span>${items[k].name}</span>`;
-                d.onclick = () => showMsg(items[k].name, items[k].desc);
-                g.appendChild(d);
-            });
-            for(let i=player.inventory.length; i<6; i++) {
-                let d = document.createElement('div'); d.className = 'inv-item empty'; g.appendChild(d);
-            }
-        }
-
-        function createSnow() {
-            const c = document.getElementById('snow-container');
-            for(let i=0; i<60; i++){
-                let s = document.createElement('div');
-                s.className = 'snowflake'; s.innerHTML = '❄';
-                s.style.left = Math.random()*100+'vw';
-                s.style.fontSize = (10 + Math.random()*20) + 'px';
-                s.style.animationDuration = (4+Math.random()*5)+'s';
-                s.style.animationDelay = '-' + (Math.random()*5) + 's';
-                c.appendChild(s);
-            }
-        }
-
-        function openHelp() { document.getElementById('help-overlay').style.display = 'flex'; }
-        function closeHelp() { document.getElementById('help-overlay').style.display = 'none'; }
-        function showMsg(t, m) {
-            document.getElementById('msg-title').innerText = t;
-            document.getElementById('msg-text').innerText = m;
-            document.getElementById('msg-modal').style.display = 'flex';
-        }
-        function closeMsg() { document.getElementById('msg-modal').style.display = 'none'; }
-
-        init();
-    </script>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+          <button id="btn-u" onclick="move('U')">⬆ HOCH</button>
+          <button id="btn-d" onclick="move('D')">⬇ RUNTER</button>
+        </div>
+        <div style="text-align:center; margin-top:8px; color:var(--muted); font-size:.92em;">
+          Tipp: <strong>E</strong> = suchen, <strong>WASD</strong> = bewegen
+        </div>
+      `;
+      area.appendChild(wrap);
+      updateUI();
+    })();
+  </script>
 </body>
 </html>
