@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Das Geheimnis des Alten Schlosses</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #2d3748;
+            color: white;
+            padding: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #ffd700;
+        }
+
+        .progress-bar {
+            flex: 1 1 100%;
+            height: 20px;
+            background: #4a5568;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            gap: 20px;
+            padding: 20px;
+            min-height: 500px;
+        }
+
+        .sidebar {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .sidebar h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .navigation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .game-screen {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .room-title {
+            font-size: 1.8em;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .room-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-description {
+            line-height: 1.8;
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .objects-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .object-button {
+            padding: 10px 20px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .object-button:hover {
+            background: #3182ce;
+            transform: scale(1.05);
+        }
+
+        .inventory {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .inventory-slot {
+            aspect-ratio: 1;
+            background: white;
+            border: 3px dashed #cbd5e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .inventory-slot.filled {
+            border-color: #4299e1;
+            border-style: solid;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        }
+
+        .inventory-slot:hover.filled {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(66, 153, 225, 0.3);
+        }
+
+        .badge-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .badge {
+            padding: 10px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .badge.unlocked {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            padding: 12px 24px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .action-button:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .action-button.secondary {
+            background: #ed8936;
+        }
+
+        .action-button.secondary:hover {
+            background: #dd6b20;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+
+        .npc-questions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .question-button {
+            padding: 12px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s;
+        }
+
+        .question-button:hover:not(:disabled) {
+            background: #3182ce;
+            transform: translateX(5px);
+        }
+
+        .question-button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .close-modal {
+            padding: 10px 20px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            position: absolute;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .puzzle-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .event-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4299e1;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease;
+            z-index: 999;
+            max-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 3;
+            }
+
+            .inventory {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🏰 Das Geheimnis des Alten Schlosses 🔍</h1>
+            <p>Ein interaktives Detektiv-Abenteuer</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <span>⭐ Punkte:</span>
+                <span class="stat-value" id="points">0</span>
+            </div>
+            <div class="stat">
+                <span>🔍 Hinweise:</span>
+                <span class="stat-value" id="clues">0</span>
+            </div>
+            <div class="stat">
+                <span>💬 Fragen übrig:</span>
+                <span class="stat-value" id="questions-left">3</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill">0%</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <h3>🧭 Navigation</h3>
+                <div class="navigation">
+                    <button class="nav-button" onclick="move('nord')" id="btn-nord">⬆️ Nord</button>
+                    <button class="nav-button" onclick="move('süd')" id="btn-süd">⬇️ Süd</button>
+                    <button class="nav-button" onclick="move('ost')" id="btn-ost">➡️ Ost</button>
+                    <button class="nav-button" onclick="move('west')" id="btn-west">⬅️ West</button>
+                    <button class="nav-button" onclick="move('oben')" id="btn-oben">⬆️⬆️ Oben</button>
+                    <button class="nav-button" onclick="move('unten')" id="btn-unten">⬇️⬇️ Unten</button>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-button" onclick="searchRoom()">🔍 Durchsuchen</button>
+                    <button class="action-button secondary" onclick="showHelp()">❓ Hilfe</button>
+                    <button class="action-button secondary" onclick="restartGame()">🔄 Neu starten</button>
+                </div>
+            </div>
+
+            <div class="game-screen">
+                <h2 class="room-title" id="room-title">Eingangshalle</h2>
+                <div class="room-image" id="room-image">🏰</div>
+                <div class="room-description" id="room-description">
+                    Du stehst in der großen Eingangshalle des alten Schlosses...
+                </div>
+                <div class="objects-container" id="objects-container"></div>
+            </div>
+
+            <div class="sidebar">
+                <h3>🎒 Inventar</h3>
+                <div class="inventory" id="inventory">
+                    <div class="inventory-slot" onclick="examineItem(0)"></div>
+                    <div class="inventory-slot" onclick="examineItem(1)"></div>
+                    <div class="inventory-slot" onclick="examineItem(2)"></div>
+                    <div class="inventory-slot" onclick="examineItem(3)"></div>
+                    <div class="inventory-slot" onclick="examineItem(4)"></div>
+                    <div class="inventory-slot" onclick="examineItem(5)"></div>
+                    <div class="inventory-slot" onclick="examineItem(6)"></div>
+                    <div class="inventory-slot" onclick="examineItem(7)"></div>
+                </div>
+                <h3 style="margin-top: 20px;">🏆 Abzeichen</h3>
+                <div class="badge-container" id="badges">
+                    <div class="badge" id="badge-1">🔍 Erster Hinweis</div>
+                    <div class="badge" id="badge-2">🗣️ Gesprächsprofi</div>
+                    <div class="badge" id="badge-3">🧩 Rätselmeister</div>
+                    <div class="badge" id="badge-4">👑 Detektiv-König</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modal-title">Titel</h3>
+            <div class="modal-text" id="modal-text">Text</div>
+            <div id="modal-actions"></div>
+            <button class="close-modal" onclick="closeModal()">Schließen</button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            currentRoom: 'eingangshalle',
+            inventory: [],
+            points: 0,
+            cluesFound: 0,
+            questionsAsked: 0,
+            questionsLimit: 3,
+            flags: {
+                librarySearched: false,
+                towerVisited: false,
+                secretPassageFound: false,
+                clockPuzzleSolved: false,
+                chestOpened: false,
+                torchLit: false,
+                finalDoorUnlocked: false,
+                mysteryStolved: false
+            },
+            npcsTalkedTo: [],
+            roomsVisited: [],
+            badges: []
+        };
+
+        // Room Definitions
+        const rooms = {
+            eingangshalle: {
+                name: 'Eingangshalle',
+                emoji: '🏰',
+                description: 'Du stehst in der großen Eingangshalle des alten Schlosses. Hohe Decken und verstaubte Gemälde umgeben dich. Eine große Treppe führt nach oben.',
+                exits: { nord: 'bibliothek', ost: 'esszimmer', oben: 'turm' },
+                objects: ['gemälde', 'rüstung'],
+                searchText: 'Hinter der alten Rüstung findest du eine vergilbte Notiz!',
+                searchItem: { emoji: '📜', name: 'Alte Notiz', description: 'Eine vergilbte Notiz mit kryptischen Symbolen' }
+            },
+            bibliothek: {
+                name: 'Bibliothek',
+                emoji: '📚',
+                description: 'Endlose Regale voller alter Bücher füllen den Raum. Ein großer Schreibtisch steht am Fenster. Der Geruch von altem Papier liegt in der Luft.',
+                exits: { süd: 'eingangshalle', ost: 'geheimgang' },
+                objects: ['bücher', 'schreibtisch', 'fenster'],
+                npc: 'professor',
+                searchText: 'In einer Schublade des Schreibtisches entdeckst du einen alten Schlüssel!',
+                searchItem: { emoji: '🔑', name: 'Silberner Schlüssel', description: 'Ein alter silberner Schlüssel mit einem Mondmuster' }
+            },
+            esszimmer: {
+                name: 'Esszimmer',
+                emoji: '🍽️',
+                description: 'Ein langer Tisch mit zwölf Stühlen dominiert den Raum. Kerzenständer und staubige Teller liegen herum. Im Kamin glühen noch schwache Kohlen.',
+                exits: { west: 'eingangshalle', nord: 'küche' },
+                objects: ['tisch', 'kerzenständer', 'kamin'],
+                searchText: 'Unter dem Tisch findest du eine versteckte Karte!',
+                searchItem: { emoji: '🗺️', name: 'Alte Karte', description: 'Eine Karte des Schlosses mit markierten Geheimgängen' }
+            },
+            küche: {
+                name: 'Küche',
+                emoji: '👨‍🍳',
+                description: 'Die alte Küche ist überraschend aufgeräumt. Kupfertöpfe hängen an der Wand. Ein angenehmer Duft von frischem Brot liegt in der Luft.',
+                exits: { süd: 'esszimmer' },
+                objects: ['töpfe', 'ofen', 'schrank'],
+                npc: 'koch',
+                searchText: 'Im Schrank findest du ein Rezeptbuch mit seltsamen Notizen!',
+                searchItem: { emoji: '📖', name: 'Rezeptbuch', description: 'Ein altes Kochbuch mit geheimnisvollen Randnotizen' }
+            },
+            turm: {
+                name: 'Turmzimmer',
+                emoji: '🗼',
+                description: 'Du bist im höchsten Turm des Schlosses. Durch die Fenster hast du einen fantastischen Blick über das Land. Eine große Uhr tickt laut an der Wand.',
+                exits: { unten: 'eingangshalle' },
+                objects: ['uhr', 'teleskop', 'fenster'],
+                puzzle: 'clockPuzzle',
+                searchText: 'Neben dem Teleskop liegt ein Tagebuch!',
+                searchItem: { emoji: '📔', name: 'Tagebuch', description: 'Das Tagebuch des Schlossherrn mit wichtigen Hinweisen' }
+            },
+            geheimgang: {
+                name: 'Geheimer Gang',
+                emoji: '🕯️',
+                description: 'Ein dunkler, enger Gang. Die Wände sind feucht und mit Moos bedeckt. Du hörst leises Tropfen von Wasser. Eine Fackel an der Wand ist erloschen.',
+                exits: { west: 'bibliothek', süd: 'schatzkammer' },
+                objects: ['fackel', 'moos'],
+                special: 'needsTorch',
+                searchText: 'Im Moos versteckt findest du eine goldene Münze!',
+                searchItem: { emoji: '🪙', name: 'Goldmünze', description: 'Eine alte Goldmünze mit dem Wappen der Familie' }
+            },
+            schatzkammer: {
+                name: 'Schatzkammer',
+                emoji: '💎',
+                description: 'Die legendäre Schatzkammer! Goldene Truhen, Edelsteine und alte Artefakte füllen den Raum. In der Mitte steht eine große verschlossene Truhe.',
+                exits: { nord: 'geheimgang' },
+                objects: ['truhen', 'edelsteine'],
+                puzzle: 'finalPuzzle',
+                searchText: 'Zwischen den Truhen liegt ein mysteriöser Edelstein!',
+                searchItem: { emoji: '💎', name: 'Blauer Edelstein', description: 'Ein wunderschöner blauer Edelstein, der im Licht funkelt' }
+            }
+        };
+
+        // NPC Definitions
+        const npcs = {
+            professor: {
+                name: 'Professor Weisenstein',
+                emoji: '👨‍🏫',
+                intro: 'Ein alter Professor mit dicken Brillen sieht dich freundlich an. "Ah, ein junger Detektiv! Ich helfe dir gerne, aber ich bin sehr beschäftigt. Du kannst mir nur drei Fragen stellen."',
+                questions: [
+                    {
+                        q: 'Was wissen Sie über das verschwundene Juwel?',
+                        a: 'Ah, das legendäre Monddiamant! Es wurde vor hundert Jahren versteckt. Ich habe alte Texte studiert, die sagen, dass es in der Schatzkammer liegt.'
+                    },
+                    {
+                        q: 'Wie kann ich die Schatzkammer finden?',
+                        a: 'Die Schatzkammer ist gut versteckt. Es gibt einen Geheimgang, der von der Bibliothek wegführt. Man muss nur genau suchen!'
+                    },
+                    {
+                        q: 'Was bedeuten die Symbole auf der alten Notiz?',
+                        a: 'Ah, diese Symbole! Sie zeigen die Uhrzeiten, zu denen wichtige Ereignisse stattfanden. Die Uhr im Turm könnte interessant sein...'
+                    },
+                    {
+                        q: 'Kennen Sie den Koch?',
+                        a: 'Der Koch? Ja, Herr Müller ist seit dreißig Jahren hier. Er weiß alles über die Geheimnisse der Küche und... vielleicht auch mehr.'
+                    }
+                ]
+            },
+            koch: {
+                name: 'Koch Müller',
+                emoji: '👨‍🍳',
+                intro: 'Ein freundlicher Koch mit weißer Schürze dreht sich zu dir um. "Willkommen in meiner Küche! Ich habe nicht viel Zeit, aber ich beantworte dir gerne drei Fragen."',
+                questions: [
+                    {
+                        q: 'Haben Sie etwas Verdächtiges bemerkt?',
+                        a: 'Hm, ja! Letzte Nacht hörte ich seltsame Geräusche aus der Bibliothek. Und heute Morgen fehlte eine Fackel aus dem Gang.'
+                    },
+                    {
+                        q: 'Was kochen Sie heute?',
+                        a: 'Heute gibt es meine berühmte Gemüsesuppe! Aber das interessiert dich sicher nicht. Wichtiger ist vielleicht mein altes Rezeptbuch...'
+                    },
+                    {
+                        q: 'Wissen Sie etwas über die Uhr im Turm?',
+                        a: 'Die alte Uhr? Sie zeigt nicht die richtige Zeit. Der Schlossherr hat sie auf eine besondere Zeit eingestellt - 3:15 Uhr. Warum, weiß niemand.'
+                    },
+                    {
+                        q: 'Wie lange arbeiten Sie schon hier?',
+                        a: 'Ich arbeite seit dreißig Jahren im Schloss. Ich habe viele Geheimnisse gesehen, aber das größte ist wohl das verschwundene Juwel.'
+                    }
+                ]
+            }
+        };
+
+        // Object Interactions
+        const objectInteractions = {
+            gemälde: 'Ein altes Ölgemälde zeigt die Schlossfamilie. Die Augen scheinen dich zu verfolgen...',
+            rüstung: 'Eine alte Ritterrüstung. Sie sieht aus, als würde sie jeden Moment zum Leben erwachen!',
+            bücher: 'Hunderte von alten Büchern. Viele handeln von Geschichte, Magie und alten Geheimnissen.',
+            schreibtisch: 'Ein massiver Eichenschreibtisch mit vielen Schubladen. Einige sind verschlossen.',
+            fenster: 'Durch das Fenster siehst du den dunklen Wald, der das Schloss umgibt.',
+            tisch: 'Ein langer Esstisch aus dunklem Holz. An den Beinen sind seltsame Schnitzereien.',
+            kerzenständer: 'Goldene Kerzenständer mit halb abgebrannten Kerzen.',
+            kamin: 'Im Kamin glühen noch schwache Kohlen. Es ist angenehm warm hier.',
+            töpfe: 'Glänzende Kupfertöpfe in allen Größen. Der Koch hält seine Küche sehr sauber!',
+            ofen: 'Ein großer alter Ofen. Es riecht nach frisch gebackenem Brot.',
+            schrank: 'Ein großer Küchenschrank voller Zutaten und Kochbücher.',
+            uhr: 'Eine massive Turmuhr. Sie zeigt 3:15 Uhr. Die Zeiger sehen so aus, als könnte man sie bewegen...',
+            teleskop: 'Ein altes Messingteleskop. Damit könnte man nachts die Sterne beobachten.',
+            fackel: 'Eine erloschene Fackel an der Wand. Vielleicht könnte man sie anzünden?',
+            moos: 'Feuchtes grünes Moos wächst an den Wänden. Es fühlt sich kühl an.',
+            truhen: 'Mehrere kleine Truhen voller Gold und Silbermünzen. Aber die große Truhe ist das wahre Ziel!',
+            edelsteine: 'Funkelnde Edelsteine in allen Farben liegen herum. Rubine, Smaragde, Saphire...'
+        };
+
+        // Initialize game
+        function initGame() {
+            const saved = localStorage.getItem('schlossSpiel');
+            if (saved) {
+                gameState = JSON.parse(saved);
+            }
+            updateDisplay();
+            updateStats();
+        }
+
+        // Update display
+        function updateDisplay() {
+            const room = rooms[gameState.currentRoom];
+            document.getElementById('room-title').textContent = room.name;
+            document.getElementById('room-image').textContent = room.emoji;
+            
+            let description = room.description;
+            if (room.special === 'needsTorch' && !gameState.flags.torchLit) {
+                description += ' Es ist zu dunkel, um viel zu sehen. Du brauchst Licht!';
+            }
+            document.getElementById('room-description').textContent = description;
+
+            // Update navigation buttons
+            ['nord', 'süd', 'ost', 'west', 'oben', 'unten'].forEach(dir => {
+                const btn = document.getElementById(`btn-${dir}`);
+                if (room.exits[dir]) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                } else {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                }
+            });
+
+            // Update objects
+            const objectsContainer = document.getElementById('objects-container');
+            objectsContainer.innerHTML = '';
+            
+            if (room.objects) {
+                room.objects.forEach(obj => {
+                    const btn = document.createElement('button');
+                    btn.className = 'object-button';
+                    btn.textContent = `🔍 ${obj.charAt(0).toUpperCase() + obj.slice(1)} untersuchen`;
+                    btn.onclick = () => examineObject(obj);
+                    objectsContainer.appendChild(btn);
+                });
+            }
+
+            if (room.npc && !gameState.npcsTalkedTo.includes(room.npc)) {
+                const btn = document.createElement('button');
+                btn.className = 'object-button';
+                btn.style.background = '#9f7aea';
+                btn.textContent = `💬 Mit ${npcs[room.npc].name} sprechen`;
+                btn.onclick = () => talkToNPC(room.npc);
+                objectsContainer.appendChild(btn);
+            }
+
+            if (room.puzzle && !gameState.flags[room.puzzle + 'Solved']) {
+                const btn = document.createElement('button');
+                btn.className = 'object-button';
+                btn.style.background = '#ed8936';
+                btn.textContent = '🧩 Rätsel lösen';
+                btn.onclick = () => solvePuzzle(room.puzzle);
+                objectsContainer.appendChild(btn);
+            }
+
+            // Update inventory
+            updateInventory();
+
+            // Track room visit
+            if (!gameState.roomsVisited.includes(gameState.currentRoom)) {
+                gameState.roomsVisited.push(gameState.currentRoom);
+                addPoints(5);
+            }
+
+            saveGame();
+        }
+
+        // Movement
+        function move(direction) {
+            const room = rooms[gameState.currentRoom];
+            const newRoom = room.exits[direction];
+            
+            if (!newRoom) {
+                showNotification('Du kannst in diese Richtung nicht gehen!');
+                return;
+            }
+
+            // Special conditions
+            if (newRoom === 'geheimgang' && !gameState.flags.secretPassageFound) {
+                showNotification('Du musst erst den Geheimgang finden! Versuche, die Bibliothek zu durchsuchen.');
+                return;
+            }
+
+            if (newRoom === 'schatzkammer' && !gameState.flags.torchLit) {
+                showNotification('Es ist zu dunkel! Du brauchst Licht.');
+                return;
+            }
+
+            gameState.currentRoom = newRoom;
+            updateDisplay();
+            playSound('move');
+        }
+
+        // Search room
+        function searchRoom() {
+            const room = rooms[gameState.currentRoom];
+            
+            if (!room.searchItem) {
+                showNotification('Du findest nichts Interessantes.');
+                return;
+            }
+
+            if (gameState.inventory.find(item => item.name === room.searchItem.name)) {
+                showNotification('Du hast hier schon alles gefunden.');
+                return;
+            }
+
+            if (gameState.inventory.length >= 8) {
+                showNotification('Dein Inventar ist voll!');
+                return;
+            }
+
+            // Special searches
+            if (gameState.currentRoom === 'bibliothek' && !gameState.flags.librarySearched) {
+                gameState.flags.secretPassageFound = true;
+                gameState.flags.librarySearched = true;
+                showNotification('Du entdeckst einen versteckten Hebel! Ein Geheimgang öffnet sich!');
+                addPoints(25);
+            }
+
+            gameState.inventory.push(room.searchItem);
+            gameState.cluesFound++;
+            addPoints(10);
+            showModal(
+                'Hinweis gefunden!',
+                `${room.searchText}<br><br>Du hast gefunden: ${room.searchItem.emoji} ${room.searchItem.name}`,
+                []
+            );
+            
+            if (gameState.cluesFound === 1) {
+                unlockBadge(1);
+            }
+
+            playSound('find');
+            updateDisplay();
+        }
+
+        // Examine object
+        function examineObject(objName) {
+            const description = objectInteractions[objName];
+            
+            if (objName === 'uhr' && gameState.currentRoom === 'turm') {
+                showModal(
+                    'Die Turmuhr',
+                    description + '<br><br>Die Uhr zeigt 3:15 Uhr. Die Zeiger kannst du bewegen...',
+                    []
+                );
+                return;
+            }
+
+            showModal(
+                objName.charAt(0).toUpperCase() + objName.slice(1),
+                description,
+                []
+            );
+        }
+
+        // Examine inventory item
+        function examineItem(slot) {
+            const item = gameState.inventory[slot];
+            if (!item) return;
+
+            let actions = [];
+
+            // Special item interactions
+            if (item.name === 'Silberner Schlüssel' && gameState.currentRoom === 'schatzkammer') {
+                actions.push({
+                    text: '🔓 Truhe öffnen',
+                    action: () => {
+                        gameState.flags.chestOpened = true;
+                        addPoints(50);
+                        closeModal();
+                        showModal(
+                            '🎉 Erfolg!',
+                            'Du öffnest die große Truhe und findest... das legendäre Monddiamant! Du hast das Geheimnis gelöst!',
+                            []
+                        );
+                        gameState.flags.mysteryStolved = true;
+                        unlockBadge(4);
+                        confettiExplosion();
+                        playSound('win');
+                    }
+                });
+            }
+
+            if (item.name === 'Rezeptbuch' && gameState.currentRoom === 'küche') {
+                actions.push({
+                    text: '🔥 Fackel anzünden',
+                    action: () => {
+                        if (gameState.inventory.find(i => i.name === 'Streichhölzer')) {
+                            gameState.flags.torchLit = true;
+                            addPoints(15);
+                            showNotification('Du hast eine Fackel angezündet! Jetzt kannst du dunkle Bereiche erkunden.');
+                            closeModal();
+                        } else {
+                            showNotification('Du brauchst Streichhölzer! Vielleicht beim Koch nachfragen?');
+                        }
+                    }
+                });
+            }
+
+            showModal(
+                item.name,
+                item.description,
+                actions
+            );
+        }
+
+        // Talk to NPC
+        function talkToNPC(npcId) {
+            const npc = npcs[npcId];
+            gameState.questionsAsked = 0;
+            gameState.questionsLimit = 3;
+            
+            showNPCDialog(npcId, npc.intro);
+        }
+
+        function showNPCDialog(npcId, message) {
+            const npc = npcs[npcId];
+            const questionsContainer = document.createElement('div');
+            questionsContainer.className = 'npc-questions';
+
+            npc.questions.forEach((q, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'question-button';
+                btn.textContent = `❓ ${q.q}`;
+                btn.onclick = () => askQuestion(npcId, index);
+                questionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('modal-actions').innerHTML = '';
+            document.getElementById('modal-actions').appendChild(questionsContainer);
+
+            showModal(
+                `${npc.emoji} ${npc.name}`,
+                message,
+                [],
+                true
+            );
+
+            updateQuestionsLeft();
+        }
+
+        function askQuestion(npcId, questionIndex) {
+            const npc = npcs[npcId];
+            const question = npc.questions[questionIndex];
+            
+            gameState.questionsAsked++;
+            addPoints(5);
+
+            if (gameState.questionsAsked >= gameState.questionsLimit) {
+                gameState.npcsTalkedTo.push(npcId);
+                showModal(
+                    `${npc.emoji} ${npc.name}`,
+                    `${question.a}<br><br>"Das waren drei Fragen. Ich muss jetzt gehen. Viel Erfolg bei deiner Suche!"`,
+                    []
+                );
+                
+                if (gameState.npcsTalkedTo.length === 2) {
+                    unlockBadge(2);
+                }
+
+                // Give matches from cook
+                if (npcId === 'koch' && !gameState.inventory.find(i => i.name === 'Streichhölzer')) {
+                    gameState.inventory.push({
+                        emoji: '🔥',
+                        name: 'Streichhölzer',
+                        description: 'Eine Schachtel Streichhölzer vom Koch'
+                    });
+                }
+
+                updateDisplay();
+            } else {
+                showNPCDialog(npcId, question.a);
+            }
+
+            updateQuestionsLeft();
+        }
+
+        function updateQuestionsLeft() {
+            document.getElementById('questions-left').textContent = gameState.questionsLimit - gameState.questionsAsked;
+        }
+
+        // Puzzles
+        function solvePuzzle(puzzleType) {
+            if (puzzleType === 'clockPuzzle') {
+                showModal(
+                    '🕐 Das Uhren-Rätsel',
+                    'Die Turmuhr zeigt 3:15 Uhr. Aber das ist nicht die richtige Zeit. Du musst die Zeiger auf die richtige Zeit stellen.<br><br>Hinweis: Der Professor sagte etwas über wichtige Uhrzeiten...<br><br>Gib die richtige Uhrzeit ein (z.B. 12:30):',
+                    [],
+                    true
+                );
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'puzzle-input';
+                input.placeholder = 'HH:MM';
+                document.getElementById('modal-actions').appendChild(input);
+
+                const submitBtn = document.createElement('button');
+                submitBtn.className = 'action-button';
+                submitBtn.textContent = '✓ Überprüfen';
+                submitBtn.onclick = () => {
+                    if (input.value === '3:15' || input.value === '03:15') {
+                        gameState.flags.clockPuzzleSolved = true;
+                        addPoints(25);
+                        unlockBadge(3);
+                        closeModal();
+                        showModal(
+                            '✅ Richtig!',
+                            'Die Uhr beginnt zu ticken und ein Geheimfach öffnet sich! Du findest einen goldenen Schlüssel!',
+                            []
+                        );
+                        gameState.inventory.push({
+                            emoji: '🗝️',
+                            name: 'Goldener Schlüssel',
+                            description: 'Ein goldener Schlüssel aus dem Geheimfach der Uhr'
+                        });
+                        confettiExplosion();
+                        playSound('puzzle');
+                        updateDisplay();
+                    } else {
+                        showNotification('❌ Das ist nicht richtig. Versuche es noch einmal!');
+                    }
+                };
+                document.getElementById('modal-actions').appendChild(submitBtn);
+            }
+
+            if (puzzleType === 'finalPuzzle') {
+                if (!gameState.inventory.find(i => i.name === 'Silberner Schlüssel')) {
+                    showNotification('Die große Truhe ist verschlossen. Du brauchst einen Schlüssel!');
+                    return;
+                }
+
+                showModal(
+                    '💎 Die verschlossene Truhe',
+                    'Die große Truhe hat ein spezielles Schloss mit vier Symbolen: Mond, Stern, Sonne, und Wolke.<br><br>Du musst die richtige Reihenfolge finden!<br><br>Hinweis: Die Notiz und das Tagebuch könnten helfen...<br><br>Gib die Reihenfolge ein (z.B. Mond Stern Sonne Wolke):',
+                    [],
+                    true
+                );
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'puzzle-input';
+                input.placeholder = 'Symbol Symbol Symbol Symbol';
+                document.getElementById('modal-actions').appendChild(input);
+
+                const submitBtn = document.createElement('button');
+                submitBtn.className = 'action-button';
+                submitBtn.textContent = '✓ Öffnen';
+                submitBtn.onclick = () => {
+                    const answer = input.value.toLowerCase().trim();
+                    if (answer === 'mond stern sonne wolke' || answer === 'mond stern sonne' || answer === 'mond') {
+                        gameState.flags.chestOpened = true;
+                        gameState.flags.mysteryStolved = true;
+                        addPoints(100);
+                        unlockBadge(4);
+                        closeModal();
+                        showModal(
+                            '🎉 DU HAST GEWONNEN!',
+                            '✨ Die Truhe öffnet sich und du findest das legendäre Monddiamant! Ein riesiger blauer Diamant, der im Licht magisch funkelt!<br><br>🏆 Du hast das Geheimnis des Alten Schlosses gelöst!<br><br>⭐ Deine Punkte: ' + gameState.points + '<br>🔍 Hinweise gefunden: ' + gameState.cluesFound + '<br>🏆 Abzeichen: ' + gameState.badges.length + '/4',
+                            []
+                        );
+                        confettiExplosion();
+                        playSound('win');
+                        updateDisplay();
+                    } else {
+                        showNotification('❌ Die Truhe öffnet sich nicht. Versuche es noch einmal!');
+                    }
+                };
+                document.getElementById('modal-actions').appendChild(submitBtn);
+            }
+        }
+
+        // Update inventory display
+        function updateInventory() {
+            const slots = document.querySelectorAll('.inventory-slot');
+            slots.forEach((slot, index) => {
+                if (gameState.inventory[index]) {
+                    slot.classList.add('filled');
+                    slot.textContent = gameState.inventory[index].emoji;
+                    slot.title = gameState.inventory[index].name;
+                } else {
+                    slot.classList.remove('filled');
+                    slot.textContent = '';
+                    slot.title = '';
+                }
+            });
+        }
+
+        // Points and stats
+        function addPoints(points) {
+            gameState.points += points;
+            updateStats();
+            saveGame();
+        }
+
+        function updateStats() {
+            document.getElementById('points').textContent = gameState.points;
+            document.getElementById('clues').textContent = gameState.cluesFound;
+            
+            // Calculate progress
+            const totalObjectives = 20; // Approximate total things to do
+            const completed = gameState.cluesFound + gameState.npcsTalkedTo.length * 2 + 
+                            Object.values(gameState.flags).filter(f => f).length * 2 +
+                            gameState.roomsVisited.length;
+            const progress = Math.min(100, Math.floor((completed / totalObjectives) * 100));
+            
+            const progressFill = document.getElementById('progress-fill');
+            progressFill.style.width = progress + '%';
+            progressFill.textContent = progress + '%';
+        }
+
+        // Badges
+        function unlockBadge(badgeNum) {
+            if (gameState.badges.includes(badgeNum)) return;
+            
+            gameState.badges.push(badgeNum);
+            const badge = document.getElementById(`badge-${badgeNum}`);
+            badge.classList.add('unlocked');
+            
+            confettiExplosion();
+            playSound('badge');
+            
+            const badgeNames = ['', 'Erster Hinweis', 'Gesprächsprofi', 'Rätselmeister', 'Detektiv-König'];
+            showNotification(`🏆 Abzeichen freigeschaltet: ${badgeNames[badgeNum]}!`);
+            
+            saveGame();
+        }
+
+        // Modal system
+        function showModal(title, text, actions = [], keepActionsArea = false) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-text').innerHTML = text;
+            
+            if (!keepActionsArea) {
+                const actionsDiv = document.getElementById('modal-actions');
+                actionsDiv.innerHTML = '';
+                
+                actions.forEach(action => {
+                    const btn = document.createElement('button');
+                    btn.className = 'action-button';
+                    btn.textContent = action.text;
+                    btn.onclick = action.action;
+                    actionsDiv.appendChild(btn);
+                });
+            }
+            
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('modal-actions').innerHTML = '';
+        }
+
+        // Notifications
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'event-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.5s ease reverse';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        // Confetti effect
+        function confettiExplosion() {
+            const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f093fb'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        // Sound effects (using Web Audio API)
+        function playSound(type) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            switch(type) {
+                case 'move':
+                    oscillator.frequency.value = 200;
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    break;
+                case 'find':
+                    oscillator.frequency.value = 500;
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    break;
+                case 'badge':
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    break;
+                case 'puzzle':
+                    oscillator.frequency.value = 600;
+                    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                    break;
+                case 'win':
+                    oscillator.frequency.value = 1000;
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    break;
+            }
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Help
+        function showHelp() {
+            showModal(
+                '❓ Hilfe',
+                `<strong>Wie spielt man?</strong><br>
+                🧭 Bewege dich mit den Navigationstasten zwischen den Räumen<br>
+                🔍 Klicke auf "Durchsuchen", um versteckte Gegenstände zu finden<br>
+                👆 Untersuche Objekte in den Räumen<br>
+                💬 Sprich mit NPCs, aber denke gut nach - du kannst nur 3 Fragen stellen!<br>
+                🎒 Klicke auf Gegenstände im Inventar, um sie zu benutzen<br>
+                🧩 Löse Rätsel, um weiterzukommen<br><br>
+                <strong>Ziel:</strong> Finde das verschwundene Monddiamant!<br><br>
+                <strong>Tipps:</strong><br>
+                • Sprich mit allen NPCs<br>
+                • Durchsuche jeden Raum gründlich<br>
+                • Lies alle Hinweise sorgfältig<br>
+                • Kombiniere Informationen aus verschiedenen Quellen<br>
+                • Die Uhrzeit 3:15 ist wichtig!`,
+                []
+            );
+        }
+
+        // Save/Load
+        function saveGame() {
+            localStorage.setItem('schlossSpiel', JSON.stringify(gameState));
+        }
+
+        function restartGame() {
+            if (confirm('Möchtest du wirklich von vorne beginnen?')) {
+                localStorage.removeItem('schlossSpiel');
+                gameState = {
+                    currentRoom: 'eingangshalle',
+                    inventory: [],
+                    points: 0,
+                    cluesFound: 0,
+                    questionsAsked: 0,
+                    questionsLimit: 3,
+                    flags: {
+                        librarySearched: false,
+                        towerVisited: false,
+                        secretPassageFound: false,
+                        clockPuzzleSolved: false,
+                        chestOpened: false,
+                        torchLit: false,
+                        finalDoorUnlocked: false,
+                        mysteryStolved: false
+                    },
+                    npcsTalkedTo: [],
+                    roomsVisited: [],
+                    badges: []
+                };
+                updateDisplay();
+                updateStats();
+                showNotification('🔄 Spiel neu gestartet!');
+            }
+        }
+
+        // Click modal background to close
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
+        });
+
+        // Initialize on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>
