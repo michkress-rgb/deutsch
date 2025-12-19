@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventskalender 2024</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(180deg, #0a1128 0%, #1a2332 50%, #2d3561 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Aurora Background Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(0, 255, 150, 0.1) 0%,
+                rgba(0, 200, 255, 0.1) 25%,
+                rgba(150, 0, 255, 0.1) 50%,
+                rgba(255, 0, 150, 0.1) 75%,
+                rgba(0, 255, 150, 0.1) 100%);
+            background-size: 400% 400%;
+            animation: aurora 15s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes aurora {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Snow Animation */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: #fff;
+            font-size: 1em;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .snowflake, body::before {
+                animation: none;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #ffefba;
+            margin-bottom: 20px;
+        }
+
+        /* Christmas Spirit Meter */
+        .spirit-meter-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .spirit-meter-label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #ffd700;
+            text-align: center;
+        }
+
+        .spirit-meter {
+            width: 100%;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .spirit-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffd700, #4ecdc4);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Calendar Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .door {
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .door-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .door.opened .door-inner {
+            transform: rotateY(180deg);
+        }
+
+        .door-front, .door-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .door-front {
+            background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+            border: 3px solid #ffd700;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .door-front::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .door:hover .door-front {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            border-color: #ffed4e;
+        }
+
+        .door-back {
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            border: 3px solid #4ecdc4;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: rotateY(180deg);
+            font-size: 3em;
+        }
+
+        .door-number {
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 1;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a2332 0%, #2d3561 100%);
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .modal-header {
+            color: #ffd700;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-body {
+            color: #fff;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        button:focus {
+            outline: 2px solid #ffd700;
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ecdc4, #44a39a);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            font-size: 0.9em;
+        }
+
+        /* Game Specific Styles */
+        .game-container {
+            margin: 20px 0;
+            min-height: 300px;
+        }
+
+        .game-grid {
+            display: grid;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .game-button {
+            padding: 20px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .game-button:hover {
+            transform: scale(1.05);
+        }
+
+        .game-canvas {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .game-score {
+            text-align: center;
+            font-size: 1.3em;
+            margin: 15px 0;
+            color: #ffd700;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            position: fixed;
+            animation: confetti-fall 3s linear;
+            z-index: 9999;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Reset Button */
+        .reset-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎄 Adventskalender 2024 🎄</h1>
+            <p class="subtitle">Öffne jeden Tag ein Türchen und erlebe die Weihnachtszeit!</p>
+        </header>
+
+        <div class="spirit-meter-container">
+            <div class="spirit-meter-label">Weihnachtsstimmungs-Barometer</div>
+            <div class="spirit-meter">
+                <div class="spirit-meter-fill" id="spiritMeter" style="width: 0%;">0%</div>
+            </div>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid"></div>
+
+        <div class="reset-container">
+            <button class="btn-reset" onclick="resetCalendar()">Alles zurücksetzen</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 class="modal-header" id="modalHeader"></h2>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="closeModal()">Zurück zum Kalender</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Content Data Structure
+        const calendarContent = [
+            { type: 'joke', content: 'Warum stehen Pinguine nie im Stau? Weil sie immer auf der Eisfahrbahn sind! 🐧' },
+            { type: 'game', game: 'lights' },
+            { type: 'trivia', content: 'Wusstest du? Der Weihnachtsmann hat offiziell eine eigene Postleitzahl in Kanada: H0H 0H0! 📬' },
+            { type: 'joke', content: 'Was macht ein Weihnachtsmann im Sommer? Er nimmt eine Auszeit und chillt am Nordpol! 🏖️' },
+            { type: 'story', content: 'Es war einmal ein kleiner Schneemann, der davon träumte zu fliegen. Eines Nachts half ihm der Weihnachtsstern und er tanzte durch die Wolken.' },
+            { type: 'game', game: 'cookie' },
+            { type: 'trivia', content: 'Wusstest du? In Japan isst man an Weihnachten traditionell Fried Chicken von KFC! 🍗' },
+            { type: 'joke', content: 'Warum mögen Weihnachtsbäume keine Stricknadeln? Weil sie Angst vor Tannennadeln haben! 🌲' },
+            { type: 'game', game: 'stacker' },
+            { type: 'story', content: 'In einem kleinen Dorf lebte ein Rentier, das nicht fliegen konnte. Aber es konnte wunderschön singen und brachte allen Freude.' },
+            { type: 'trivia', content: 'Wusstest du? Der höchste Weihnachtsbaum der Welt war 67 Meter hoch und stand in den USA! 🌲' },
+            { type: 'joke', content: 'Was sagt der Weihnachtsmann zu seinen Rentieren? "Auf geht\'s, wir haben keine Zeit zu verlieren!" 🦌' },
+            { type: 'game', game: 'snowball' },
+            { type: 'trivia', content: 'Wusstest du? "Jingle Bells" war ursprünglich ein Thanksgiving-Lied! 🔔' },
+            { type: 'joke', content: 'Warum trägt der Weihnachtsmann eine rote Jacke? Weil seine blaue in der Wäsche war! 👔' },
+            { type: 'story', content: 'Ein kleines Mädchen schrieb einen Brief an den Weihnachtsmann. Statt Geschenke wünschte sie sich, dass alle Kinder lachen können.' },
+            { type: 'game', game: 'memory' },
+            { type: 'trivia', content: 'Wusstest du? In Island gibt es 13 Weihnachtsmänner, die Jólasveinar heißen! 🎅' },
+            { type: 'joke', content: 'Was ist grün und singt Weihnachtslieder? Ein Tannenbaum-Chor! 🎵' },
+            { type: 'story', content: 'Ein alter Stern am Himmel erinnerte sich, wie er vor langer Zeit den Weg zur Krippe wies. Heute leuchtet er für alle Kinder.' },
+            { type: 'trivia', content: 'Wusstest du? Der teuerste Adventskalender der Welt kostete 2,5 Millionen Euro! 💰' },
+            { type: 'joke', content: 'Warum können Schneemänner keine Geheimnisse bewahren? Weil sie immer schmelzen unter Druck! ⛄' },
+            { type: 'game', game: 'simon' },
+            { type: 'trivia', content: 'Wusstest du? Das Lied "Stille Nacht" wurde in über 300 Sprachen übersetzt! 🎶' },
+            { type: 'joke', content: 'Was ist der Lieblingstanz des Weihnachtsmanns? Der Schlitten-Shuffle! 💃' }
+        ];
+
+        // Game Definitions
+        const games = {
+            lights: {
+                title: 'Lichterkette Reparieren',
+                description: 'Drehe die Kabel durch Klicken, bis alle verbunden sind und die Lichter leuchten!',
+                init: function() {
+                    const grid = [
+                        [1, 1, 0, 2],
+                        [0, 1, 1, 1],
+                        [1, 0, 1, 3]
+                    ];
+                    const solution = [
+                        [1, 1, 2, 2],
+                        [0, 1, 1, 1],
+                        [1, 0, 1, 3]
+                    ];
+                    let current = grid.map(row => [...row]);
+                    
+                    let html = '<div class="game-container"><div class="game-grid" style="grid-template-columns: repeat(4, 1fr);">';
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 4; j++) {
+                            const rotation = current[i][j] * 90;
+                            html += `<div class="game-button" onclick="rotateTile(${i}, ${j})" id="tile-${i}-${j}" 
+                                     style="background: linear-gradient(135deg, #3a3a3a, #5a5a5a); position: relative;">
+                                     <div style="transform: rotate(${rotation}deg); transition: transform 0.3s;">
+                                         ${j === 0 && i === 1 ? '🔌' : (j === 3 && i === 0 ? '💡' : '━')}
+                                     </div>
+                                   </div>`;
+                        }
+                    }
+                    html += '</div></div>';
+                    
+                    document.getElementById('modalBody').innerHTML = html;
+                    
+                    window.currentGame = { current, solution };
+                    window.rotateTile = function(i, j) {
+                        window.currentGame.current[i][j] = (window.currentGame.current[i][j] + 1) % 4;
+                        const tile = document.getElementById(`tile-${i}-${j}`);
+                        const rotation = window.currentGame.current[i][j] * 90;
+                        tile.querySelector('div').style.transform = `rotate(${rotation}deg)`;
+                        
+                        // Check win
+                        const won = JSON.stringify(window.currentGame.current) === JSON.stringify(window.currentGame.solution);
+                        if (won) {
+                            setTimeout(() => {
+                                gameWon();
+                            }, 300);
+                        }
+                    };
+                }
+            },
+            cookie: {
+                title: 'Weihnachtsbäckerei',
+                description: 'Klicke den Keks 30 Mal in 10 Sekunden!',
+                init: function() {
+                    let clicks = 0;
+                    let timeLeft = 10;
+                    
+                    let html = `
+                        <div class="game-container">
+                            <div class="game-score">Klicks: <span id="clickCount">0</span> / 30</div>
+                            <div class="game-score">Zeit: <span id="timeLeft">10</span>s</div>
+                            <button class="game-button" id="cookieBtn" style="font-size: 4em; padding: 40px;">
+                                🍪
+                            </button>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modalBody').innerHTML = html;
+                    
+                    const timer = setInterval(() => {
+                        timeLeft--;
+                        document.getElementById('timeLeft').textContent = timeLeft;
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            document.getElementById('cookieBtn').disabled = true;
+                            if (clicks < 30) {
+                                alert('Zu langsam! Versuch es nochmal!');
+                                games.cookie.init();
+                            }
+                        }
+                    }, 1000);
+                    
+                    document.getElementById('cookieBtn').onclick = function() {
+                        clicks++;
+                        document.getElementById('clickCount').textContent = clicks;
+                        this.style.transform = `scale(${0.95}) rotate(${Math.random() * 20 - 10}deg)`;
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1) rotate(0deg)';
+                        }, 100);
+                        
+                        if (clicks >= 30) {
+                            clearInterval(timer);
+                            gameWon();
+                        }
+                    };
+                }
+            },
+            stacker: {
+                title: 'Geschenke-Stapel',
+                description: 'Staple 5 Geschenke! Klicke "Stopp" wenn das Geschenk über dem vorherigen ist.',
+                init: function() {
+                    let level = 0;
+                    let position = 0;
+                    let direction = 1;
+                    let moving = true;
+                    
+                    let html = `
+                        <div class="game-container">
+                            <div class="game-score">Level: <span id="stackLevel">1</span> / 5</div>
+                            <canvas id="stackCanvas" class="game-canvas" width="400" height="400"></canvas>
+                            <button class="game-button" id="stackBtn">Stopp!</button>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modalBody').innerHTML = html;
+                    
+                    const canvas = document.getElementById('stackCanvas');
+                    const ctx = canvas.getContext('2d');
+                    const blocks = [];
+                    const blockWidth = 80;
+                    const blockHeight = 40;
+                    
+                    function animate() {
+                        if (moving && level < 5) {
+                            ctx.clearRect(0, 0, 400, 400);
+                            
+                            // Draw placed blocks
+                            blocks.forEach((block, idx) => {
+                                ctx.fillStyle = `hsl(${idx * 60}, 70%, 50%)`;
+                                ctx.fillRect(block.x, 350 - idx * blockHeight, block.width, blockHeight);
+                            });
+                            
+                            // Draw moving block
+                            ctx.fillStyle = `hsl(${level * 60}, 70%, 50%)`;
+                            ctx.fillRect(position, 350 - level * blockHeight, blockWidth, blockHeight);
+                            
+                            position += direction * 3;
+                            if (position <= 0 || position >= 400 - blockWidth) direction *= -1;
+                            
+                            requestAnimationFrame(animate);
+                        }
+                    }
+                    
+                    document.getElementById('stackBtn').onclick = function() {
+                        if (!moving) return;
+                        
+                        const lastBlock = blocks[blocks.length - 1];
+                        const tolerance = 30;
+                        
+                        if (blocks.length === 0 || Math.abs(position - lastBlock.x) < tolerance) {
+                            blocks.push({ x: position, width: blockWidth });
+                            level++;
+                            document.getElementById('stackLevel').textContent = level;
+                            
+                            if (level >= 5) {
+                                moving = false;
+                                gameWon();
+                            } else {
+                                position = 0;
+                                direction = 1;
+                            }
+                        } else {
+                            alert('Zu weit daneben! Versuch es nochmal!');
+                            games.stacker.init();
+                            return;
+                        }
+                    };
+                    
+                    animate();
+                }
+            },
+            snowball: {
+                title: 'Schneeball-Suche',
+                description: 'Finde den einzigartigen Stern unter den Schneeflocken in 30 Sekunden!',
+                init: function() {
+                    let timeLeft = 30;
+                    
+                    let html = `
+                        <div class="game-container">
+                            <div class="game-score">Zeit: <span id="searchTime">30</span>s</div>
+                            <canvas id="searchCanvas" class="game-canvas" width="500" height="400"></canvas>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modalBody').innerHTML = html;
+                    
+                    const canvas = document.getElementById('searchCanvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Generate snowflakes and one star
+                    const items = [];
+                    const starPos = { 
+                        x: Math.random() * 450 + 25, 
+                        y: Math.random() * 350 + 25 
+                    };
+                    items.push({ x: starPos.x, y: starPos.y, isStar: true });
+                    
+                    for (let i = 0; i < 49; i++) {
+                        items.push({
+                            x: Math.random() * 450 + 25,
+                            y: Math.random() * 350 + 25,
+                            isStar: false
+                        });
+                    }
+                    
+                    // Draw items
+                    ctx.fillStyle = '#fff';
+                    items.forEach(item => {
+                        if (item.isStar) {
+                            // Draw star
+                            ctx.fillStyle = '#ffd700';
+                            ctx.beginPath();
+                            for (let i = 0; i < 5; i++) {
+                                const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+                                const x = item.x + Math.cos(angle) * 8;
+                                const y = item.y + Math.sin(angle) * 8;
+                                if (i === 0) ctx.moveTo(x, y);
+                                else ctx.lineTo(x, y);
+                            }
+                            ctx.closePath();
+                            ctx.fill();
+                        } else {
+                            // Draw snowflake
+                            ctx.fillStyle = '#fff';
+                            ctx.font = '16px Arial';
+                            ctx.fillText('❄', item.x, item.y);
+                        }
+                    });
+                    
+                    const timer = setInterval(() => {
+                        timeLeft--;
+                        document.getElementById('searchTime').textContent = timeLeft;
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            alert('Zeit abgelaufen! Versuch es nochmal!');
+                            games.snowball.init();
+                        }
+                    }, 1000);
+                    
+                    canvas.onclick = function(e) {
+                        const rect = canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        const clicked = items.find(item => 
+                            Math.abs(item.x - x) < 15 && Math.abs(item.y - y) < 15
+                        );
+                        
+                        if (clicked && clicked.isStar) {
+                            clearInterval(timer);
+                            gameWon();
+                        }
+                    };
+                }
+            },
+            memory: {
+                title: 'Rentier-Memory',
+                description: 'Finde alle Paare!',
+                init: function() {
+                    const symbols = ['🎅', '🦌', '🎁', '❄️', '🕯️', '🍪'];
+                    const cards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+                    let flipped = [];
+                    let matched = 0;
+                    
+                    let html = '<div class="game-container"><div class="game-grid" style="grid-template-columns: repeat(4, 1fr);">';
+                    cards.forEach((symbol, idx) => {
+                        html += `<div class="game-button memory-card" data-symbol="${symbol}" data-idx="${idx}" 
+                                 onclick="flipCard(${idx})" id="card-${idx}" style="font-size: 2em;">?</div>`;
+                    });
+                    html += '</div></div>';
+                    
+                    document.getElementById('modalBody').innerHTML = html;
+                    
+                    window.flipCard = function(idx) {
+                        const card = document.getElementById(`card-${idx}`);
+                        if (flipped.length >= 2 || flipped.includes(idx) || card.classList.contains('matched')) return;
+                        
+                        card.textContent = cards[idx];
+                        flipped.push(idx);
+                        
+                        if (flipped.length === 2) {
+                            const [first, second] = flipped;
+                            if (cards[first] === cards[second]) {
+                                matched += 2;
+                                document.getElementById(`card-${first}`).classList.add('matched');
+                                document.getElementById(`card-${second}`).classList.add('matched');
+                                flipped = [];
+                                
+                                if (matched === 12) {
+                                    setTimeout(() => gameWon(), 500);
+                                }
+                            } else {
+                                setTimeout(() => {
+                                    document.getElementById(`card-${first}`).textContent = '?';
+                                    document.getElementById(`card-${second}`).textContent = '?';
+                                    flipped = [];
+                                }, 1000);
+                            }
+                        }
+                    };
+                }
+            },
+            simon: {
+                title: 'Musik-Code',
+                description: 'Merke dir die Reihenfolge und wiederhole sie!',
+                init: function() {
+                    const colors = ['#ff6b6b', '#4ecdc4', '#ffd700', '#95a5a6'];
+                    const colorNames = ['Rot', 'Türkis', 'Gold', 'Silber'];
+                    let sequence = [];
+                    let playerSequence = [];
+                    let level = 0;
+                    
+                    let html = `
+                        <div class="game-container">
+                            <div class="game-score">Level: <span id="simonLevel">0</span></div>
+                            <div class="game-grid" style="grid-template-columns: repeat(2, 1fr);">
+                                ${colors.map((color, idx) => 
+                                    `<div class="game-button simon-btn" data-idx="${idx}" id="simon-${idx}"
+                                          style="background: ${color}; min-height: 100px;" 
+                                          onclick="playerClick(${idx})"></div>`
+                                ).join('')}
+                            </div>
+                            <button class="game-button" id="startBtn" onclick="startSimon()" style="margin-top: 20px;">Start</button>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modalBody').innerHTML = html;
+                    
+                    window.startSimon = function() {
+                        document.getElementById('startBtn').style.display = 'none';
+                        nextRound();
+                    };
+                    
+                    function nextRound() {
+                        level++;
+                        document.getElementById('simonLevel').textContent = level;
+                        sequence.push(Math.floor(Math.random() * 4));
+                        playerSequence = [];
+                        playSequence();
+                    }
+                    
+                    function playSequence() {
+                        disableButtons();
+                        sequence.forEach((idx, i) => {
+                            setTimeout(() => {
+                                flashButton(idx);
+                            }, i * 800);
+                        });
+                        setTimeout(() => {
+                            enableButtons();
+                        }, sequence.length * 800);
+                    }
+                    
+                    function flashButton(idx) {
+                        const btn = document.getElementById(`simon-${idx}`);
+                        btn.style.opacity = '1';
+                        btn.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            btn.style.opacity = '0.7';
+                            btn.style.transform = 'scale(1)';
+                        }, 400);
+                    }
+                    
+                    function disableButtons() {
+                        document.querySelectorAll('.simon-btn').forEach(btn => {
+                            btn.style.pointerEvents = 'none';
+                            btn.style.opacity = '0.7';
+                        });
+                    }
+                    
+                    function enableButtons() {
+                        document.querySelectorAll('.simon-btn').forEach(btn => {
+                            btn.style.pointerEvents = 'auto';
+                        });
+                    }
+                    
+                    window.playerClick = function(idx) {
+                        flashButton(idx);
+                        playerSequence.push(idx);
+                        
+                        const currentStep = playerSequence.length - 1;
+                        if (playerSequence[currentStep] !== sequence[currentStep]) {
+                            alert('Falsch! Versuch es nochmal!');
+                            games.simon.init();
+                            return;
+                        }
+                        
+                        if (playerSequence.length === sequence.length) {
+                            if (level >= 5) {
+                                setTimeout(() => gameWon(), 500);
+                            } else {
+                                setTimeout(() => nextRound(), 1000);
+                            }
+                        }
+                    };
+                }
+            }
+        };
+
+        // Initialize
+        let spiritLevel = parseInt(localStorage.getItem('spiritLevel') || '0');
+        let openedDoors = JSON.parse(localStorage.getItem('openedDoors') || '[]');
+        let solvedGames = JSON.parse(localStorage.getItem('solvedGames') || '[]');
+
+        function updateSpiritMeter() {
+            const meter = document.getElementById('spiritMeter');
+            meter.style.width = spiritLevel + '%';
+            meter.textContent = spiritLevel + '%';
+            localStorage.setItem('spiritLevel', spiritLevel);
+            
+            if (spiritLevel >= 100) {
+                setTimeout(() => {
+                    showFinalMessage();
+                }, 1000);
+            }
+        }
+
+        function createCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            for (let i = 1; i <= 24; i++) {
+                const door = document.createElement('div');
+                door.className = 'door' + (openedDoors.includes(i) ? ' opened' : '');
+                door.innerHTML = `
+                    <div class="door-inner">
+                        <div class="door-front">
+                            <span class="door-number">${i}</span>
+                        </div>
+                        <div class="door-back">
+                            ${getIconForDay(i)}
+                        </div>
+                    </div>
+                `;
+                door.addEventListener('click', () => openDoor(i));
+                door.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') openDoor(i);
+                });
+                door.setAttribute('tabindex', '0');
+                door.setAttribute('role', 'button');
+                door.setAttribute('aria-label', `Türchen ${i} öffnen`);
+                grid.appendChild(door);
+            }
+        }
+
+        function getIconForDay(day) {
+            const content = calendarContent[day - 1];
+            if (content.type === 'game') return '🎮';
+            if (content.type === 'joke') return '😄';
+            if (content.type === 'trivia') return '💡';
+            if (content.type === 'story') return '📖';
+            return '🎁';
+        }
+
+        function openDoor(day) {
+            const door = document.querySelectorAll('.door')[day - 1];
+            if (openedDoors.includes(day)) {
+                showContent(day);
+                return;
+            }
+            
+            door.classList.add('opened');
+            openedDoors.push(day);
+            localStorage.setItem('openedDoors', JSON.stringify(openedDoors));
+            
+            // Increase spirit meter for opening
+            spiritLevel = Math.min(100, spiritLevel + 2);
+            updateSpiritMeter();
+            
+            setTimeout(() => {
+                showContent(day);
+            }, 600);
+        }
+
+        function showContent(day) {
+            const content = calendarContent[day - 1];
+            const modal = document.getElementById('modal');
+            const header = document.getElementById('modalHeader');
+            const body = document.getElementById('modalBody');
+            
+            header.textContent = `Türchen ${day}`;
+            
+            if (content.type === 'game') {
+                const game = games[content.game];
+                body.innerHTML = `<p style="margin-bottom: 20px;">${game.description}</p>`;
+                modal.classList.add('active');
+                window.currentDay = day;
+                setTimeout(() => game.init(), 100);
+            } else {
+                body.innerHTML = `<p>${content.content}</p>`;
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function gameWon() {
+            const day = window.currentDay;
+            if (!solvedGames.includes(day)) {
+                solvedGames.push(day);
+                localStorage.setItem('solvedGames', JSON.stringify(solvedGames));
+                
+                spiritLevel = Math.min(100, spiritLevel + 10);
+                updateSpiritMeter();
+                createConfetti();
+            }
+            
+            setTimeout(() => {
+                alert('Geschafft! Du hast das Spiel gewonnen! 🎉');
+                closeModal();
+            }, 500);
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = ['#ff6b6b', '#ffd700', '#4ecdc4', '#95a5a6'][Math.floor(Math.random() * 4)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        function showFinalMessage() {
+            const modal = document.getElementById('modal');
+            const header = document.getElementById('modalHeader');
+            const body = document.getElementById('modalBody');
+            
+            header.textContent = '🎄 Frohe Weihnachten! 🎄';
+            body.innerHTML = `
+                <p style="font-size: 1.3em; text-align: center; line-height: 1.8;">
+                    Du hast das Weihnachtsstimmungs-Barometer gefüllt!<br><br>
+                    Danke, dass du alle Türchen geöffnet und die Spiele gemeistert hast.<br><br>
+                    Möge deine Weihnachtszeit voller Freude, Liebe und Wärme sein!<br><br>
+                    ⭐ Frohe Weihnachten! ⭐
+                </p>
+            `;
+            modal.classList.add('active');
+            createConfetti();
+        }
+
+        function resetCalendar() {
+            if (confirm('Möchtest du wirklich alle Fortschritte zurücksetzen?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Create snow
+        function createSnow() {
+            for (let i = 0; i < 50; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
+                snowflake.style.fontSize = (Math.random() * 0.5 + 0.5) + 'em';
+                document.body.appendChild(snowflake);
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Initialize
+        createCalendar();
+        updateSpiritMeter();
+        createSnow();
+    </script>
+</body>
+</html>
