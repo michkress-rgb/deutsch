@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ferien-Countdown · ISN 2026/27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2B2350;
+    --ink-soft:rgba(43,35,80,.66);
+    --ink-faint:rgba(43,35,80,.30);
+    --paper:#FFFDF6;
+    --tape:rgba(255,214,102,.72);
+
+    --p1:#FF6B6B;  --t1:#FFE2E2;   /* coral   */
+    --p2:#FFAF1A;  --t2:#FFEFCE;   /* marigold*/
+    --p3:#1FCB9E;  --t3:#D6F7EE;   /* mint    */
+    --p4:#2FB4F0;  --t4:#DAF0FD;   /* sky     */
+    --p5:#9B7BFF;  --t5:#E9E2FF;   /* grape   */
+    --p6:#FF75B1;  --t6:#FFE2F0;   /* bubblegum*/
+
+    --font-display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+    --font-hand:"Caveat","Comic Sans MS",cursive;
+    --font-body:"Nunito","Segoe UI",system-ui,sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    min-height:100vh;
+    color:var(--ink);
+    font-family:var(--font-body);
+    overflow-x:hidden;
+    background:
+      radial-gradient(ellipse 100% 55% at 50% -8%, rgba(255,255,255,.85), transparent 62%),
+      linear-gradient(168deg,#FFE07A 0%, #FFB06B 26%, #FF95B5 55%, #B49BFF 100%);
+    background-attachment:fixed;
+  }
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+  .wrap{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:26px 20px 70px}
+
+  /* ---------- header ---------- */
+  .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+  .brand{font-family:var(--font-display);font-weight:600;font-size:1rem;line-height:1.2}
+  .brand small{display:block;font-family:var(--font-hand);font-size:1.2rem;font-weight:700;color:var(--ink-soft)}
+  .controls{display:flex;gap:8px;align-items:center}
+  button{font-family:var(--font-body);font-weight:700;cursor:pointer}
+  .lang{display:flex;border:2px solid rgba(43,35,80,.22);border-radius:999px;overflow:hidden;background:rgba(255,255,255,.5)}
+  .lang button{background:transparent;border:0;color:var(--ink-soft);padding:6px 14px;font-size:.78rem;letter-spacing:.08em}
+  .lang button[aria-pressed="true"]{background:var(--ink);color:#FFF7DC}
+  .party{background:#FFF;border:0;color:var(--ink);border-radius:999px;padding:9px 17px;font-size:.8rem;
+    box-shadow:0 4px 0 rgba(43,35,80,.22);transition:transform .12s ease,box-shadow .12s ease}
+  .party:hover{transform:translateY(-1px);box-shadow:0 5px 0 rgba(43,35,80,.22)}
+  .party:active{transform:translateY(4px);box-shadow:0 0 0 rgba(43,35,80,.22)}
+  :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+  /* ---------- hero: a big sheet of paper taped up ---------- */
+  .sheet{position:relative;background:var(--paper);border-radius:10px;padding:44px 26px 38px;text-align:center;
+    box-shadow:0 18px 46px rgba(43,35,80,.22);transform:rotate(-.5deg)}
+  .sheet::before,.sheet::after{content:"";position:absolute;top:-13px;width:96px;height:26px;background:var(--tape);
+    box-shadow:0 1px 3px rgba(43,35,80,.12)}
+  .sheet::before{left:34px;transform:rotate(-4deg)}
+  .sheet::after{right:34px;transform:rotate(3.5deg)}
+
+  .eyebrow{font-weight:800;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px}
+  .hero-emoji{font-size:clamp(2rem,7vw,2.9rem);display:block;line-height:1}
+  .hero-name{font-family:var(--font-display);font-weight:700;font-size:clamp(1.7rem,6vw,3rem);
+    line-height:1.05;margin:4px 0 0;color:var(--accent,var(--p1))}
+  .count{font-family:var(--font-display);font-weight:700;font-size:clamp(6rem,25vw,14rem);line-height:.82;
+    letter-spacing:-.045em;margin:14px 0 0;color:var(--accent,var(--p1))}
+  .count-unit{font-family:var(--font-hand);font-weight:700;font-size:clamp(1.4rem,4.6vw,2.2rem);
+    line-height:1.15;color:var(--ink);max-width:16ch;margin:2px auto 0}
+  .ticker{font-variant-numeric:tabular-nums;font-weight:700;font-size:.8rem;letter-spacing:.18em;color:var(--ink-faint);margin-top:12px}
+  .quip{font-family:var(--font-hand);font-weight:700;font-size:clamp(1.3rem,3.6vw,1.9rem);line-height:1.25;
+    max-width:24ch;margin:20px auto 0;transform:rotate(-1.1deg);color:var(--ink)}
+  .hero-dates{margin-top:20px;font-size:.9rem;color:var(--ink-soft)}
+  .hero-dates b{color:var(--ink);font-weight:800}
+
+  .banner{display:inline-block;font-family:var(--font-display);font-weight:600;font-size:.76rem;letter-spacing:.18em;
+    text-transform:uppercase;background:var(--p3);color:#0A3A2C;padding:8px 20px;border-radius:999px;
+    transform:rotate(-1.6deg);margin-bottom:16px}
+
+  /* ---------- signature: the paper chain ---------- */
+  .chain-block{margin:32px auto 0;max-width:800px}
+  .chain-label{font-family:var(--font-hand);font-weight:700;font-size:1.15rem;color:var(--ink-soft);margin-bottom:10px}
+  .chain{display:flex;flex-wrap:wrap;justify-content:center;gap:3px 1px}
+  .link{width:15px;height:27px;border-radius:7px/13px;flex:0 0 auto;box-shadow:inset 0 0 0 3px rgba(255,255,255,.55)}
+  .link.weekend{opacity:.32}
+  .link.today{animation:wobble 2.4s ease-in-out infinite;box-shadow:inset 0 0 0 3px rgba(255,255,255,.55),0 0 0 2px var(--ink)}
+  @keyframes wobble{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+
+  /* ---------- sections ---------- */
+  .cols{display:grid;grid-template-columns:1.75fr 1fr;gap:32px;margin-top:52px;align-items:start}
+  h2{font-family:var(--font-display);font-weight:600;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;
+    color:rgba(43,35,80,.55);margin:0 0 16px;display:flex;align-items:center;gap:12px}
+  h2::after{content:"";flex:1;height:2px;background:rgba(43,35,80,.16);border-radius:2px}
+
+  .notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:20px}
+  .note{border-radius:8px;padding:22px 18px 18px;position:relative;
+    box-shadow:0 10px 26px rgba(43,35,80,.18);transition:transform .18s ease}
+  .note:nth-child(3n+1){transform:rotate(-1deg)}
+  .note:nth-child(3n+2){transform:rotate(.8deg)}
+  .note:nth-child(3n){transform:rotate(-.3deg)}
+  .note:hover{transform:rotate(0) translateY(-4px)}
+  .note::before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(-2deg);
+    width:66px;height:20px;background:var(--tape)}
+  .note h3{font-family:var(--font-display);font-weight:600;font-size:1.1rem;margin:4px 0 2px;padding-right:6px}
+  .note .when{font-size:.82rem;font-weight:700;color:var(--ink-soft);margin-bottom:12px}
+  .note .big{font-family:var(--font-display);font-weight:700;font-size:2.4rem;line-height:1;letter-spacing:-.03em}
+  .note .big span{font-size:.82rem;font-weight:700;font-family:var(--font-body);color:var(--ink-soft);margin-left:6px}
+  .note .len{font-family:var(--font-hand);font-weight:700;font-size:1.15rem;color:var(--ink-soft);margin-top:8px}
+
+  .card{background:var(--paper);border-radius:8px;box-shadow:0 10px 26px rgba(43,35,80,.18);transform:rotate(.7deg);overflow:hidden}
+  .card .head{background:var(--p5);color:#FFF;padding:12px 18px;font-family:var(--font-display);font-weight:600;
+    font-size:.72rem;letter-spacing:.16em;text-transform:uppercase}
+  .card ul{list-style:none;margin:0;padding:6px 18px 16px}
+  .card li{padding:12px 0;border-bottom:2px dotted rgba(43,35,80,.15)}
+  .card li:last-child{border-bottom:0}
+  .card .d{font-family:var(--font-display);font-weight:600;font-size:.95rem}
+  .card .n{font-size:.82rem;color:var(--ink-soft)}
+  .card .s{font-family:var(--font-hand);font-weight:700;font-size:1.1rem;color:var(--ink-soft);margin-top:3px;display:block}
+  .card li.gold .d{color:#C97A00}
+  .card .empty{padding:16px 0;font-family:var(--font-hand);font-weight:700;font-size:1.15rem;color:var(--ink-soft)}
+
+  footer{margin-top:52px;padding-top:16px;border-top:2px dotted rgba(43,35,80,.2);font-size:.78rem;font-weight:600;
+    color:rgba(43,35,80,.55);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+
+  @media (max-width:820px){
+    .cols{grid-template-columns:1fr;gap:40px}
+    .sheet{padding:38px 18px 30px}
+    .link{width:13px;height:23px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">SBW International School Neustadt
+      <small id="brandsub">Break countdown · School year 2026/27</small>
+    </div>
+    <div class="controls">
+      <button class="party" id="partyBtn">🎉 <span id="partyLabel">Throw confetti</span></button>
+      <div class="lang" role="group" aria-label="Language">
+        <button id="btn-de" aria-pressed="false">DE</button>
+        <button id="btn-en" aria-pressed="true">EN</button>
+      </div>
+    </div>
+  </div>
+
+  <main id="hero" class="sheet"></main>
+
+  <div class="cols">
+    <section>
+      <h2 id="h-rest">The rest of the year</h2>
+      <div class="notes" id="notes"></div>
+    </section>
+    <aside>
+      <div class="card">
+        <div class="head" id="h-odd">Odd days off</div>
+        <ul id="odd"></ul>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <span id="foot-left"></span>
+    <span id="foot-right"></span>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   ISN break countdown 2026/27
+   Dates transcribed from the official ISN Ferienkalender.
+   ============================================================ */
+
+const D = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const today = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+const diffDays = (a,b) => Math.round((b - a) / 86400000);
+
+/* Only breaks of a week or more. The 2026 summer holiday is gone:
+   staff are back in the building, so there is nothing to count. */
+const BREAKS = [
+  {
+    key:'herbst', emoji:'🍂', color:'var(--p1)', tint:'var(--t1)',
+    from:'2026-10-03', to:'2026-10-18', back:'2026-10-19', schoolDays:10,
+    name:{en:'Autumn break', de:'Herbstferien'},
+    flavor:{en:'Two full weeks. The leaves fall, the marking pile does not.',
+            de:'Zwei volle Wochen. Die Blätter fallen, der Korrekturstapel nicht.'}
+  },
+  {
+    key:'weihnachten', emoji:'🎄', color:'var(--p3)', tint:'var(--t3)',
+    from:'2026-12-19', to:'2027-01-10', back:'2027-01-11', schoolDays:15,
+    name:{en:'Christmas break', de:'Weihnachtsferien'},
+    flavor:{en:'Twenty-three days in which biscuits count as a meal.',
+            de:'23 Tage, in denen Plätzchen als Mahlzeit gelten.'}
+  },
+  {
+    key:'fasching', emoji:'🎭', color:'var(--p5)', tint:'var(--t5)',
+    from:'2027-02-06', to:'2027-02-14', back:'2027-02-15', schoolDays:5,
+    name:{en:'Carnival break', de:'Faschingsferien'},
+    flavor:{en:'One week. Confetti is, technically, a teaching material.',
+            de:'Eine Woche. Konfetti ist streng genommen Anschauungsmaterial.'}
+  },
+  {
+    key:'ostern', emoji:'🐣', color:'var(--p6)', tint:'var(--t6)',
+    from:'2027-03-20', to:'2027-04-04', back:'2027-04-05', schoolDays:10,
+    name:{en:'Easter break', de:'Osterferien'},
+    flavor:{en:'Sixteen days. Chocolate for breakfast is legal on these premises.',
+            de:'16 Tage. Schokolade zum Frühstück ist hier ausdrücklich erlaubt.'}
+  },
+  {
+    key:'mai', emoji:'🌤️', color:'var(--p4)', tint:'var(--t4)',
+    from:'2027-05-06', to:'2027-05-17', back:'2027-05-18', schoolDays:8,
+    name:{en:'May break', de:'Maiferien'},
+    flavor:{en:'Twelve days glued together out of public holidays. Germany at its absolute finest.',
+            de:'Zwölf Tage, zusammengeklebt aus lauter Feiertagen. Deutschland in Bestform.'}
+  },
+  {
+    key:'sommer27', emoji:'🏖️', color:'var(--p2)', tint:'var(--t2)',
+    from:'2027-06-26', to:'2027-08-08', back:'2027-08-09', schoolDays:30,
+    name:{en:'Summer holidays', de:'Sommerferien'},
+    flavor:{en:'Forty-four days. The final boss of breaks.',
+            de:'44 Tage. Der Endgegner aller Ferien.'}
+  }
+];
+
+const ODD = [
+  { date:'2026-08-10', name:{en:'First day of school — half day',de:'Erster Schultag — halber Tag'},
+    note:{en:'Gentle start. Nobody learns anything. Correct.',de:'Sanfter Einstieg. Niemand lernt etwas. Richtig so.'} },
+  { date:'2026-10-03', name:{en:'German Unity Day',de:'Tag der Deutschen Einheit'},
+    note:{en:'A Saturday, inside the autumn break. Wasted twice over.',de:'Ein Samstag, mitten in den Herbstferien. Doppelt vergeudet.'} },
+  { date:'2026-10-31', name:{en:'Reformation Day',de:'Reformationstag'},
+    note:{en:'A Saturday. The calendar itself needs reforming.',de:'Ein Samstag. Da müsste mal der Kalender reformiert werden.'} },
+  { date:'2026-11-01', name:{en:'All Saints',de:'Allerheiligen'},
+    note:{en:'A Sunday. All the saints, none of the mercy.',de:'Ein Sonntag. Alle Heiligen, kein Erbarmen.'} },
+  { date:'2027-05-01', name:{en:'Labour Day',de:'Tag der Arbeit'},
+    note:{en:'A Saturday. The irony is working overtime.',de:'Ein Samstag. Die Ironie macht Überstunden.'} },
+  { date:'2027-05-27', name:{en:'Corpus Christi',de:'Fronleichnam'},
+    note:{en:'A real, free, midweek Thursday. Treasure it.',de:'Ein echter freier Donnerstag mitten in der Woche. Bitte würdigen.'}, gold:true },
+  { date:'2027-06-25', name:{en:'Last day of school — half day',de:'Letzter Schultag — halber Tag'},
+    note:{en:'Half a day, and even that is mostly hugging.',de:'Ein halber Tag, und der besteht großteils aus Umarmungen.'}, gold:true }
+];
+
+const YEAR_START = '2026-08-10', YEAR_END = '2027-06-25';
+
+/* ---------------- copy ---------------- */
+const T = {
+  en:{
+    sub:'Break countdown · School year 2026/27',
+    party:'Throw confetti', rest:'The rest of the year', odd:'Odd days off',
+    nextUp:'Next up', daysWord:n => n===1?'day to go':'days to go',
+    chain:n => 'One paper link per sleep · ' + n + ' left to tear off',
+    chainWeekend:'faded links are weekends',
+    window:(a,b)=>'Off from '+a+' to '+b, lenDays:n=>n+' days off', lenSchool:n=>n+' school days',
+    back:d=>'Back in the classroom '+d,
+    /* break mode */
+    bannerNow:'You are on break right now',
+    bannerLead:'This is not a drill',
+    backUnit:n => n===1 ? 'day until you are back at that desk' : 'days until you are back at that desk',
+    breakEnds:d=>'The last free day is '+d+'.',
+    todayCounter:' — today',
+    /* year states */
+    yearOverName:'Nothing left to count',
+    yearOver:'That is the whole calendar. Go and enjoy yourself properly.',
+    noOdd:'None left. You used them all.',
+    dayCounter:(a,b)=>'Day '+a+' of '+b+' of the school year',
+    preYear:d=>'School year starts '+d,
+    postYear:'School year 2026/27 is done',
+    footRight:'Check the official calendar before you book any flights.',
+    /* countdown-to-break tiers */
+    tiers:[
+      [1,   'TOMORROW. Do not start a new topic today.'],
+      [3,   'You can see it from here. Squint and hold on.'],
+      [7,   'Under a week. Even the photocopier can feel it.'],
+      [14,  'Two weeks-ish. Mark in bulk, breathe in bulk.'],
+      [30,  'Close enough to plan a trip, far enough to still set homework.'],
+      [60,  'Middle distance. Drink water. Say no to one committee.'],
+      [100, 'Long haul. This might be the term to take up a hobby.'],
+      [9999,'Bring a sleeping bag and a strong opinion about coffee.']
+    ],
+    /* days-until-back tiers, used while on break */
+    backTiers:[
+      [1,   'Back tomorrow. Lay out the lanyard. Sit quietly with that.'],
+      [2,   'Two sleeps. The photocopier is already warming up without you.'],
+      [4,   'Still comfortably far away. Ignore the school inbox.'],
+      [8,   'Over a week of nobody asking you for a worksheet.'],
+      [16,  'Long enough to forget where you left the whiteboard markers.'],
+      [30,  'Long enough to become a slightly different person.'],
+      [9999,'So far away it is basically theoretical. Enjoy.']
+    ]
+  },
+  de:{
+    sub:'Ferien-Countdown · Schuljahr 2026/27',
+    party:'Konfetti werfen', rest:'Der Rest des Schuljahres', odd:'Einzelne freie Tage',
+    nextUp:'Als Nächstes', daysWord:n => n===1?'Tag noch':'Tage noch',
+    chain:n => 'Ein Papierglied pro Nacht · noch ' + n + ' zum Abreißen',
+    chainWeekend:'blasse Glieder sind Wochenenden',
+    window:(a,b)=>'Frei von '+a+' bis '+b, lenDays:n=>n+' Tage frei', lenSchool:n=>n+' Schultage',
+    back:d=>'Zurück im Klassenzimmer am '+d,
+    bannerNow:'Du hast gerade Ferien',
+    bannerLead:'Das ist keine Übung',
+    backUnit:n => n===1 ? 'Tag, bis du wieder an diesem Schreibtisch sitzt' : 'Tage, bis du wieder an diesem Schreibtisch sitzt',
+    breakEnds:d=>'Der letzte freie Tag ist der '+d+'.',
+    todayCounter:' — heute',
+    yearOverName:'Nichts mehr zu zählen',
+    yearOver:'Das war der ganze Kalender. Jetzt aber wirklich genießen.',
+    noOdd:'Keine mehr übrig. Alle aufgebraucht.',
+    dayCounter:(a,b)=>'Tag '+a+' von '+b+' des Schuljahres',
+    preYear:d=>'Schuljahresbeginn: '+d,
+    postYear:'Schuljahr 2026/27 ist geschafft',
+    footRight:'Vor dem Flugbuchen bitte den echten Kalender prüfen.',
+    tiers:[
+      [1,   'MORGEN. Heute bitte kein neues Thema anfangen.'],
+      [3,   'Man kann es schon sehen. Augen zu und durch.'],
+      [7,   'Weniger als eine Woche. Sogar der Kopierer spürt es.'],
+      [14,  'Knapp zwei Wochen. Korrigieren im Akkord, atmen im Akkord.'],
+      [30,  'Nah genug zum Reisebuchen, weit genug für Hausaufgaben.'],
+      [60,  'Mittelstrecke. Wasser trinken. Einer AG absagen.'],
+      [100, 'Langstrecke. Vielleicht das Halbjahr für ein Hobby nutzen?'],
+      [9999,'Schlafsack einpacken und eine feste Meinung über Kaffee mitbringen.']
+    ],
+    backTiers:[
+      [1,   'Morgen wieder. Lanyard rauslegen. Kurz in sich gehen.'],
+      [2,   'Zweimal schlafen. Der Kopierer wärmt sich schon ohne dich auf.'],
+      [4,   'Noch angenehm weit weg. Dienstpostfach bleibt zu.'],
+      [8,   'Über eine Woche, in der niemand ein Arbeitsblatt von dir will.'],
+      [16,  'Lang genug, um zu vergessen, wo die Whiteboard-Marker liegen.'],
+      [30,  'Lang genug, um ein leicht anderer Mensch zu werden.'],
+      [9999,'So weit weg, dass es rein theoretisch ist. Genieß es.']
+    ]
+  }
+};
+
+let lang = (navigator.language || 'en').toLowerCase().startsWith('de') ? 'de' : 'en';
+const fmt = d => d.toLocaleDateString(lang==='de'?'de-DE':'en-GB',{weekday:'short',day:'numeric',month:'short'});
+const fmtLong = d => d.toLocaleDateString(lang==='de'?'de-DE':'en-GB',{weekday:'long',day:'numeric',month:'long'});
+const PAPER = ['var(--p1)','var(--p2)','var(--p3)','var(--p4)','var(--p5)','var(--p6)'];
+
+function pickTier(list, n){ for (const [max,txt] of list) if (n <= max) return txt; return list[list.length-1][1]; }
+
+/* ---------------- render ---------------- */
+const heroEl  = document.getElementById('hero');
+const notesEl = document.getElementById('notes');
+const oddEl   = document.getElementById('odd');
+let lastState = '';
+
+function render(){
+  const t = today(), L = T[lang];
+
+  document.getElementById('brandsub').textContent = L.sub;
+  document.getElementById('partyLabel').textContent = L.party;
+  document.getElementById('h-rest').textContent = L.rest;
+  document.getElementById('h-odd').textContent = L.odd;
+  document.getElementById('btn-de').setAttribute('aria-pressed', lang==='de');
+  document.getElementById('btn-en').setAttribute('aria-pressed', lang==='en');
+  document.getElementById('foot-right').textContent = L.footRight;
+
+  const current  = BREAKS.find(b => t >= D(b.from) && t <= D(b.to));
+  const upcoming = BREAKS.filter(b => D(b.from) > t);
+  const next     = upcoming[0];
+
+  /* ---- hero ---- */
+  if (current){
+    const untilBack = diffDays(t, D(current.back));   // today counts, so this is also "days of break left"
+    heroEl.style.setProperty('--accent', current.color);
+    heroEl.innerHTML = `
+      <div class="banner">🎉 ${L.bannerNow}</div>
+      <div class="eyebrow">${L.bannerLead}</div>
+      <span class="hero-emoji">${current.emoji}</span>
+      <h1 class="hero-name">${current.name[lang]}</h1>
+      <div class="count">${untilBack}</div>
+      <div class="count-unit">${L.backUnit(untilBack)}</div>
+      <p class="quip">${pickTier(L.backTiers, untilBack)}</p>
+      <div class="hero-dates">${L.breakEnds('<b>'+fmtLong(D(current.to))+'</b>')}<br>
+        ${L.back('<b>'+fmtLong(D(current.back))+'</b>')}</div>`;
+    if (lastState !== 'break-'+current.key){ burst(.5,.32,90); rainOn(); }
+    lastState = 'break-'+current.key;
+
+  } else if (next){
+    rainOff();
+    const n = diffDays(t, D(next.from));
+    const total = diffDays(D(next.from), D(next.to)) + 1;
+    heroEl.style.setProperty('--accent', next.color);
+    heroEl.innerHTML = `
+      <div class="eyebrow">${L.nextUp}</div>
+      <span class="hero-emoji">${next.emoji}</span>
+      <h1 class="hero-name">${next.name[lang]}</h1>
+      <div class="count">${n}</div>
+      <div class="count-unit">${L.daysWord(n)}</div>
+      <div class="ticker" id="ticker">–</div>
+      <p class="quip">${pickTier(L.tiers, n)}</p>
+      <div class="hero-dates">
+        ${L.window('<b>'+fmt(D(next.from))+'</b>','<b>'+fmt(D(next.to))+'</b>')}
+        &nbsp;·&nbsp; ${L.lenDays(total)}
+        ${next.schoolDays ? '&nbsp;·&nbsp; '+L.lenSchool(next.schoolDays) : ''}
+      </div>
+      <div class="chain-block">
+        <div class="chain-label">${L.chain(n)} <span style="opacity:.6">(${L.chainWeekend})</span></div>
+        <div class="chain" id="chain"></div>
+      </div>`;
+    buildChain(t, n);
+    lastState = 'count-'+next.key;
+
+  } else {
+    rainOff();
+    heroEl.style.setProperty('--accent','var(--p5)');
+    heroEl.innerHTML = `
+      <span class="hero-emoji">🕊️</span>
+      <h1 class="hero-name">${L.yearOverName}</h1>
+      <p class="quip">${L.yearOver}</p>`;
+    lastState = 'over';
+  }
+
+  /* ---- the rest of the year ---- */
+  const hidden = current ? null : next;
+  notesEl.innerHTML = upcoming.filter(b => !hidden || b.key !== hidden.key).map(b => {
+    const n = diffDays(t, D(b.from));
+    const total = diffDays(D(b.from), D(b.to)) + 1;
+    return `<article class="note" style="background:${b.tint}">
+      <h3>${b.emoji} ${b.name[lang]}</h3>
+      <div class="when">${fmt(D(b.from))} – ${fmt(D(b.to))}</div>
+      <div class="big" style="color:${b.color}">${n}<span>${L.daysWord(n)}</span></div>
+      <div class="len">${L.lenDays(total)}${b.schoolDays ? ' · '+L.lenSchool(b.schoolDays) : ''}</div>
+    </article>`;
+  }).join('');
+
+  /* ---- odd days off ---- */
+  const odds = ODD.filter(o => D(o.date) >= t);
+  oddEl.innerHTML = odds.length
+    ? odds.map(o => {
+        const n = diffDays(t, D(o.date));
+        return `<li class="${o.gold?'gold':''}">
+          <div class="d">${fmt(D(o.date))}${n===0 ? L.todayCounter : ''}</div>
+          <div class="n">${o.name[lang]}</div>
+          <span class="s">${o.note[lang]}</span>
+        </li>`;
+      }).join('')
+    : `<li><div class="empty">${L.noOdd}</div></li>`;
+
+  /* ---- footer ---- */
+  const yStart = D(YEAR_START), yEnd = D(YEAR_END);
+  const totalDays = diffDays(yStart, yEnd) + 1;
+  const foot = document.getElementById('foot-left');
+  if (t < yStart)      foot.textContent = L.preYear(fmtLong(yStart));
+  else if (t > yEnd)   foot.textContent = L.postYear;
+  else                 foot.textContent = L.dayCounter(diffDays(yStart,t)+1, totalDays);
+
+  tick();
+}
+
+function buildChain(t, n){
+  const el = document.getElementById('chain');
+  if (!el) return;
+  let html = '';
+  for (let i = 0; i < Math.min(n, 200); i++){
+    const d = new Date(t.getFullYear(), t.getMonth(), t.getDate() + i);
+    const wd = d.getDay();
+    const cls = 'link' + (wd===0||wd===6 ? ' weekend' : '') + (i===0 ? ' today' : '');
+    html += `<span class="${cls}" style="background:${PAPER[i%PAPER.length]}" title="${fmt(d)}"></span>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ---------------- live ticker ---------------- */
+function tick(){
+  const el = document.getElementById('ticker');
+  if (!el) return;
+  const t = today();
+  const next = BREAKS.filter(b => D(b.from) > t)[0];
+  if (!next){ el.textContent = ''; return; }
+  let ms = D(next.from) - new Date(); if (ms < 0) ms = 0;
+  const p = v => String(v).padStart(2,'0');
+  el.textContent = `${p(Math.floor(ms/3600000))} : ${p(Math.floor(ms/60000)%60)} : ${p(Math.floor(ms/1000)%60)}`;
+}
+
+/* ---------------- confetti ---------------- */
+const cv = document.getElementById('confetti'), ctx = cv.getContext('2d');
+let parts = [], raining = false, rafId = null;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const COLORS = ['#FF6B6B','#FFAF1A','#1FCB9E','#2FB4F0','#9B7BFF','#FF75B1','#FFFFFF'];
+
+function resize(){ cv.width = innerWidth; cv.height = innerHeight; }
+resize(); addEventListener('resize', resize);
+
+function make(x,y,spread){
+  return { x, y, vx:(Math.random()-.5)*spread, vy:Math.random()*-9-3,
+    w:6+Math.random()*7, h:9+Math.random()*9, r:Math.random()*Math.PI,
+    vr:(Math.random()-.5)*.28, c:COLORS[(Math.random()*COLORS.length)|0], life:1 };
+}
+function burst(fx,fy,count){ if (reduce) return; for (let i=0;i<count;i++) parts.push(make(cv.width*fx, cv.height*fy, 16)); start(); }
+function rainOn(){ if (!reduce){ raining = true; start(); } }
+function rainOff(){ raining = false; }
+function start(){ if (!rafId) rafId = requestAnimationFrame(loop); }
+function loop(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if (raining && Math.random() < .35){ const p = make(Math.random()*cv.width,-20,3); p.vy = 1+Math.random()*2.4; parts.push(p); }
+  for (const p of parts){ p.x+=p.vx; p.y+=p.vy; p.vy+=.32; p.vx*=.992; p.r+=p.vr; if (p.y > cv.height+40) p.life = 0; }
+  parts = parts.filter(p => p.life);
+  for (const p of parts){
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+    ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h*(.4+.6*Math.abs(Math.cos(p.r)))); ctx.restore();
+  }
+  if (parts.length || raining) rafId = requestAnimationFrame(loop);
+  else { rafId = null; ctx.clearRect(0,0,cv.width,cv.height); }
+}
+
+/* ---------------- wiring ---------------- */
+document.getElementById('partyBtn').addEventListener('click', () => burst(.5,.5,110));
+heroEl.addEventListener('click', () => {
+  const r = heroEl.getBoundingClientRect();
+  burst((r.left + r.width/2)/innerWidth, Math.max(.2,(r.top+140)/innerHeight), 70);
+});
+document.getElementById('btn-de').addEventListener('click', () => { lang='de'; lastState=''; render(); });
+document.getElementById('btn-en').addEventListener('click', () => { lang='en'; lastState=''; render(); });
+
+render();
+setInterval(tick, 1000);
+window.__day = today().toDateString();
+setInterval(() => { const k = today().toDateString(); if (k !== window.__day){ window.__day = k; render(); } }, 60000);
+setTimeout(() => burst(.5,.3,60), 350);
+</script>
+</body>
+</html>
