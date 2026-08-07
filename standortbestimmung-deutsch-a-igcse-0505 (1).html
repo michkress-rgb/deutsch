@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Standortbestimmung Deutsch A · IGCSE 0505 · Klasse 10</title>
+<style>
+:root{
+  --paper:#E9E4D7;
+  --card:#F6F2E9;
+  --card-2:#FBF9F3;
+  --ink:#232A2E;
+  --ink-soft:#5A6169;
+  --ink-faint:#8B8F8A;
+  --rule:#CDC4B0;
+  --rule-soft:#DED7C6;
+  --slate:#395A6B;
+  --slate-hi:#4E7A8E;
+  --oxide:#8C3B2E;
+  --moss:#5E6E4A;
+  --ochre:#B08331;
+  --shadow:0 1px 0 rgba(35,42,46,.06), 0 12px 28px -18px rgba(35,42,46,.45);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",Consolas,"SF Mono",ui-monospace,"Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 120px}
+
+/* ---------- Kopf ---------- */
+header.top{
+  position:sticky;top:0;z-index:40;
+  background:var(--paper);
+  border-bottom:1px solid var(--rule);
+}
+.top-inner{max-width:820px;margin:0 auto;padding:14px 20px 10px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.brand{font-family:var(--serif);font-size:17px;letter-spacing:.01em;margin:0}
+.brand em{font-style:normal;color:var(--slate)}
+.top-meta{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.04em;text-transform:uppercase}
+#saveState{color:var(--moss)}
+/* Zeitstreifen: das Schuljahr läuft */
+.timestrip{height:6px;background:var(--rule-soft);position:relative;max-width:820px;margin:0 auto}
+.timestrip i{position:absolute;left:0;top:0;bottom:0;background:var(--oxide);opacity:.65;display:block}
+.timestrip b{position:absolute;top:0;bottom:0;width:1px;background:var(--ink);opacity:.5}
+.timelabel{max-width:820px;margin:0 auto;padding:4px 20px 8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink-faint);display:flex;justify-content:space-between}
+
+/* Fortschritt */
+.progress{max-width:820px;margin:0 auto;padding:0 20px 10px;display:flex;align-items:center;gap:10px}
+.progress .bar{flex:1;height:2px;background:var(--rule)}
+.progress .bar i{display:block;height:2px;background:var(--slate);transition:width .35s ease}
+.progress .num{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.05em}
+
+/* ---------- Karten ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  box-shadow:var(--shadow);
+  padding:34px 34px 30px;
+  margin-top:28px;
+}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate);margin:0 0 10px}
+h1{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1.15;margin:0 0 14px;letter-spacing:-.01em}
+h2{font-family:var(--serif);font-weight:600;font-size:25px;line-height:1.2;margin:0 0 8px}
+h3{font-family:var(--serif);font-weight:600;font-size:18px;margin:26px 0 8px}
+p{margin:0 0 14px}
+.lead{font-size:17.5px;line-height:1.65}
+.muted{color:var(--ink-soft)}
+.small{font-size:14px}
+hr.rule{border:0;border-top:1px solid var(--rule-soft);margin:26px 0}
+
+.numeral{
+  font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--ink-faint);
+  border-bottom:1px solid var(--rule-soft);padding-bottom:6px;margin-bottom:16px;display:flex;justify-content:space-between
+}
+
+/* Klartext-Kasten */
+.klartext{
+  border-left:3px solid var(--oxide);
+  background:linear-gradient(90deg,rgba(140,59,46,.06),rgba(140,59,46,0));
+  padding:16px 18px;margin:22px 0;
+}
+.klartext p:last-child{margin-bottom:0}
+.klartext .kt-title{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--oxide);margin-bottom:6px}
+.note{border-left:3px solid var(--slate);background:linear-gradient(90deg,rgba(57,90,107,.07),rgba(57,90,107,0));padding:14px 18px;margin:20px 0}
+.note p:last-child{margin-bottom:0}
+
+/* ---------- Formular ---------- */
+label.f{display:block;font-size:13px;letter-spacing:.03em;color:var(--ink-soft);margin:0 0 5px}
+input[type=text],input[type=date],input[type=number],select,textarea{
+  width:100%;font-family:var(--sans);font-size:15.5px;color:var(--ink);
+  background:var(--card-2);border:1px solid var(--rule);padding:9px 11px;border-radius:2px;
+}
+textarea{min-height:88px;resize:vertical;line-height:1.55}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--slate-hi);outline-offset:1px;border-color:var(--slate)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.field{margin-bottom:16px}
+
+/* Aussagen + Skala */
+.stmt{border-top:1px solid var(--rule-soft);padding:18px 0 6px}
+.stmt:first-of-type{border-top:0}
+.stmt .txt{font-size:16.5px;line-height:1.5;margin-bottom:12px}
+.stmt .txt b{font-family:var(--mono);font-size:12px;color:var(--ink-faint);margin-right:10px;letter-spacing:.08em}
+.scale{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.scale input{position:absolute;opacity:0;width:0;height:0}
+.scale label{
+  display:block;text-align:center;cursor:pointer;
+  border:1px solid var(--rule);background:var(--card-2);
+  padding:9px 6px;font-size:12.5px;line-height:1.3;color:var(--ink-soft);
+  transition:background .12s,border-color .12s,color .12s;
+}
+.scale label span{display:block;font-family:var(--mono);font-size:13px;color:var(--ink-faint);margin-bottom:3px}
+.scale label:hover{border-color:var(--slate);color:var(--ink)}
+.scale input:focus-visible + label{outline:2px solid var(--slate-hi);outline-offset:1px}
+.scale input:checked + label{background:var(--slate);border-color:var(--slate);color:#F6F2E9}
+.scale input:checked + label span{color:rgba(246,242,233,.75)}
+
+.choices{display:flex;flex-direction:column;gap:0}
+.choices .opt{border-top:1px solid var(--rule-soft)}
+.choices .opt:first-child{border-top:0}
+.choices input{position:absolute;opacity:0;width:0;height:0}
+.choices label{display:block;padding:11px 12px;cursor:pointer;font-size:15.5px;border-left:3px solid transparent}
+.choices label:hover{background:var(--card-2)}
+.choices input:checked + label{border-left-color:var(--slate);background:var(--card-2);font-weight:600}
+.choices input:focus-visible + label{outline:2px solid var(--slate-hi);outline-offset:-2px}
+
+/* ---------- Knöpfe ---------- */
+.btn{
+  font-family:var(--sans);font-size:15px;cursor:pointer;
+  border:1px solid var(--ink);background:var(--ink);color:var(--card-2);
+  padding:10px 20px;border-radius:2px;letter-spacing:.01em;
+}
+.btn:hover{background:#111820}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn.ghost:hover{background:var(--card-2);border-color:var(--ink)}
+.btn.slate{background:var(--slate);border-color:var(--slate);color:#F6F2E9}
+.btn.slate:hover{background:#2E4A58}
+.btn:focus-visible{outline:2px solid var(--slate-hi);outline-offset:2px}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:26px}
+.btnrow .spacer{flex:1}
+
+/* Werkzeugleiste unten */
+.toolbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:var(--card);border-top:1px solid var(--rule);
+}
+.toolbar-inner{max-width:820px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toolbar .btn{font-size:13.5px;padding:7px 14px}
+.toolbar .hint{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:.05em;margin-left:auto}
+
+/* ---------- Auswertung ---------- */
+.radarbox{background:var(--card-2);border:1px solid var(--rule-soft);padding:10px 0 4px;margin:8px 0 24px;text-align:center}
+.radarbox svg{max-width:100%;height:auto}
+.axis-line{stroke:var(--rule);stroke-width:1}
+.ring{fill:none;stroke:var(--rule-soft);stroke-width:1}
+.ring.outer{stroke:var(--rule)}
+.net{fill:rgba(57,90,107,.16);stroke:var(--slate);stroke-width:2;stroke-linejoin:round}
+.dot{fill:var(--slate)}
+.axlabel{font-family:var(--sans);font-size:10.5px;fill:var(--ink-soft)}
+.axnum{font-family:var(--mono);font-size:9px;fill:var(--ink-faint)}
+
+.bars{border-top:1px solid var(--rule-soft)}
+.brow{display:grid;grid-template-columns:26px 1fr 46px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule-soft)}
+.brow .rn{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+.brow .nm{font-size:14.5px}
+.brow .track{height:7px;background:var(--rule-soft);margin-top:5px;position:relative}
+.brow .track i{display:block;height:7px;transition:width .6s ease}
+.brow .val{font-family:var(--mono);font-size:13px;text-align:right}
+.lv1{background:var(--oxide)}.lv2{background:var(--ochre)}.lv3{background:var(--moss)}.lv4{background:var(--slate)}
+.tv1{color:var(--oxide)}.tv2{color:var(--ochre)}.tv3{color:var(--moss)}.tv4{color:var(--slate)}
+
+.verdict{border:1px solid var(--ink);padding:20px 22px;margin:24px 0}
+.verdict .vt{font-family:var(--serif);font-size:21px;margin-bottom:8px}
+.verdict p:last-child{margin-bottom:0}
+
+.gapbars{margin:18px 0}
+.gapbar{margin-bottom:12px}
+.gapbar .lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--ink-soft);margin-bottom:4px}
+.gapbar .track{height:16px;background:var(--rule-soft);position:relative}
+.gapbar .track i{display:block;height:16px}
+
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
+.stat .s{border:1px solid var(--rule);background:var(--card-2);padding:14px}
+.stat .s .n{font-family:var(--mono);font-size:26px;line-height:1;color:var(--slate)}
+.stat .s .n.warn{color:var(--oxide)}
+.stat .s .c{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.35}
+
+.baustelle{border-left:3px solid var(--ochre);padding:12px 16px;margin:14px 0;background:var(--card-2)}
+.baustelle h4{font-family:var(--serif);font-size:17px;margin:0 0 6px}
+.baustelle ul{margin:6px 0 0;padding-left:18px}
+.baustelle li{margin-bottom:4px;font-size:14.5px}
+
+table.plan{width:100%;border-collapse:collapse;margin:12px 0}
+table.plan th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);text-align:left;padding:0 8px 6px 0;font-weight:400}
+table.plan td{padding:5px 8px 5px 0;vertical-align:middle}
+table.plan td:first-child{font-size:14.5px;width:34%}
+
+.check{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--rule-soft);cursor:pointer}
+.check input{margin-top:5px;width:16px;height:16px;accent-color:var(--slate);flex:none}
+.check span{font-size:15px;line-height:1.45}
+
+.sig{border-top:1px solid var(--ink);margin-top:8px;padding-top:6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ink-faint)}
+
+/* Druck */
+#report{display:none}
+@media print{
+  body{background:#fff}
+  header.top,.timestrip,.timelabel,.progress,.toolbar,#stage,.noprint{display:none !important}
+  #report{display:block !important}
+  .wrap{padding:0;max-width:none}
+  .card{border:0;box-shadow:none;padding:0;margin:0}
+  h1{font-size:24px}
+  .brow{break-inside:avoid}
+}
+
+@media (max-width:640px){
+  .card{padding:22px 18px}
+  h1{font-size:27px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .stat{grid-template-columns:1fr}
+  .scale{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <p class="brand">Standortbestimmung <em>Deutsch A</em> · IGCSE 0505</p>
+    <div class="top-meta"><span id="saveState">nicht gesichert</span></div>
+  </div>
+  <div class="timestrip" title="Zeit bis zur Prüfung"><i id="tsFill" style="width:0%"></i><b id="tsNow" style="left:0%"></b></div>
+  <div class="timelabel"><span id="tsLeft">—</span><span id="tsRight">—</span></div>
+  <div class="progress"><span class="num" id="stepNum">01 / 16</span><span class="bar"><i id="progFill" style="width:6%"></i></span></div>
+</header>
+
+<div class="wrap">
+  <main id="stage"></main>
+  <div id="report"></div>
+</div>
+
+<div class="toolbar noprint">
+  <div class="toolbar-inner">
+    <button class="btn ghost" id="btnSave">Sichern</button>
+    <button class="btn ghost" id="btnExport">Datei exportieren</button>
+    <button class="btn ghost" id="btnImport">Datei importieren</button>
+    <input type="file" id="fileIn" accept="application/json,.json" style="display:none">
+    <span class="hint" id="tbHint">Sichern speichert im Browser. Exportieren speichert eine Datei.</span>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   1. INHALT
+   ========================================================= */
+
+const RN = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI"];
+
+const AREAS = [
+  {
+    id:"lesen_entnehmen", kurz:"Entnehmen", name:"Lesen: Informationen entnehmen",
+    intro:"Paper 1 beginnt hier. Wer den Text nicht genau liest, beantwortet eine Frage, die niemand gestellt hat.",
+    items:[
+      "Ich finde in einem längeren Text schnell die Stellen, die zu einer Frage gehören.",
+      "Ich unterscheide sicher zwischen dem, was im Text steht, und dem, was ich hineinlese.",
+      "Ich erkenne, welche Informationen eine Aufgabe verlangt – und welche ich weglassen muss.",
+      "Ich kann einen Text nach einmaligem Lesen in eigenen Worten wiedergeben."
+    ],
+    prompt:"Wann hast du zuletzt eine Aufgabe falsch beantwortet, weil du zu schnell gelesen hast?",
+    tipps:["Lies mit zwei Farben: Fakt und Wertung. Nichts anderes markieren.","Fasse jeden Sachtext, den du liest, danach in drei Sätzen zusammen – ohne noch einmal hinzusehen."]
+  },
+  {
+    id:"zwischen_zeilen", kurz:"Zwischen den Zeilen", name:"Lesen: zwischen den Zeilen",
+    intro:"Cambridge fragt selten, was passiert ist. Cambridge fragt, was jemand fühlt, will oder verschweigt.",
+    items:[
+      "Ich erschließe Gefühle, Absichten und Haltungen, auch wenn sie nicht ausgesprochen werden.",
+      "Ich erkenne, welche Wirkung ein Text auf mich haben soll – und warum.",
+      "Ich erkenne Ironie, Untertreibung und Doppeldeutigkeit.",
+      "Ich belege meine Deutung mit Textstellen, statt sie nur zu behaupten."
+    ],
+    prompt:"Notiere eine Stelle aus einem Text, die dich überrascht hat, als du sie zum zweiten Mal gelesen hast.",
+    tipps:["Notiere zu jeder Figur zwei Spalten: Was sagt sie – was meint sie?","Suche in jedem Text drei Stellen, an denen etwas bewusst nicht gesagt wird."]
+  },
+  {
+    id:"analyse", kurz:"Absicht & Adressat", name:"Analysieren: Absicht, Adressat, Haltung",
+    intro:"Jeder Text will etwas von jemandem. Wer das nicht benennen kann, beschreibt nur den Inhalt.",
+    items:[
+      "Ich bestimme Textsorte, Zielgruppe und Absicht eines Textes zuverlässig.",
+      "Ich beschreibe Ton und Register genau (sachlich, polemisch, vertraulich, ironisch …).",
+      "Ich erkenne Einseitigkeit, Wertung und verdeckte Meinung in Sachtexten.",
+      "Ich beurteile, ob eine Argumentation trägt oder Lücken hat."
+    ],
+    prompt:"Welchen Ton triffst du selbst am schlechtesten – und woran merkst du das?",
+    tipps:["Drei Fragen zu jedem Text: Wer schreibt? Für wen? Wozu?","Sammle Adjektive für Ton und Register. Zwanzig bis zu den Herbstferien."]
+  },
+  {
+    id:"mittel", kurz:"Sprachl. Mittel", name:"Sprachliche Mittel und ihre Wirkung",
+    intro:"Ein Mittel benennen bringt keinen Punkt. Die Wirkung erklären bringt den Punkt.",
+    items:[
+      "Ich benenne sprachliche Mittel sicher (Metapher, Vergleich, Personifikation, Wiederholung, Symbol …).",
+      "Ich erkläre die Wirkung eines Mittels, statt es nur zu benennen.",
+      "Ich sehe Satzbau, Satzlänge und Interpunktion als Gestaltungsmittel.",
+      "Ich beschreibe den Aufbau eines Textes (Anfang, Wendepunkt, Perspektivwechsel, Schluss)."
+    ],
+    prompt:"Schreibe hier einen einzigen Satz nach dem Muster: „Durch … wirkt der Text …, weil …“",
+    tipps:["Zu jedem Mittel ein Satz mit „Dadurch wirkt …“. Ohne diesen Satz zählt es nicht.","Lege eine Doppelseite an: Mittel – Beispiel – Wirkung. Sie wächst das ganze Jahr."]
+  },
+  {
+    id:"gelenkt", kurz:"Gelenktes Schreiben", name:"Gelenktes Schreiben (Paper 1)",
+    intro:"Rede, Bericht, Artikel, Brief, Tagebuch, Interview. Jede Sorte hat eigene Regeln – und du sollst sie im Kopf haben, nicht nachschlagen.",
+    items:[
+      "Ich schreibe Rede, Bericht, Artikel, Brief, Tagebuch und Interview formgerecht.",
+      "Ich wähle aus einer Vorlage gezielt die Informationen aus, die die Aufgabe verlangt.",
+      "Ich ändere Register und Ton, wenn sich der Adressat ändert.",
+      "Ich formuliere um, statt abzuschreiben."
+    ],
+    prompt:"Welche Textsorte hast du noch nie vollständig geschrieben?",
+    tipps:["Musterblatt pro Textsorte: Aufbau, Anrede, Ton, typische Wendungen.","Schreibe denselben Inhalt zweimal: einmal als Rede, einmal als Bericht. Vergleiche."]
+  },
+  {
+    id:"zusammenfassen", kurz:"Zusammenfassen", name:"Zusammenfassen",
+    intro:"Die häufigste Fehlerquelle: abschreiben statt zusammenfassen. Das erkennt jeder Prüfer sofort.",
+    items:[
+      "Ich erkenne die Kernaussagen eines Textes zuverlässig.",
+      "Ich lasse Beispiele, Wiederholungen und Nebensachen weg.",
+      "Ich fasse in eigenen Worten zusammen, ohne den Sinn zu verfälschen.",
+      "Ich halte die vorgegebene Länge ein."
+    ],
+    prompt:"Was fällt dir schwerer: das Wichtige finden oder das Unwichtige weglassen?",
+    tipps:["Text lesen, zuklappen, in 100 Wörtern wiedergeben. Mit Stoppuhr.","Streiche in deiner Zusammenfassung jedes Beispiel. Was bleibt, ist der Kern."]
+  },
+  {
+    id:"erzaehlen", kurz:"Erzählen", name:"Erzählendes und beschreibendes Schreiben (Paper 2)",
+    intro:"350 bis 450 Wörter, unter Zeitdruck, ohne Vorbereitung des Themas. Das gelingt nur, wenn du es oft geübt hast.",
+    items:[
+      "Ich plane eine Erzählung, bevor ich anfange (Ausgangslage, Konflikt, Wendepunkt, Schluss).",
+      "Ich erzeuge Spannung, statt Ereignisse aufzuzählen.",
+      "Ich beschreibe mit den Sinnen und mit genauen Wörtern – nicht mit „schön“ und „krass“.",
+      "Ich halte Erzählperspektive und Zeitform konsequent durch."
+    ],
+    prompt:"Wie lange planst du normalerweise, bevor du den ersten Satz schreibst?",
+    tipps:["Immer fünf Planungszeilen vor dem ersten Satz. Keine Ausnahme.","Ersetze in jedem fertigen Text zehn allgemeine Wörter durch genaue."]
+  },
+  {
+    id:"eroertern", kurz:"Erörtern", name:"Erörterndes und argumentierendes Schreiben (Paper 2)",
+    intro:"Meinung haben kann jeder. Gefragt ist eine Argumentation, die den Widerspruch aushält.",
+    items:[
+      "Ich entwickle eine These und begründe sie folgerichtig.",
+      "Ich nehme Gegenargumente ernst und entkräfte sie, statt sie zu übergehen.",
+      "Ich belege mit Beispielen, statt nur zu behaupten.",
+      "Ich schreibe einen Schluss, der mehr ist als eine Wiederholung der Einleitung."
+    ],
+    prompt:"Nenne eine Meinung, die du nicht teilst, aber gut begründen könntest.",
+    tipps:["Zu jeder These zuerst das stärkste Gegenargument aufschreiben, dann erst planen.","Hamburger-Methode konsequent: Behauptung – Begründung – Beispiel – Rückbindung."]
+  },
+  {
+    id:"richtigkeit", kurz:"Sprachrichtigkeit", name:"Sprachrichtigkeit: Grammatik, Syntax, Rechtschreibung",
+    intro:"Muttersprache heißt nicht fehlerfrei. Hier verlieren Muttersprachler die meisten Punkte – aus Gewohnheit.",
+    items:[
+      "Ich setze Kommas bei Nebensätzen und Infinitivgruppen sicher.",
+      "Ich beherrsche Groß- und Kleinschreibung, auch bei Nominalisierungen.",
+      "Ich baue komplexe Sätze korrekt (Wortstellung, Verbklammer, Bezüge).",
+      "Ich verwende Konjunktiv I und II richtig, besonders bei der Wiedergabe fremder Rede."
+    ],
+    prompt:"Welchen Fehler machst du seit Jahren immer wieder?",
+    tipps:["Fehlerheft am Tag der Rückgabe führen. Nicht später.","Eine Regel pro Monat, gezielt geübt. Nicht alles auf einmal."]
+  },
+  {
+    id:"wortschatz", kurz:"Wortschatz & Stil", name:"Wortschatz und Stil",
+    intro:"Der Unterschied zwischen einer 5 und einer 7 ist selten der Inhalt. Es ist die Genauigkeit der Wörter.",
+    items:[
+      "Ich verfüge über einen abstrakten Wortschatz, nicht nur über Alltagssprache.",
+      "Ich vermeide Wiederholungen durch treffende Synonyme.",
+      "Ich schreibe präzise statt vage („Sache“, „Ding“, „irgendwie“, „man“).",
+      "Ich passe meinen Stil bewusst an Textsorte und Adressat an."
+    ],
+    prompt:"Welche drei Wörter benutzt du zu oft?",
+    tipps:["Zehn neue Wörter pro Woche, jedes mit eigenem Beispielsatz.","Sammle Wendungen, nicht nur Wörter. Wendungen tragen den Stil."]
+  },
+  {
+    id:"haltung", kurz:"Arbeitshaltung", name:"Arbeitshaltung, Selbstorganisation, Prüfung",
+    intro:"Selbstorganisiertes Lernen heißt nicht: allein gelassen. Es heißt: Du führst Regie – und trägst die Folgen.",
+    items:[
+      "Ich plane meine Zeit, bevor ich schreibe, und halte den Plan ein.",
+      "Ich überarbeite meine Texte, bevor ich sie abgebe – nicht nur „durchlesen“.",
+      "Ich arbeite mit meinem Fehlerheft und wiederhole dieselben Fehler nicht.",
+      "Ich lese regelmäßig auf Deutsch, ohne dass jemand es verlangt."
+    ],
+    prompt:"Was hat dich im letzten Schuljahr am meisten Zeit gekostet, ohne dass du etwas gelernt hast?",
+    tipps:["Feste Termine im Kalender statt „wenn ich Zeit habe“.","Jeden Text zweimal: Fassung schreiben, einen Tag liegen lassen, überarbeiten."]
+  }
+];
+
+const SCALE = [
+  {v:1,t:"Noch nicht"},
+  {v:2,t:"Mit Hilfe"},
+  {v:3,t:"Meistens sicher"},
+  {v:4,t:"Sicher, auch in der Prüfung"}
+];
+
+const AUDIT = [
+  { id:"lesen", frage:"Wie viele Minuten liest du in einer normalen Woche auf Deutsch, ohne dass es Hausaufgabe ist?",
+    opts:[["Gar nicht",0],["Bis 30 Minuten",20],["30 bis 60 Minuten",45],["1 bis 2 Stunden",90],["Mehr als 2 Stunden",150]] },
+  { id:"heim", frage:"Wie viel Zeit arbeitest du pro Woche zu Hause für Deutsch A – über die Hausaufgaben hinaus?",
+    opts:[["Gar nicht",0],["Bis 30 Minuten",20],["30 bis 60 Minuten",45],["1 bis 2 Stunden",90],["Mehr als 2 Stunden",150]] },
+  { id:"texte", frage:"Wie viele vollständige Texte von 350 bis 450 Wörtern hast du im letzten Schuljahr geschrieben?",
+    opts:[["Keinen",0],["Ein bis zwei",1.5],["Drei bis fünf",4],["Sechs bis zehn",8],["Mehr als zehn",12]] },
+  { id:"vorbereitung", frage:"Wann beginnst du mit der Vorbereitung auf eine Klassenarbeit?",
+    opts:[["Am Abend davor",1],["Ein bis zwei Tage vorher",2],["Etwa eine Woche vorher",3],["Laufend, das ganze Halbjahr",4]] },
+  { id:"korrektur", frage:"Was machst du mit einem korrigierten Text?",
+    opts:[["Ich sehe die Note an und lege ihn weg",1],["Ich lese die Kommentare durch",2],["Ich schreibe die Fehler in mein Fehlerheft",3],["Ich schreibe Teile neu und lasse sie prüfen",4]] },
+  { id:"heft", frage:"Führst du ein Vokabel- oder Formulierungsheft?",
+    opts:[["Nein",1],["Angefangen und liegen gelassen",2],["Ja, unregelmäßig",3],["Ja, regelmäßig",4]] }
+];
+
+const MASSNAHMEN = [
+  "Ich führe ein Fehlerheft und trage am Tag der Rückgabe ein.",
+  "Ich führe ein Wortschatz- und Formulierungsheft: zehn Einträge pro Woche.",
+  "Ich schreibe pro Monat mindestens einen vollständigen Text von 350 bis 450 Wörtern.",
+  "Ich lese pro Woche mindestens 60 Minuten auf Deutsch, freiwillig.",
+  "Ich überarbeite jeden Text mit einem Tag Abstand, bevor ich ihn abgebe.",
+  "Ich lege für jede Textsorte ein Musterblatt an.",
+  "Ich arbeite mit den Bewertungskriterien von Cambridge, bevor ich abgebe.",
+  "Ich melde mich bei meinem Lernbegleiter, wenn ich zwei Wochen lang nicht weiterkomme."
+];
+
+const WOCHENTAGE = ["—","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+const MINUTEN = [0,15,20,30,45,60,75,90,120];
+const RHYTHMUS = [
+  {id:"r_lesen", was:"Lesen auf Deutsch"},
+  {id:"r_schreiben", was:"Schreiben und Überarbeiten"},
+  {id:"r_sprache", was:"Wortschatz, Grammatik, Fehlerarbeit"}
+];
+
+const ZIEL_MIN = 180;   // empfohlene Minuten pro Woche außerhalb des Unterrichts
+const ZIEL_TEXTE = 24;  // vollständige Kompositionen bis zur Prüfung
+
+/* =========================================================
+   2. ZUSTAND
+   ========================================================= */
+
+const KEY = "isn_standortbestimmung_d10_v1";
+const VERSION = 1;
+
+function leererState(){
+  return {
+    version:VERSION,
+    meta:{ name:"", klasse:"10", datum:heuteISO(), pruefung:"2028-05-08" },
+    ratings:{}, reflexionen:{}, audit:{}, ehrlichkeit:7,
+    plan:{ prio1:"", prio2:"", prio3:"", hindernis:"", gegenmittel:"", unterschrift:"", planDatum:heuteISO() },
+    rhythmus:{}, massnahmen:{},
+    step:0,
+    zuletzt:null
+  };
+}
+let S = leererState();
+
+function heuteISO(){ const d=new Date(); return d.toISOString().slice(0,10); }
+
+function speichern(still){
+  S.zuletzt = new Date().toISOString();
+  try{
+    localStorage.setItem(KEY, JSON.stringify(S));
+    setSaveState("gesichert " + new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}), "var(--moss)");
+  }catch(e){
+    setSaveState("Browser speichert nicht – bitte exportieren", "var(--oxide)");
+  }
+}
+function setSaveState(text, farbe){
+  const el = document.getElementById("saveState");
+  el.textContent = text; el.style.color = farbe || "var(--moss)";
+}
+function laden(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return false;
+    const obj = JSON.parse(raw);
+    if(obj && obj.version === VERSION){ S = Object.assign(leererState(), obj); return true; }
+  }catch(e){}
+  return false;
+}
+let saveTimer=null;
+function autosave(){
+  setSaveState("…", "var(--ink-faint)");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>speichern(true), 500);
+}
+
+/* =========================================================
+   3. RECHNEN
+   ========================================================= */
+
+function bereichsWert(area){
+  let sum=0, n=0;
+  area.items.forEach((_,i)=>{
+    const v = S.ratings[area.id+"_"+i];
+    if(v){ sum+=v; n++; }
+  });
+  return n ? {avg:sum/n, n:n, voll:n===area.items.length} : {avg:0,n:0,voll:false};
+}
+function alleWerte(){ return AREAS.map(a=>bereichsWert(a)); }
+function gesamtSchnitt(){
+  const w = alleWerte().filter(x=>x.n>0);
+  if(!w.length) return 0;
+  return w.reduce((s,x)=>s+x.avg,0)/w.length;
+}
+function offeneAussagen(){
+  let n=0;
+  AREAS.forEach(a=>a.items.forEach((_,i)=>{ if(!S.ratings[a.id+"_"+i]) n++; }));
+  return n;
+}
+function auditWert(id){
+  const q = AUDIT.find(a=>a.id===id);
+  const idx = S.audit[id];
+  if(idx===undefined || idx===null) return null;
+  return q.opts[idx][1];
+}
+function wochenMinuten(){
+  const a = auditWert("lesen"), b = auditWert("heim");
+  return (a===null?0:a) + (b===null?0:b);
+}
+function arbeitsHaltung(){
+  const ids=["vorbereitung","korrektur","heft"];
+  const vals = ids.map(auditWert).filter(v=>v!==null);
+  return vals.length ? vals.reduce((s,v)=>s+v,0)/vals.length : 0;
+}
+function wochenBisPruefung(){
+  const p = new Date(S.meta.pruefung || "2028-05-08");
+  const heute = new Date(); heute.setHours(0,0,0,0);
+  const ms = p - heute;
+  return Math.max(0, Math.round(ms/(1000*60*60*24*7)));
+}
+function arbeitsWochen(){ return Math.max(1, Math.round(wochenBisPruefung()*0.75)); }
+function planMinuten(){
+  let sum=0;
+  RHYTHMUS.forEach(r=>{ const m = S.rhythmus[r.id+"_min"]; if(m) sum += Number(m); });
+  return sum;
+}
+
+/* Zeitstreifen im Kopf: Anteil des Schuljahres/Zeitraums, der schon vorbei ist */
+function zeitstreifen(){
+  const p = new Date(S.meta.pruefung || "2028-05-08");
+  const heute = new Date();
+  // Startpunkt: 1. August des Jahres, in dem der aktuelle Kurs begonnen hat
+  let start = new Date(heute.getFullYear(), 7, 1);
+  if(heute.getMonth() < 7) start = new Date(heute.getFullYear()-1, 7, 1);
+  const ganz = Math.max(1, p - start);
+  const durch = Math.min(ganz, Math.max(0, heute - start));
+  const pct = Math.round(durch/ganz*100);
+  document.getElementById("tsFill").style.width = pct+"%";
+  document.getElementById("tsNow").style.left = pct+"%";
+  const w = wochenBisPruefung();
+  document.getElementById("tsLeft").textContent = "Verstrichen: " + pct + " %";
+  document.getElementById("tsRight").textContent = w + " Wochen bis zur Prüfung · " + arbeitsWochen() + " davon Schulwochen";
+}
+
+/* =========================================================
+   4. SCHRITTE
+   ========================================================= */
+
+function steps(){
+  const list = [{id:"start", render:renderStart}];
+  AREAS.forEach((a,i)=>list.push({id:"a"+i, render:()=>renderArea(a,i)}));
+  list.push({id:"audit", render:renderAudit});
+  list.push({id:"result", render:renderResult});
+  list.push({id:"plan", render:renderPlan});
+  list.push({id:"abgabe", render:renderAbgabe});
+  return list;
+}
+const STEPS = steps();
+
+function go(n){
+  S.step = Math.max(0, Math.min(STEPS.length-1, n));
+  autosave(); render();
+  window.scrollTo({top:0, behavior:"instant"});
+}
+
+function render(){
+  if(!(S.step >= 0 && S.step < STEPS.length)) S.step = 0;
+  const st = STEPS[S.step];
+  const stage = document.getElementById("stage");
+  stage.innerHTML = "";
+  stage.appendChild(st.render());
+  document.getElementById("progFill").style.width = ((S.step+1)/STEPS.length*100)+"%";
+  document.getElementById("stepNum").textContent =
+    String(S.step+1).padStart(2,"0") + " / " + String(STEPS.length).padStart(2,"0");
+  zeitstreifen();
+}
+
+function el(html){ const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstElementChild; }
+function card(inner){ const c=document.createElement("section"); c.className="card"; c.innerHTML=inner; return c; }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+
+function nav(c, zurueck, weiter, weiterText){
+  const row = el('<div class="btnrow noprint"></div>');
+  if(zurueck!==null){
+    const b = el('<button class="btn ghost">Zurück</button>');
+    b.onclick = ()=>go(zurueck); row.appendChild(b);
+  }
+  row.appendChild(el('<span class="spacer"></span>'));
+  if(weiter!==null){
+    const b = el('<button class="btn">'+(weiterText||"Weiter")+'</button>');
+    b.onclick = ()=>go(weiter); row.appendChild(b);
+  }
+  c.appendChild(row);
+}
+
+/* ---------- Startseite ---------- */
+function renderStart(){
+  const c = card(`
+    <p class="eyebrow">Klasse 10 · Schuljahr 2026/27 · Erste Woche</p>
+    <h1>Wo stehst du – und wie viel Zeit hast du noch?</h1>
+    <p class="lead">Diese Standortbestimmung dauert etwa 25 Minuten. Sie ist keine Prüfung und wird nicht benotet.
+    Sie beantwortet zwei Fragen: Was kannst du im Fach Deutsch A schon – und reicht die Zeit, die du dafür einsetzt?</p>
+
+    <div class="klartext">
+      <div class="kt-title">Klartext</div>
+      <p>Deutsch A ist kein Fach, das man beherrscht, weil man Deutsch spricht. Die Muttersprache ist nur das Werkzeug.
+      Ob du damit etwas bauen kannst, ist eine andere Frage – und genau diese Frage stellt Cambridge in Paper 1 und Paper 2.</p>
+      <p>Geprüft werden rund einhundert einzelne Fähigkeiten in dreizehn Bereichen. Keine davon lernt man in der Woche vor der Prüfung.</p>
+    </div>
+
+    <h3>So funktioniert es</h3>
+    <p class="muted small">Elf Kompetenzfelder mit je vier Aussagen. Du bewertest jede Aussage auf einer Skala von vier Stufen
+    und kannst zu jedem Feld etwas notieren. Danach folgt ein Zeitcheck, deine Auswertung mit Profilgrafik und dein Arbeitsplan.
+    Am Ende exportierst du eine Datei und gibst sie ab.</p>
+
+    <div class="note">
+      <p class="small"><strong>Unterbrechung ist eingeplant.</strong> Mit <em>Sichern</em> bleibt alles in diesem Browser gespeichert.
+      Mit <em>Datei exportieren</em> bekommst du eine Datei, die du später über <em>Datei importieren</em> wieder öffnen kannst –
+      auch an einem anderen Gerät.</p>
+    </div>
+
+    <hr class="rule">
+    <div class="grid2">
+      <div class="field"><label class="f" for="mName">Name</label><input type="text" id="mName" value="${esc(S.meta.name)}" placeholder="Vor- und Nachname"></div>
+      <div class="field"><label class="f" for="mKlasse">Klasse</label><input type="text" id="mKlasse" value="${esc(S.meta.klasse)}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label class="f" for="mDatum">Heutiges Datum</label><input type="date" id="mDatum" value="${esc(S.meta.datum)}"></div>
+      <div class="field"><label class="f" for="mPruefung">Termin der schriftlichen Prüfung</label><input type="date" id="mPruefung" value="${esc(S.meta.pruefung)}"><span class="small muted">Ändere das Datum, wenn dein Termin abweicht.</span></div>
+    </div>
+  `);
+  c.querySelector("#mName").oninput = e=>{S.meta.name=e.target.value; autosave();};
+  c.querySelector("#mKlasse").oninput = e=>{S.meta.klasse=e.target.value; autosave();};
+  c.querySelector("#mDatum").onchange = e=>{S.meta.datum=e.target.value; autosave();};
+  c.querySelector("#mPruefung").onchange = e=>{S.meta.pruefung=e.target.value; autosave(); zeitstreifen();};
+  nav(c, null, 1, "Anfangen");
+  return c;
+}
+
+/* ---------- Kompetenzfeld ---------- */
+function renderArea(a, idx){
+  const c = card(`
+    <div class="numeral"><span>Feld ${RN[idx]} von ${RN[AREAS.length-1]}</span><span>${esc(a.kurz)}</span></div>
+    <h2>${esc(a.name)}</h2>
+    <p class="muted">${esc(a.intro)}</p>
+    <div id="stmts"></div>
+    <hr class="rule">
+    <label class="f" for="refl_${a.id}">${esc(a.prompt)} <span class="muted">(freiwillig)</span></label>
+    <textarea id="refl_${a.id}" placeholder="Ein oder zwei Sätze genügen.">${esc(S.reflexionen[a.id]||"")}</textarea>
+  `);
+
+  const box = c.querySelector("#stmts");
+  a.items.forEach((txt,i)=>{
+    const key = a.id+"_"+i;
+    const s = el('<div class="stmt"></div>');
+    s.appendChild(el('<div class="txt"><b>'+String(i+1).padStart(2,"0")+'</b>'+esc(txt)+'</div>'));
+    const sc = el('<div class="scale"></div>');
+    SCALE.forEach(opt=>{
+      const id = "r_"+key+"_"+opt.v;
+      const inp = document.createElement("input");
+      inp.type="radio"; inp.name=key; inp.id=id; inp.value=opt.v;
+      if(S.ratings[key]===opt.v) inp.checked=true;
+      inp.onchange = ()=>{ S.ratings[key]=opt.v; autosave(); };
+      const lab = el('<label for="'+id+'"><span>'+opt.v+'</span>'+opt.t+'</label>');
+      sc.appendChild(inp); sc.appendChild(lab);
+    });
+    s.appendChild(sc);
+    box.appendChild(s);
+  });
+
+  c.querySelector("#refl_"+a.id).oninput = e=>{ S.reflexionen[a.id]=e.target.value; autosave(); };
+  nav(c, S.step-1, S.step+1);
+  return c;
+}
+
+/* ---------- Zeitcheck ---------- */
+function renderAudit(){
+  const c = card(`
+    <p class="eyebrow">Zeitcheck</p>
+    <h2>Was tust du wirklich – nicht, was du vorhast</h2>
+    <p class="muted">Die folgenden sechs Fragen entscheiden über deine Auswertung stärker als alles davor.
+    Antworte so, wie die letzten Monate tatsächlich waren.</p>
+    <div id="auditBox"></div>
+    <hr class="rule">
+    <label class="f" for="ehrl">Wie ehrlich war deine Selbsteinschätzung eben? <span class="muted">1 = geschönt, 10 = schonungslos</span></label>
+    <input type="range" id="ehrl" min="1" max="10" step="1" value="${S.ehrlichkeit}" style="width:100%">
+    <p class="small muted" id="ehrlOut">Aktuell: ${S.ehrlichkeit}</p>
+  `);
+  const box = c.querySelector("#auditBox");
+  AUDIT.forEach((q,qi)=>{
+    const w = el('<div style="padding:18px 0;border-top:1px solid var(--rule-soft)"></div>');
+    w.appendChild(el('<div class="txt" style="font-size:16.5px;margin-bottom:10px"><b style="font-family:var(--mono);font-size:12px;color:var(--ink-faint);margin-right:10px">'+String(qi+1).padStart(2,"0")+'</b>'+esc(q.frage)+'</div>'));
+    const ch = el('<div class="choices"></div>');
+    q.opts.forEach((o,oi)=>{
+      const id = "au_"+q.id+"_"+oi;
+      const inp = document.createElement("input");
+      inp.type="radio"; inp.name="au_"+q.id; inp.id=id;
+      if(S.audit[q.id]===oi) inp.checked=true;
+      inp.onchange = ()=>{ S.audit[q.id]=oi; autosave(); };
+      const wrap = el('<div class="opt"></div>');
+      wrap.appendChild(inp);
+      wrap.appendChild(el('<label for="'+id+'">'+esc(o[0])+'</label>'));
+      ch.appendChild(wrap);
+    });
+    w.appendChild(ch);
+    box.appendChild(w);
+  });
+  const sl = c.querySelector("#ehrl");
+  sl.oninput = e=>{ S.ehrlichkeit=Number(e.target.value); c.querySelector("#ehrlOut").textContent="Aktuell: "+S.ehrlichkeit; autosave(); };
+  nav(c, S.step-1, S.step+1, "Auswertung anzeigen");
+  return c;
+}
+
+/* ---------- Netzdiagramm ---------- */
+function radarSVG(){
+  const W=560,H=520,cx=280,cy=250,R=152,LR=R+26;
+  const werte = alleWerte();
+  const n = AREAS.length;
+  const pt=(i,r)=>{
+    const a = -Math.PI/2 + i*2*Math.PI/n;
+    return [cx + r*Math.cos(a), cy + r*Math.sin(a)];
+  };
+  let s = '<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="Kompetenzprofil als Netzdiagramm">';
+  for(let ring=1; ring<=4; ring++){
+    const r = R*ring/4;
+    let pts=[];
+    for(let i=0;i<n;i++){ const p=pt(i,r); pts.push(p[0].toFixed(1)+","+p[1].toFixed(1)); }
+    s += '<polygon class="ring'+(ring===4?" outer":"")+'" points="'+pts.join(" ")+'"/>';
+  }
+  for(let i=0;i<n;i++){
+    const p = pt(i,R);
+    s += '<line class="axis-line" x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'"/>';
+  }
+  for(let ring=1; ring<=4; ring++){
+    s += '<text class="axnum" x="'+(cx+4)+'" y="'+(cy - R*ring/4 + 3)+'">'+ring+'</text>';
+  }
+  const gefuellt = werte.filter(w=>w.n>0).length;
+  if(gefuellt >= 3){
+    let pts=[], dots="";
+    for(let i=0;i<n;i++){
+      const v = werte[i].n>0 ? werte[i].avg : 0.6;
+      const p = pt(i, R*v/4);
+      pts.push(p[0].toFixed(1)+","+p[1].toFixed(1));
+      if(werte[i].n>0) dots += '<circle class="dot" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3"/>';
+    }
+    s += '<polygon class="net" points="'+pts.join(" ")+'"/>' + dots;
+  }
+  for(let i=0;i<n;i++){
+    const a = -Math.PI/2 + i*2*Math.PI/n;
+    const x = cx + LR*Math.cos(a), y = cy + LR*Math.sin(a);
+    let anchor = "middle";
+    if(Math.cos(a) > 0.25) anchor="start";
+    else if(Math.cos(a) < -0.25) anchor="end";
+    s += '<text class="axlabel" text-anchor="'+anchor+'" x="'+x.toFixed(1)+'" y="'+(y+3).toFixed(1)+'">'+esc(AREAS[i].kurz)+'</text>';
+  }
+  s += '</svg>';
+  return s;
+}
+
+function stufeKlasse(v){
+  if(v < 1.75) return 1;
+  if(v < 2.5) return 2;
+  if(v < 3.25) return 3;
+  return 4;
+}
+
+function barsHTML(){
+  const werte = alleWerte();
+  let s = '<div class="bars">';
+  AREAS.forEach((a,i)=>{
+    const w = werte[i];
+    const k = w.n>0 ? stufeKlasse(w.avg) : 0;
+    const pct = w.n>0 ? (w.avg/4*100) : 0;
+    s += '<div class="brow">'
+       + '<span class="rn">'+RN[i]+'</span>'
+       + '<span><span class="nm">'+esc(a.name)+'</span><span class="track"><i class="lv'+(k||1)+'" style="width:'+pct.toFixed(1)+'%"></i></span></span>'
+       + '<span class="val tv'+(k||1)+'">'+(w.n>0 ? w.avg.toFixed(1) : "–")+'</span>'
+       + '</div>';
+  });
+  s += '</div>';
+  return s;
+}
+
+function urteil(schnitt, minuten, haltung){
+  if(schnitt === 0) return {t:"Noch keine Auswertung möglich", p:"Du hast keine Aussage bewertet. Geh zurück und beantworte wenigstens ein Feld."};
+  if(schnitt < 2.0) return {t:"Du stehst am Anfang.",
+    p:"Das ist keine Schande – im zweiten Jahr der Sekundarstufe wäre es sogar normal. In Klasse 10 bedeutet es: Du kannst dieses Jahr nicht mitlaufen. Du brauchst einen Plan, feste Zeiten und regelmäßige Rückmeldung. Wenn du jetzt anfängst, reicht die Zeit. Wenn du im Januar anfängst, nicht mehr."};
+  if(schnitt < 2.6) return {t:"Du kommst durch, solange nichts Schweres kommt.",
+    p:"In der Prüfung kommt etwas Schweres: ein unbekannter Text, ein Thema, das dich nicht interessiert, und 45 Minuten für eine Komposition. Dein Profil trägt bei bekannten Aufgaben, aber es hat zu wenig Reserve. Die Reserve baust du nur durch Menge auf – gelesene Texte, geschriebene Texte, überarbeitete Texte."};
+  if(schnitt < 3.25) return {t:"Solide Grundlage. Der Rest entscheidet sich jetzt.",
+    p:"Zwischen solide und stark liegen keine neuen Themen, sondern Genauigkeit: die Wirkung erklären statt das Mittel benennen, umformulieren statt abschreiben, überarbeiten statt abgeben. Das sind Gewohnheiten, und Gewohnheiten entstehen in den nächsten drei Monaten oder gar nicht."};
+  return {t:"Du schätzt dich stark ein.",
+    p:"Dann ist deine Aufgabe in diesem Jahr, es zu belegen – und die zwei oder drei Felder zu schließen, die du selbst niedriger bewertet hast. Wer sich hoch einschätzt und wenig arbeitet, erlebt die erste Klausur als Unfall. Sie ist keiner."};
+}
+
+function renderResult(){
+  const schnitt = gesamtSchnitt();
+  const min = wochenMinuten();
+  const haltung = arbeitsHaltung();
+  const wochen = wochenBisPruefung();
+  const aw = arbeitsWochen();
+  const offen = offeneAussagen();
+  const texte = auditWert("texte");
+  const u = urteil(schnitt, min, haltung);
+
+  const werte = alleWerte();
+  const rang = AREAS.map((a,i)=>({a:a, i:i, v:werte[i].n>0?werte[i].avg:99}))
+                    .filter(x=>x.v<99).sort((x,y)=>x.v-y.v);
+  const schwach = rang.slice(0,3);
+  const stark = rang.slice(-3).reverse();
+
+  const deinAnteil = Math.min(100, Math.round(min/ZIEL_MIN*100));
+  const stundenNoetig = Math.round(aw*ZIEL_MIN/60);
+  const stundenDein = Math.round(aw*min/60);
+  const monate = Math.max(1, Math.round(wochen/4.33));
+  const texteProMonat = (ZIEL_TEXTE/monate);
+
+  const c = card(`
+    <p class="eyebrow">Auswertung · ${esc(S.meta.name||"ohne Namen")} · ${esc(S.meta.datum)}</p>
+    <h2>Dein Profil</h2>
+    ${offen>0 ? '<p class="small" style="color:var(--oxide)">'+offen+' Aussagen sind unbeantwortet. Sie fehlen in der Auswertung.</p>' : ''}
+    <div class="radarbox">${radarSVG()}</div>
+    ${barsHTML()}
+    <p class="small muted" style="margin-top:10px">Skala: 1 = noch nicht · 2 = mit Hilfe · 3 = meistens sicher · 4 = sicher, auch in der Prüfung. Das ist keine Note, sondern dein eigener Blick auf dich.</p>
+
+    <div class="verdict">
+      <div class="vt">${esc(u.t)}</div>
+      <p>${esc(u.p)}</p>
+      <p class="small muted" style="margin-top:10px">Gesamtschnitt deiner Selbsteinschätzung: <strong style="font-family:var(--mono)">${schnitt.toFixed(2)}</strong> von 4,00</p>
+    </div>
+
+    <h3>Der Zeitabgleich</h3>
+    <div class="stat">
+      <div class="s"><div class="n">${wochen}</div><div class="c">Wochen bis zur schriftlichen Prüfung</div></div>
+      <div class="s"><div class="n">${aw}</div><div class="c">davon Schulwochen, ohne Ferien gerechnet</div></div>
+      <div class="s"><div class="n${min<90?" warn":""}">${min}</div><div class="c">Minuten pro Woche investierst du zurzeit</div></div>
+    </div>
+
+    <div class="gapbars">
+      <div class="gapbar">
+        <div class="lbl"><span>Deine Zeit</span><span>${min} Min / Woche</span></div>
+        <div class="track"><i class="${min<90?'lv1':(min<150?'lv2':'lv3')}" style="width:${deinAnteil}%"></i></div>
+      </div>
+      <div class="gapbar">
+        <div class="lbl"><span>Nötig für Deutsch A</span><span>${ZIEL_MIN} Min / Woche</span></div>
+        <div class="track"><i class="lv4" style="width:100%"></i></div>
+      </div>
+    </div>
+
+    <div class="klartext">
+      <div class="kt-title">Was das in Zahlen heißt</div>
+      <p>Bei ${ZIEL_MIN} Minuten pro Woche kommen bis zur Prüfung rund <strong>${stundenNoetig} Stunden</strong> eigene Arbeit zusammen.
+      Bei deinem jetzigen Tempo sind es <strong>${stundenDein} Stunden</strong>. Die Differenz beträgt <strong>${Math.max(0,stundenNoetig-stundenDein)} Stunden</strong> –
+      und diese Stunden lassen sich am Ende nicht nachholen, weil am Ende alle Fächer gleichzeitig fällig sind.</p>
+      <p>Für Paper 2 solltest du bis zur Prüfung etwa <strong>${ZIEL_TEXTE} vollständige Texte</strong> von 350 bis 450 Wörtern geschrieben haben.
+      Bei ${monate} verbleibenden Monaten sind das <strong>${texteProMonat.toFixed(1)} Texte pro Monat</strong>.
+      ${texte!==null ? "Im letzten Schuljahr waren es bei dir etwa <strong>"+texte+"</strong>." : ""}</p>
+    </div>
+
+    <div id="warnBox"></div>
+
+    <h3>Deine drei Baustellen</h3>
+    <p class="small muted">Nach deiner eigenen Einschätzung die drei niedrigsten Felder. Genau hier beginnst du – nicht bei dem, was dir Spaß macht.</p>
+    <div id="baustellen"></div>
+
+    <h3>Worauf du aufbauen kannst</h3>
+    <p class="small">${stark.length ? stark.map(x=>esc(x.a.name)+" ("+x.v.toFixed(1)+")").join(" · ") : "–"}</p>
+  `);
+
+  // Widerspruchs-Warnungen
+  const warn = c.querySelector("#warnBox");
+  const hinweise = [];
+  if(schnitt >= 3.0 && min < 60){
+    hinweise.push("Deine Selbsteinschätzung ist hoch, deine Arbeitszeit ist niedrig. Eine der beiden Zahlen stimmt nicht. Erfahrungsgemäß ist es die erste.");
+  }
+  if(haltung > 0 && haltung < 2.2){
+    hinweise.push("Deine Antworten zur Arbeitsweise zeigen ein Muster: kurzfristig, reaktiv, ohne Nacharbeit. Das funktioniert bis Klasse 9 und danach nicht mehr.");
+  }
+  if(texte !== null && texte <= 2){
+    hinweise.push("Du hast im letzten Schuljahr höchstens zwei vollständige Texte geschrieben. Paper 2 verlangt zwei davon an einem Vormittag, unter Zeitdruck, zu unbekannten Themen.");
+  }
+  if(S.ehrlichkeit <= 4){
+    hinweise.push("Du hast selbst angegeben, dass deine Einschätzung eher geschönt war. Dann gilt dieses Profil als Obergrenze, nicht als Bild deines Könnens.");
+  }
+  if(hinweise.length){
+    let h = '<div class="note" style="border-left-color:var(--oxide);background:linear-gradient(90deg,rgba(140,59,46,.08),rgba(140,59,46,0))"><div class="kt-title" style="color:var(--oxide);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px">Widerspruch im Profil</div>';
+    hinweise.forEach(x=>h += '<p class="small">'+esc(x)+'</p>');
+    h += '</div>';
+    warn.appendChild(el(h));
+  }
+
+  const bs = c.querySelector("#baustellen");
+  if(!schwach.length){ bs.appendChild(el('<p class="small muted">Keine Bewertung vorhanden.</p>')); }
+  schwach.forEach(x=>{
+    bs.appendChild(el(
+      '<div class="baustelle"><h4>'+RN[x.i]+' · '+esc(x.a.name)+' <span style="font-family:var(--mono);font-size:13px;color:var(--ink-faint)">'+x.v.toFixed(1)+'</span></h4>'
+      + '<ul>'+x.a.tipps.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul></div>'
+    ));
+  });
+
+  nav(c, S.step-1, S.step+1, "Zum Arbeitsplan");
+  return c;
+}
+
+/* ---------- Plan ---------- */
+function renderPlan(){
+  const werte = alleWerte();
+  const rang = AREAS.map((a,i)=>({a:a,v:werte[i].n>0?werte[i].avg:99})).filter(x=>x.v<99).sort((x,y)=>x.v-y.v);
+  for(let i=0;i<3;i++){
+    const k = "prio"+(i+1);
+    if(!S.plan[k] && rang[i]) S.plan[k] = rang[i].a.name + ": ";
+  }
+
+  const c = card(`
+    <p class="eyebrow">Arbeitsplan · Schuljahr 2026/27</p>
+    <h2>Was du ab Montag anders machst</h2>
+    <p class="muted">Ein Plan, den du nicht in den Kalender einträgst, ist ein Wunsch. Trag ihn ein.</p>
+
+    <h3>Meine drei Prioritäten</h3>
+    <p class="small muted">Vorgeschlagen sind deine drei niedrigsten Felder. Ergänze, was du dort konkret tun willst.</p>
+    <div class="field"><label class="f" for="p1">Priorität 1</label><input type="text" id="p1" value="${esc(S.plan.prio1)}"></div>
+    <div class="field"><label class="f" for="p2">Priorität 2</label><input type="text" id="p2" value="${esc(S.plan.prio2)}"></div>
+    <div class="field"><label class="f" for="p3">Priorität 3</label><input type="text" id="p3" value="${esc(S.plan.prio3)}"></div>
+
+    <hr class="rule">
+    <h3>Mein Wochenrhythmus</h3>
+    <p class="small muted">Feste Tage, feste Dauer. Ziel sind ${ZIEL_MIN} Minuten pro Woche außerhalb des Unterrichts.</p>
+    <table class="plan"><thead><tr><th>Was</th><th>Wann</th><th>Wie lange</th></tr></thead><tbody id="rhy"></tbody></table>
+    <p class="small" id="rhySum"></p>
+
+    <hr class="rule">
+    <h3>Meine Maßnahmen</h3>
+    <div id="mass"></div>
+
+    <hr class="rule">
+    <h3>Ehrlich gerechnet</h3>
+    <div class="field"><label class="f" for="hind">Woran wird dieser Plan scheitern? Nenne das Wahrscheinlichste.</label><textarea id="hind">${esc(S.plan.hindernis)}</textarea></div>
+    <div class="field"><label class="f" for="gegen">Und was tust du dann?</label><textarea id="gegen">${esc(S.plan.gegenmittel)}</textarea></div>
+
+    <hr class="rule">
+    <div class="grid2">
+      <div class="field"><label class="f" for="sig">Ich nehme mir das vor (Name eintippen)</label><input type="text" id="sig" value="${esc(S.plan.unterschrift)}"></div>
+      <div class="field"><label class="f" for="pdatum">Datum</label><input type="date" id="pdatum" value="${esc(S.plan.planDatum)}"></div>
+    </div>
+  `);
+
+  ["p1","p2","p3"].forEach((id,i)=>{
+    const inp = c.querySelector("#"+id);
+    inp.oninput = e=>{ S.plan["prio"+(i+1)] = e.target.value; autosave(); };
+  });
+
+  const tb = c.querySelector("#rhy");
+  function summe(){
+    const m = planMinuten();
+    const out = c.querySelector("#rhySum");
+    if(m >= ZIEL_MIN) out.innerHTML = '<span style="color:var(--moss)">Geplant: '+m+' Minuten pro Woche. Das trägt.</span>';
+    else if(m > 0) out.innerHTML = '<span style="color:var(--oxide)">Geplant: '+m+' Minuten pro Woche. Es fehlen '+(ZIEL_MIN-m)+' Minuten auf das Ziel.</span>';
+    else out.innerHTML = '<span class="muted">Noch nichts geplant.</span>';
+  }
+  RHYTHMUS.forEach(r=>{
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td"); td1.textContent = r.was;
+    const td2 = document.createElement("td");
+    const sel = document.createElement("select");
+    WOCHENTAGE.forEach(d=>{ const o=document.createElement("option"); o.value=d; o.textContent=d; sel.appendChild(o); });
+    sel.value = S.rhythmus[r.id+"_tag"] || "—";
+    sel.onchange = e=>{ S.rhythmus[r.id+"_tag"]=e.target.value; autosave(); };
+    td2.appendChild(sel);
+    const td3 = document.createElement("td");
+    const sel2 = document.createElement("select");
+    MINUTEN.forEach(m=>{ const o=document.createElement("option"); o.value=m; o.textContent = m===0?"—":(m+" Min"); sel2.appendChild(o); });
+    sel2.value = S.rhythmus[r.id+"_min"] || 0;
+    sel2.onchange = e=>{ S.rhythmus[r.id+"_min"]=Number(e.target.value); autosave(); summe(); };
+    td3.appendChild(sel2);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+    tb.appendChild(tr);
+  });
+  summe();
+
+  const mb = c.querySelector("#mass");
+  MASSNAHMEN.forEach((m,i)=>{
+    const lab = document.createElement("label"); lab.className="check";
+    const inp = document.createElement("input"); inp.type="checkbox";
+    inp.checked = !!S.massnahmen["m"+i];
+    inp.onchange = e=>{ S.massnahmen["m"+i]=e.target.checked; autosave(); };
+    const sp = document.createElement("span"); sp.textContent = m;
+    lab.appendChild(inp); lab.appendChild(sp); mb.appendChild(lab);
+  });
+
+  c.querySelector("#hind").oninput = e=>{ S.plan.hindernis=e.target.value; autosave(); };
+  c.querySelector("#gegen").oninput = e=>{ S.plan.gegenmittel=e.target.value; autosave(); };
+  c.querySelector("#sig").oninput = e=>{ S.plan.unterschrift=e.target.value; autosave(); };
+  c.querySelector("#pdatum").onchange = e=>{ S.plan.planDatum=e.target.value; autosave(); };
+
+  nav(c, S.step-1, S.step+1, "Fertigstellen");
+  return c;
+}
+
+/* ---------- Abgabe ---------- */
+function renderAbgabe(){
+  const offen = offeneAussagen();
+  const c = card(`
+    <p class="eyebrow">Abgabe</p>
+    <h2>Fertig. Jetzt sichern und abgeben.</h2>
+    ${offen>0 ? '<p class="small" style="color:var(--oxide)">Hinweis: '+offen+' Aussagen sind noch unbeantwortet.</p>' : '<p class="small" style="color:var(--moss)">Alle Aussagen beantwortet.</p>'}
+    <p>Deine Standortbestimmung gehört dir. Herr Kress bekommt eine Kopie, damit die Rückmeldung im ersten Halbjahr zu dem passt, was du hier aufgeschrieben hast.</p>
+
+    <h3>1 · Datei exportieren</h3>
+    <p class="small muted">Erzeugt eine Datei mit allen Antworten. Diese Datei gibst du ab. Mit derselben Datei kannst du später weiterarbeiten.</p>
+    <div class="btnrow" style="margin-top:8px"><button class="btn slate" id="exp2">Datei exportieren</button></div>
+
+    <h3>2 · Bericht ausdrucken oder als PDF sichern</h3>
+    <p class="small muted">Öffnet den Druckdialog. Wähle „Als PDF sichern“, wenn du eine lesbare Fassung möchtest.</p>
+    <div class="btnrow" style="margin-top:8px"><button class="btn ghost" id="prt">Bericht drucken</button></div>
+
+    <hr class="rule">
+    <div class="note">
+      <p class="small">Sieh dir dieses Blatt im Dezember noch einmal an. Die Frage ist dann nicht, ob du besser geworden bist,
+      sondern ob du das getan hast, was hier steht.</p>
+    </div>
+
+    <div class="btnrow">
+      <button class="btn ghost" id="back">Zurück</button>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="reset">Alles löschen und neu beginnen</button>
+    </div>
+  `);
+  c.querySelector("#exp2").onclick = exportieren;
+  c.querySelector("#prt").onclick = drucken;
+  c.querySelector("#back").onclick = ()=>go(S.step-1);
+  c.querySelector("#reset").onclick = ()=>{
+    if(confirm("Wirklich alles löschen? Exportiere vorher deine Datei, sonst ist alles weg.")){
+      try{ localStorage.removeItem(KEY); }catch(e){}
+      S = leererState(); render();
+    }
+  };
+  return c;
+}
+
+/* =========================================================
+   5. EXPORT / IMPORT / DRUCK
+   ========================================================= */
+
+function dateiname(ext){
+  const n = (S.meta.name||"ohne_Name").trim().replace(/[^\wÄÖÜäöüß\- ]/g,"").replace(/\s+/g,"_");
+  return "Standortbestimmung_DeutschA_"+n+"_"+(S.meta.datum||heuteISO())+"."+ext;
+}
+
+function exportieren(){
+  speichern();
+  const blob = new Blob([JSON.stringify(S,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url; a.download=dateiname("json");
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  setSaveState("Datei exportiert", "var(--slate)");
+}
+
+function importieren(file){
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const obj = JSON.parse(r.result);
+      if(!obj || typeof obj !== "object" || !obj.meta) throw new Error("Format");
+      S = Object.assign(leererState(), obj);
+      S.version = VERSION;
+      speichern(); render();
+      alert("Datei geladen. Du bist bei Schritt "+(S.step+1)+".");
+    }catch(e){
+      alert("Diese Datei lässt sich nicht lesen. Wähle die Datei, die du aus diesem Programm exportiert hast (Endung .json).");
+    }
+  };
+  r.onerror = ()=>alert("Die Datei konnte nicht gelesen werden. Versuche es noch einmal.");
+  r.readAsText(file);
+}
+
+function drucken(){
+  const werte = alleWerte();
+  const schnitt = gesamtSchnitt();
+  const min = wochenMinuten();
+  const u = urteil(schnitt, min, arbeitsHaltung());
+  const rang = AREAS.map((a,i)=>({a:a,v:werte[i].n>0?werte[i].avg:99})).filter(x=>x.v<99).sort((x,y)=>x.v-y.v);
+
+  let h = '<div class="card">';
+  h += '<p class="eyebrow">Standortbestimmung Deutsch A · IGCSE 0505 · Klasse 10</p>';
+  h += '<h1>'+esc(S.meta.name||"ohne Namen")+' · Klasse '+esc(S.meta.klasse)+' · '+esc(S.meta.datum)+'</h1>';
+  h += '<div class="radarbox">'+radarSVG()+'</div>';
+  h += barsHTML();
+  h += '<div class="verdict"><div class="vt">'+esc(u.t)+'</div><p>'+esc(u.p)+'</p>'
+     + '<p class="small">Gesamtschnitt: '+schnitt.toFixed(2)+' von 4,00 · Selbst eingeschätzte Ehrlichkeit: '+S.ehrlichkeit+'/10</p></div>';
+
+  h += '<h3>Zeitcheck</h3><ul class="small">';
+  AUDIT.forEach(q=>{
+    const idx = S.audit[q.id];
+    h += '<li>'+esc(q.frage)+' <strong>'+(idx===undefined?"—":esc(q.opts[idx][0]))+'</strong></li>';
+  });
+  h += '</ul>';
+  h += '<p class="small">Eingesetzte Zeit: '+min+' Minuten pro Woche · Zielwert: '+ZIEL_MIN+' Minuten · Wochen bis zur Prüfung: '+wochenBisPruefung()+'</p>';
+
+  h += '<h3>Drei Baustellen</h3><ol class="small">';
+  rang.slice(0,3).forEach(x=>h += '<li>'+esc(x.a.name)+' ('+x.v.toFixed(1)+')</li>');
+  h += '</ol>';
+
+  h += '<h3>Prioritäten</h3><ol class="small">';
+  ["prio1","prio2","prio3"].forEach(k=>{ if(S.plan[k]) h += '<li>'+esc(S.plan[k])+'</li>'; });
+  h += '</ol>';
+
+  h += '<h3>Wochenrhythmus</h3><ul class="small">';
+  RHYTHMUS.forEach(r=>{
+    h += '<li>'+esc(r.was)+': '+esc(S.rhythmus[r.id+"_tag"]||"—")+', '+(S.rhythmus[r.id+"_min"]||0)+' Minuten</li>';
+  });
+  h += '</ul><p class="small">Geplant insgesamt: '+planMinuten()+' Minuten pro Woche.</p>';
+
+  const gewaehlt = MASSNAHMEN.filter((m,i)=>S.massnahmen["m"+i]);
+  h += '<h3>Maßnahmen</h3>';
+  h += gewaehlt.length ? '<ul class="small">'+gewaehlt.map(m=>'<li>'+esc(m)+'</li>').join("")+'</ul>' : '<p class="small">Keine ausgewählt.</p>';
+
+  h += '<h3>Notizen zu den Kompetenzfeldern</h3>';
+  let hatRefl = false;
+  AREAS.forEach(a=>{
+    const t = (S.reflexionen[a.id]||"").trim();
+    if(t){ hatRefl=true; h += '<p class="small"><strong>'+esc(a.kurz)+':</strong> '+esc(t)+'</p>'; }
+  });
+  if(!hatRefl) h += '<p class="small">Keine Notizen.</p>';
+
+  h += '<h3>Hindernis und Gegenmittel</h3>';
+  h += '<p class="small"><strong>Wahrscheinlichstes Hindernis:</strong> '+esc(S.plan.hindernis||"—")+'</p>';
+  h += '<p class="small"><strong>Reaktion darauf:</strong> '+esc(S.plan.gegenmittel||"—")+'</p>';
+
+  h += '<div style="margin-top:34px;max-width:320px"><div style="height:34px"></div><div class="sig">'
+     + esc(S.plan.unterschrift||S.meta.name||"") + ' · ' + esc(S.plan.planDatum||S.meta.datum) + '</div></div>';
+  h += '</div>';
+
+  document.getElementById("report").innerHTML = h;
+  window.print();
+}
+
+/* =========================================================
+   6. START
+   ========================================================= */
+
+document.getElementById("btnSave").onclick = ()=>speichern();
+document.getElementById("btnExport").onclick = exportieren;
+document.getElementById("btnImport").onclick = ()=>document.getElementById("fileIn").click();
+document.getElementById("fileIn").onchange = e=>{
+  const f = e.target.files && e.target.files[0];
+  if(f) importieren(f);
+  e.target.value = "";
+};
+
+window.addEventListener("beforeunload", e=>{
+  const leer = Object.keys(S.ratings).length===0 && !S.meta.name;
+  if(!leer){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(err){} }
+});
+
+(function init(){
+  const gefunden = laden();
+  render();
+  if(gefunden){
+    setSaveState("gespeicherter Stand geladen", "var(--slate)");
+    document.getElementById("tbHint").textContent = "Gespeicherter Stand geladen. Weitermachen oder unten alles löschen.";
+  }else{
+    try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); }
+    catch(e){
+      document.getElementById("tbHint").textContent = "Dieser Browser speichert nicht. Exportiere regelmäßig eine Datei.";
+      setSaveState("nur Export möglich","var(--oxide)");
+    }
+  }
+})();
+</script>
+</body>
+</html>
