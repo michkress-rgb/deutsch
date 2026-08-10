@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kompetenz-Tafel · Deutsch A · IGCSE 0505</title>
+<style>
+:root{
+  --paper:#E9E4D7; --card:#F6F2E9; --card-2:#FBF9F3;
+  --ink:#232A2E; --ink-soft:#5A6169; --ink-faint:#8B8F8A;
+  --rule:#CDC4B0; --rule-soft:#DED7C6;
+  --slate:#395A6B; --oxide:#8C3B2E; --moss:#5E6E4A; --ochre:#B08331;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",Consolas,"SF Mono",ui-monospace,"Courier New",monospace;
+  --z1:#5E6E4A; --z2:#395A6B; --z3:#B08331; --z4:#8C3B2E;
+  --f:1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;overflow:hidden;-webkit-font-smoothing:antialiased}
+body.bericht{overflow:auto}
+button{font-family:inherit}
+
+/* ---------- Gerüst ---------- */
+#board{display:flex;flex-direction:column;height:100vh}
+body.bericht #board{display:none}
+#bericht{display:none;max-width:900px;margin:0 auto;padding:28px 24px 80px}
+body.bericht #bericht{display:block}
+
+.bar{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:1px solid var(--rule);background:var(--paper);flex-wrap:wrap}
+.bar h1{font-family:var(--serif);font-size:19px;font-weight:600;margin:0;white-space:nowrap}
+.bar h1 em{font-style:normal;color:var(--slate)}
+.counter{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ink-faint);white-space:nowrap}
+.bar .sp{flex:1}
+.tb{font-size:13px;padding:6px 12px;border:1px solid var(--rule);background:transparent;color:var(--ink);border-radius:2px;cursor:pointer;white-space:nowrap}
+.tb:hover{background:var(--card-2);border-color:var(--ink)}
+.tb.solid{background:var(--ink);color:var(--card-2);border-color:var(--ink)}
+.tb.solid:hover{background:#111820}
+.tb:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+#saveState{font-family:var(--mono);font-size:11px;color:var(--moss);letter-spacing:.04em}
+
+/* Barometer */
+.baro{display:flex;height:9px;background:var(--rule-soft)}
+.baro i{display:block;height:9px;transition:width .35s ease}
+.baro .b1{background:var(--z1)}.baro .b2{background:var(--z2)}.baro .b3{background:var(--z3)}.baro .b4{background:var(--z4)}
+.baro .b0{background:var(--rule-soft)}
+
+/* ---------- Stapel ---------- */
+#deck{padding:calc(20px * var(--f)) 18px;display:flex;justify-content:center;border-bottom:1px solid var(--rule)}
+.stack{position:relative;width:min(760px,100%)}
+.stack:before,.stack:after{content:"";position:absolute;left:8px;right:8px;height:100%;top:6px;background:var(--card-2);border:1px solid var(--rule);z-index:0}
+.stack:after{top:12px;left:16px;right:16px;opacity:.6}
+.bigcard{
+  position:relative;z-index:2;background:var(--card);border:1px solid var(--ink);
+  box-shadow:0 2px 0 rgba(35,42,46,.08),0 18px 34px -22px rgba(35,42,46,.6);
+  padding:calc(20px * var(--f)) calc(26px * var(--f));cursor:grab;touch-action:none;user-select:none;
+}
+.bigcard:active{cursor:grabbing}
+.bigcard .dom{font-family:var(--mono);font-size:calc(11px * var(--f));letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:9px;margin-bottom:calc(8px * var(--f))}
+.bigcard .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.bigcard .nm{font-family:var(--serif);font-size:calc(32px * var(--f));line-height:1.15;font-weight:600;margin-bottom:calc(6px * var(--f))}
+.bigcard .kz{font-size:calc(17px * var(--f));color:var(--ink-soft);margin:0}
+.deckrow{display:flex;gap:8px;align-items:center;margin-top:calc(14px * var(--f));flex-wrap:wrap}
+.deckrow .hint{font-family:var(--mono);font-size:calc(11px * var(--f));color:var(--ink-faint);letter-spacing:.05em;margin-left:auto;text-align:right}
+.zbtn{font-size:calc(14px * var(--f));padding:calc(8px * var(--f)) calc(14px * var(--f));border:1px solid var(--rule);background:var(--card-2);cursor:pointer;border-radius:2px;color:var(--ink)}
+.zbtn:hover{border-color:var(--ink)}
+.zbtn b{font-family:var(--mono);font-size:calc(12px * var(--f));color:var(--ink-faint);margin-right:7px}
+.zbtn[data-z="0"]:hover{border-color:var(--z1)} .zbtn[data-z="1"]:hover{border-color:var(--z2)}
+.zbtn[data-z="2"]:hover{border-color:var(--z3)} .zbtn[data-z="3"]:hover{border-color:var(--z4)}
+.done{text-align:center;padding:26px 20px}
+.done h2{font-family:var(--serif);font-size:26px;margin:0 0 8px}
+
+/* ---------- Zonen ---------- */
+#zones{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);min-height:0}
+.zone{background:var(--card);display:flex;flex-direction:column;min-height:0;transition:background .12s}
+.zone.over{background:#EFEADE;box-shadow:inset 0 0 0 2px var(--zc)}
+.zhead{padding:9px 12px;border-bottom:1px solid var(--rule-soft);display:flex;align-items:baseline;gap:8px}
+.zhead .zn{font-family:var(--serif);font-size:calc(16px * var(--f));font-weight:600}
+.zhead .zs{font-size:calc(11.5px * var(--f));color:var(--ink-soft);line-height:1.25}
+.zhead .zc{margin-left:auto;font-family:var(--mono);font-size:calc(13px * var(--f));color:var(--zc)}
+.zbody{flex:1;overflow-y:auto;padding:8px 8px 20px}
+.zbody::-webkit-scrollbar{width:9px}
+.zbody::-webkit-scrollbar-thumb{background:var(--rule);border-radius:5px}
+.chip{
+  background:var(--card-2);border:1px solid var(--rule);border-left:4px solid var(--zc);
+  padding:7px 9px;margin-bottom:6px;font-size:calc(13.5px * var(--f));line-height:1.35;
+  cursor:grab;touch-action:none;user-select:none;display:flex;gap:7px;align-items:flex-start;
+}
+.chip:hover{border-color:var(--ink);background:#fff}
+.chip .cd{width:8px;height:8px;border-radius:50%;flex:none;margin-top:5px}
+.chip .st{margin-left:auto;color:var(--ochre);font-size:calc(13px * var(--f));flex:none}
+.chip .nt{color:var(--slate);font-size:calc(12px * var(--f));flex:none}
+.zempty{color:var(--ink-faint);font-size:calc(12.5px * var(--f));padding:10px 4px;font-style:italic}
+
+.ghost{position:fixed;z-index:200;pointer-events:none;background:var(--card);border:1px solid var(--ink);
+  box-shadow:0 14px 30px -14px rgba(35,42,46,.7);padding:8px 12px;font-size:15px;max-width:280px;opacity:.95}
+
+/* ---------- Infofenster ---------- */
+#modal{position:fixed;inset:0;z-index:300;background:rgba(35,42,46,.55);display:none;align-items:center;justify-content:center;padding:20px}
+#modal.on{display:flex}
+.mbox{background:var(--card);border:1px solid var(--ink);max-width:680px;width:100%;max-height:88vh;overflow-y:auto;
+  box-shadow:0 24px 50px -20px rgba(0,0,0,.6)}
+.mbox .mh{padding:20px 26px 14px;border-bottom:1px solid var(--rule-soft)}
+.mbox .dom{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.mbox h3{font-family:var(--serif);font-size:26px;margin:0 0 6px;font-weight:600}
+.mbox .mb{padding:18px 26px 24px}
+.mbox h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);margin:20px 0 6px}
+.mbox h4:first-child{margin-top:0}
+.mbox p{margin:0 0 10px;font-size:15.5px}
+.bsp{font-family:var(--serif);font-size:16.5px;line-height:1.6;border-left:3px solid var(--ochre);background:var(--card-2);padding:12px 16px;margin:0 0 10px}
+.mbox textarea{width:100%;min-height:80px;font-family:var(--sans);font-size:15px;background:var(--card-2);border:1px solid var(--rule);padding:9px 11px;resize:vertical}
+.mbox textarea:focus{outline:2px solid var(--slate);outline-offset:1px}
+.mrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule-soft)}
+.mrow .sp{flex:1}
+.star{cursor:pointer;border:1px solid var(--rule);background:transparent;padding:6px 12px;font-size:13.5px;border-radius:2px}
+.star.on{background:var(--ochre);border-color:var(--ochre);color:#fff}
+.zpick{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.zpick button{font-size:13px;padding:6px 11px;border:1px solid var(--rule);background:var(--card-2);cursor:pointer;border-radius:2px}
+.zpick button.on{color:#fff;border-color:transparent}
+
+/* ---------- Bericht ---------- */
+#bericht h1{font-family:var(--serif);font-size:32px;margin:0 0 6px}
+#bericht h2{font-family:var(--serif);font-size:21px;margin:30px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--rule)}
+#bericht .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate);margin:0 0 8px}
+.rline{display:grid;grid-template-columns:1fr auto;gap:12px;padding:8px 0;border-bottom:1px solid var(--rule-soft);align-items:start}
+.rline .rn{font-size:15.5px}
+.rline .rd{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.04em}
+.rline .rnote{font-size:14px;color:var(--ink-soft);border-left:2px solid var(--rule);padding-left:10px;margin-top:5px}
+.rbar{display:flex;height:26px;margin:14px 0 6px;border:1px solid var(--rule)}
+.rbar i{display:block;height:24px;font-family:var(--mono);font-size:11px;color:#fff;text-align:center;line-height:24px;overflow:hidden}
+.rmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.rmeta label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:4px}
+.rmeta input{width:100%;font-family:var(--sans);font-size:15px;background:var(--card-2);border:1px solid var(--rule);padding:8px 10px}
+.fokus{border-left:3px solid var(--ochre);background:var(--card-2);padding:12px 16px;margin:10px 0}
+
+@media print{
+  body{background:#fff;overflow:visible}
+  #board,.noprint{display:none !important}
+  #bericht{display:block !important;max-width:none;padding:0}
+  .rline,.fokus{break-inside:avoid}
+  .rmeta input{border:0;border-bottom:1px solid #999;padding-left:0}
+}
+@media (max-width:900px){
+  #zones{grid-template-columns:repeat(2,1fr)}
+  .bigcard .nm{font-size:calc(25px * var(--f))}
+  #bericht{padding:18px 16px 60px}
+  .rmeta{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<div id="board">
+  <div class="bar noprint">
+    <h1>Kompetenz-Tafel <em>Deutsch A</em></h1>
+    <span class="counter" id="cnt">—</span>
+    <span class="sp"></span>
+    <span id="saveState">bereit</span>
+    <button class="tb" id="bZoom" title="Schriftgröße für die Projektion">A+</button>
+    <button class="tb" id="bMisch">Mischen</button>
+    <button class="tb" id="bSave">Sichern</button>
+    <button class="tb" id="bExp">Exportieren</button>
+    <button class="tb" id="bImp">Importieren</button>
+    <input type="file" id="fileIn" accept="application/json,.json" style="display:none">
+    <button class="tb solid" id="bRep">Bericht</button>
+  </div>
+  <div class="baro" id="baro"></div>
+  <div id="deck"></div>
+  <div id="zones"></div>
+</div>
+
+<div id="bericht"></div>
+
+<div id="modal"><div class="mbox" id="mbox"></div></div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   BEREICHE
+   ========================================================= */
+const DOM = {
+  lesen:   {n:"Lesen und Verstehen",        c:"#3B5F70"},
+  deuten:  {n:"Zwischen den Zeilen",        c:"#59808F"},
+  analyse: {n:"Absicht, Adressat, Wirkung", c:"#6E5A78"},
+  mittel:  {n:"Sprachliche Mittel",         c:"#B08331"},
+  texte:   {n:"Textsorten und Zusammenfassen", c:"#5E6E4A"},
+  erzaehl: {n:"Erzählen und Beschreiben",   c:"#8C6239"},
+  eroert:  {n:"Erörtern und Argumentieren", c:"#8C3B2E"},
+  sprache: {n:"Grammatik, Wortschatz, Stil",c:"#4A6B57"},
+  arbeit:  {n:"Arbeitsweise und Prüfung",   c:"#6B6257"}
+};
+
+const ZONEN = [
+  {id:"sitzt",   n:"Sitzt",     s:"Können wir sicher, auch unter Zeitdruck", c:"var(--z1)"},
+  {id:"wackelt", n:"Wackelt",   s:"Meistens ja, aber nicht verlässlich",     c:"var(--z2)"},
+  {id:"hilfe",   n:"Baustelle", s:"Nur mit Hilfe oder Vorlage",              c:"var(--z3)"},
+  {id:"neu",     n:"Neuland",   s:"Kennen wir noch nicht wirklich",          c:"var(--z4)"}
+];
+
+/* =========================================================
+   KOMPETENZEN
+   ========================================================= */
+const SKILLS = [
+/* --- Lesen --- */
+{id:"s01",d:"lesen",n:"Informationen gezielt finden",kz:"Im Text schnell die Stellen finden, die zur Frage gehören.",
+ was:"Ein Prüfungstext wird nicht von vorn bis hinten gelesen und dann beantwortet. Man liest zweimal: einmal für den Überblick, einmal mit der Aufgabe im Kopf. Erst der zweite Durchgang sucht.",
+ bsp:"Frage: „Wie reagiert die Nachbarin auf den Lärm?“ — Gesucht sind nicht ihre Gefühle, sondern ihre Handlungen und ihre Worte. Alles andere im Absatz ist für diese Frage Beiwerk.",
+ kann:"Wir finden die passende Stelle in unter einer Minute und können sagen, in welchem Absatz sie steht.", p:"Paper 1"},
+{id:"s02",d:"lesen",n:"Fakt und Wertung unterscheiden",kz:"Erkennen, was im Text steht und was der Text bewertet.",
+ was:"Sachtexte mischen beides ununterbrochen. Wer die Wertung für eine Tatsache hält, übernimmt fremde Meinung als eigene Antwort — der häufigste stille Fehler in Paper 1.",
+ bsp:"„Die Stadt hat 40 neue Bäume gepflanzt“ ist ein Fakt. „Die Stadt hat sich zu einer Alibi-Aktion durchgerungen“ ist dieselbe Information mit Wertung.",
+ kann:"Wir können in einem Absatz die wertenden Wörter unterstreichen und den Satz ohne sie neu formulieren.", p:"Paper 1"},
+{id:"s03",d:"lesen",n:"Erkennen, was in die Antwort gehört",kz:"Relevantes auswählen, Richtiges an falscher Stelle weglassen.",
+ was:"Punkte gehen selten dafür verloren, dass etwas falsch ist. Sie gehen dafür verloren, dass etwas Richtiges nicht zur Frage gehört. Jede Frage hat einen Rahmen, und alles außerhalb zählt nicht.",
+ bsp:"Frage nach der Beschreibung der Wohnung — die Hausschuhe des Vaters gehören zur Figur, nicht zur Wohnung. Richtig beobachtet, falsch platziert, null Punkte.",
+ kann:"Wir streichen aus einem Antwortentwurf mindestens einen richtigen, aber unpassenden Satz.", p:"Paper 1"},
+{id:"s04",d:"lesen",n:"Mit Textbelegen arbeiten",kz:"Behauptungen mit kurzen Belegen stützen, ohne abzuschreiben.",
+ was:"Ein Beleg ist so kurz wie möglich und so lang wie nötig. Er ersetzt die Deutung nicht, er stützt sie. Wer ganze Sätze zitiert, gibt Platz auf, den er für die Erklärung bräuchte.",
+ bsp:"Schwach: Der Text sagt: „Im Flur roch es nach nichts. Das war das Erste, was ihm auffiel.“ — Stark: Der Geruch „nach nichts“ markiert die Leere der Wohnung.",
+ kann:"Unsere Belege sind meist drei bis fünf Wörter lang und stehen mitten im eigenen Satz.", p:"Paper 1"},
+
+/* --- Deuten --- */
+{id:"s05",d:"deuten",n:"Gefühle und Absichten erschließen",kz:"Verstehen, was eine Figur fühlt, obwohl es nicht dasteht.",
+ was:"Literarische Texte benennen Gefühle fast nie. Sie zeigen Handlungen, Gesten, Pausen, Wortwahl — und überlassen den Schluss dem Leser. Gefragt ist der Schluss, nicht die Nacherzählung.",
+ bsp:"Jemand stellt die Tasche ab, ohne den Riemen loszulassen. Niemand sagt, dass er unsicher ist, ob er bleibt. Der Satz sagt es trotzdem.",
+ kann:"Wir können zu einer Geste sagen, welches Gefühl sie zeigt, und warum gerade diese Geste es zeigt.", p:"Paper 1"},
+{id:"s06",d:"deuten",n:"Ironie erkennen",kz:"Merken, wenn jemand das Gegenteil dessen meint, was er sagt.",
+ was:"Ironie ist ein Widerspruch zwischen Wortlaut und Zusammenhang. Erkennbar wird sie nicht am einzelnen Wort, sondern daran, dass der Wortlaut nicht zur Lage passt — durch Übertreibung, gespielte Zustimmung oder auffällig freundliche Wörter an einer unfreundlichen Stelle.\n\nZu unterscheiden: Ironie meint das Gegenteil (leichter Spott), Sarkasmus zielt verletzend auf eine Person, Zynismus stellt Werte selbst in Frage. Die Prüfung fragt fast immer nach Ironie und nach ihrer Wirkung — nämlich Distanz: Der Sprecher stellt sich neben das Gesagte und lädt den Leser ein, mitzudenken.",
+ bsp:"Überschrift eines Kommentars gegen die Abschaffung des Auswendiglernens: „Auswendig lernen? Endlich wieder!“ — Der Jubel ist gespielt; der Text wendet sich gegen die Begeisterung derer, die das Gegenteil fordern.\n\nIm Alltag: „Na großartig“, während der Bus wegfährt.\n\nErzählerisch: „Sein Vater nickte, als wäre das eine Erklärung.“ Der Erzähler tut so, als sei alles in Ordnung, und zeigt damit, dass es das nicht ist.",
+ kann:"Wir können sagen, welche Textstelle die Ironie verrät, und den Satz in nicht-ironisches Deutsch übersetzen.", p:"Paper 1"},
+{id:"s07",d:"deuten",n:"Untertreibung und Übertreibung",kz:"Erkennen, wenn ein Text absichtlich zu klein oder zu groß macht.",
+ was:"Beide Mittel arbeiten mit dem Abstand zur Wirklichkeit. Die Untertreibung (Litotes) lässt Ungeheuerliches beiläufig klingen und macht es dadurch stärker. Die Übertreibung (Hyperbel) drängt zum Widerspruch oder zum Lachen.",
+ bsp:"Untertreibung: „Der Zug war voll“ als Erklärung für vier Jahre Abwesenheit. — Übertreibung: „Wer keine Jahreszahl im Kopf trägt, kann überhaupt nichts einordnen.“",
+ kann:"Wir können bei beiden sagen, was der Text durch das Missverhältnis erreicht.", p:"Paper 1"},
+{id:"s08",d:"deuten",n:"Andeutung und Auslassung",kz:"Bemerken, was ein Text bewusst nicht sagt.",
+ was:"Leerstellen sind gestaltet. Wenn ein Text an einer wichtigen Stelle abbricht, ausweicht oder über etwas Belangloses spricht, ist das eine Aussage über die Figuren — meist darüber, was sie nicht aussprechen können.",
+ bsp:"Vater und Sohn sehen einem Auto beim Einparken zu, „bis das Auto weg war“. Die Szene ist belanglos. Genau deshalb steht sie da: Sie füllt ein Schweigen.",
+ kann:"Wir finden in einem Text drei Stellen, an denen etwas Wichtiges umgangen wird.", p:"Paper 1"},
+{id:"s09",d:"deuten",n:"Beziehungen zwischen Figuren lesen",kz:"Aus Sprache und Verhalten erschließen, wie Figuren zueinander stehen.",
+ was:"Beziehungen zeigen sich in Kleinigkeiten: wer zuerst spricht, wer antwortet, wer eine Frage übergeht, wie angeredet wird, wie lange jemand schweigt. Die Rangordnung eines Gesprächs steht nie im Text, sie liegt in seinem Verlauf.",
+ bsp:"„Du hast dir Zeit gelassen.“ — „Der Zug war voll.“ Ein Vorwurf, eine Ausrede, kein Widerspruch. Beide vermeiden das eigentliche Thema, und beide wissen es.",
+ kann:"Wir können ein Gespräch danach beschreiben, wer die Kontrolle hat und woran man das sieht.", p:"Paper 1"},
+
+/* --- Analyse --- */
+{id:"s10",d:"analyse",n:"Textsorte bestimmen",kz:"Erkennen, ob Kommentar, Reportage, Bericht, Interview, Blog.",
+ was:"Die Textsorte legt fest, was erlaubt ist: Ein Bericht wertet nicht, ein Kommentar muss werten, eine Reportage beobachtet und zeigt, ein Interview bleibt in der Rede. Wer die Sorte verkennt, deutet an der Absicht vorbei.",
+ bsp:"Ein Text ohne Quellenangaben, mit rhetorischen Fragen und offenen Urteilen ist ein Kommentar — auch wenn er auf der Nachrichtenseite steht.",
+ kann:"Wir nennen die Sorte und zwei Merkmale im Text, an denen wir sie festmachen.", p:"Paper 1 · Paper 2"},
+{id:"s11",d:"analyse",n:"Adressaten bestimmen",kz:"Sagen können, für wen ein Text geschrieben ist.",
+ was:"Der Adressat steht nie da, er ist an der Sprache ablesbar: an vorausgesetztem Wissen, an der Anrede, am Fachwortschatz, an dem, was erklärt wird und was nicht.",
+ bsp:"Wer „Lehrerkonferenz“ und „Kompetenzorientierung“ unerklärt benutzt, schreibt nicht für Neuntklässler, sondern für Erwachsene, die den Betrieb kennen.",
+ kann:"Wir belegen den Adressaten mit einer Stelle, die etwas voraussetzt oder etwas erklärt.", p:"Paper 1 · Paper 2"},
+{id:"s12",d:"analyse",n:"Absicht des Textes bestimmen",kz:"Informieren, überzeugen, unterhalten, mahnen, bewegen.",
+ was:"Jeder Text will etwas. Die Absicht ist selten nur eine, aber meist ist eine die stärkste. Sie bestimmt Aufbau, Wortwahl und Schluss — und deshalb lässt sie sich am Schluss oft am schnellsten erkennen.",
+ bsp:"Ein Text, der mit einem leicht erfüllbaren Vorschlag endet („zehn Zeilen in der Woche“), will nicht analysieren, sondern zum Handeln bewegen.",
+ kann:"Wir formulieren die Absicht in einem Satz mit einem Verb: Der Text will …", p:"Paper 1 · Paper 2"},
+{id:"s13",d:"analyse",n:"Ton und Register beschreiben",kz:"Mit genauen Wörtern sagen, wie ein Text klingt.",
+ was:"„Gut geschrieben“ ist kein Befund. Gebraucht werden Adjektive, die trennen: sachlich, nüchtern, distanziert, vertraulich, spöttisch, polemisch, feierlich, drängend, resigniert. Register meint zusätzlich die Höhenlage: gehoben, standardsprachlich, umgangssprachlich, salopp.",
+ bsp:"„Alle nicken. Niemand fragt nach.“ — knapp, unterstellend, zugespitzt. Nicht: „kritisch“. Kritisch wäre auch ein abwägender Text.",
+ kann:"Wir haben zwanzig solcher Adjektive im Kopf und benutzen nicht dreimal dasselbe.", p:"Paper 1 · Paper 2"},
+{id:"s14",d:"analyse",n:"Einseitigkeit erkennen",kz:"Sehen, wo ein Sachtext parteiisch ist, ohne es zu sagen.",
+ was:"Einseitigkeit zeigt sich weniger in den Behauptungen als in der Behandlung der Gegenseite: Wird sie genannt? Namentlich? Mit ihren besten Argumenten? Bekommt sie eine Antwort oder nur einen Seitenhieb?",
+ bsp:"„Natürlich, sagen die Fachleute, komme es auf Kompetenzen an.“ Die Gegenseite hat keinen Namen, kein Argument und keine zweite Chance — ein Scheinzugeständnis.",
+ kann:"Wir können benennen, welches Gegenargument im Text fehlt, das dort hingehört hätte.", p:"Paper 1"},
+
+/* --- Mittel --- */
+{id:"s15",d:"mittel",n:"Metapher",kz:"Ein Bild, das ohne „wie“ gesetzt wird.",
+ was:"Eine Metapher überträgt einen Ausdruck aus einem Bereich in einen anderen und behauptet die Gleichsetzung. Wichtig ist nicht der Name des Mittels, sondern die Frage: Welcher Bereich wird geholt, und was färbt er auf die Sache ab?",
+ bsp:"„Ein Meer von Formularen“ holt Weite, Unübersichtlichkeit und Ertrinken in die Verwaltung. „Ein Berg von Formularen“ hätte Mühe und Aufstieg geholt — anderes Bild, andere Wirkung.",
+ kann:"Wir sagen zu jeder Metapher, aus welchem Bereich sie stammt und was sie überträgt.", p:"Paper 1 · Paper 2"},
+{id:"s16",d:"mittel",n:"Vergleich",kz:"Zwei Dinge nebeneinanderstellen, meist mit „wie“.",
+ was:"Der Vergleich behauptet keine Gleichheit, er stellt gegenüber — und wird dadurch oft argumentativ eingesetzt. Ein gut gewählter Vergleich beweist nichts, wirkt aber wie ein Beweis.",
+ bsp:"„Man stelle sich einen Pianisten vor, der die Tonleitern nachschlägt.“ Der Vergleich widerlegt nichts, lässt die Gegenposition aber absurd erscheinen. Das ist seine Funktion.",
+ kann:"Wir erkennen, wann ein Vergleich Erkenntnis bringt und wann er nur Stimmung macht.", p:"Paper 1 · Paper 2"},
+{id:"s17",d:"mittel",n:"Personifikation",kz:"Unbelebtes handelt, fühlt oder spricht.",
+ was:"Personifikation gibt Dingen, Naturphänomenen oder Abstrakta menschliche Züge. Sie erzeugt Nähe oder Bedrohung — je nachdem, ob das Belebte freundlich oder feindlich wirkt.",
+ bsp:"„Die Stadt hielt den Atem an.“ Nicht die Stadt, sondern die Menschen; die Übertragung macht aus vielen Einzelnen einen Körper.",
+ kann:"Wir unterscheiden Personifikation von der bloßen Metapher und benennen die Wirkung.", p:"Paper 1 · Paper 2"},
+{id:"s18",d:"mittel",n:"Symbol und Motiv",kz:"Ein Gegenstand, der für mehr steht als für sich.",
+ was:"Ein Symbol ist ein konkretes Ding, das eine Bedeutung trägt, die über es hinausgeht — erkennbar daran, dass der Text es auffällig oft oder an wichtiger Stelle zeigt. Ein Motiv ist ein wiederkehrendes Element, das einen Text zusammenhält.",
+ bsp:"Ein Schlüssel unter dem Blumentopf: Zugang, Zugehörigkeit, ein Recht, das noch gilt. Dass er nach vier Jahren noch dort liegt, sagt mehr über den Vater als jeder Satz über ihn.",
+ kann:"Wir begründen die symbolische Deutung aus dem Text und nicht aus allgemeinem Wissen.", p:"Paper 1"},
+{id:"s19",d:"mittel",n:"Wiederholung und Parallelismus",kz:"Gleiches kehrt wieder — im Wort oder im Satzbau.",
+ was:"Wiederholung erzeugt Nachdruck, Rhythmus und Einprägsamkeit; Parallelismus (gleicher Satzbau hintereinander) erzeugt zusätzlich Ordnung und lässt Behauptungen zwingend klingen, ohne dass sie begründet wären.",
+ bsp:"„Wer ein Gedicht nie gelernt hat, hat es nie besessen. Wer keine Jahreszahl im Kopf trägt, kann nichts einordnen.“ Zwei gleich gebaute Sätze — die Form ersetzt den Beweis.",
+ kann:"Wir sagen nicht nur „Wiederholung“, sondern was sie im Leser auslöst.", p:"Paper 1 · Paper 2"},
+{id:"s20",d:"mittel",n:"Rhetorische Frage",kz:"Eine Frage, die keine Antwort will.",
+ was:"Sie zieht den Leser auf die Seite des Schreibers, weil die Antwort schon feststeht. Häufung wirkt drängend, kann aber auch aufdringlich werden — auch das ist eine Wirkung, die man benennen darf.",
+ bsp:"„Denn was tritt an die Stelle des Gedächtnisses? Ein Bildschirm.“ Die Frage wird sofort selbst beantwortet; sie dient nur der Zuspitzung.",
+ kann:"Wir erkennen sie auch dann, wenn kein Fragezeichen mehr folgt, sondern schon die Antwort.", p:"Paper 1 · Paper 2"},
+{id:"s21",d:"mittel",n:"Satzbau als Mittel",kz:"Satzlänge, Abbruch und Interpunktion wirken mit.",
+ was:"Kurze Sätze beschleunigen, schaffen Härte oder Endgültigkeit. Lange, verschachtelte Sätze verlangsamen und bilden Nachdenken ab. Ein Gedankenstrich hält an, ein Doppelpunkt kündigt an. Das ist Gestaltung, nicht Zufall.",
+ bsp:"„Es geht auch anders. Zehn Zeilen in der Woche. Mehr nicht.“ Drei kurze Sätze nach vier Absätzen Polemik — die Kürze suggeriert, dass es leicht sei.",
+ kann:"Wir können die Wirkung eines Absatzes an seinem Satzbau festmachen, nicht nur am Inhalt.", p:"Paper 1 · Paper 2"},
+{id:"s22",d:"mittel",n:"Wirkung erklären statt benennen",kz:"Die Kernfähigkeit: „Dadurch wirkt …, weil …“",
+ was:"Ein Mittel zu benennen bringt in Cambridge keinen Punkt. Der Punkt entsteht aus der Verbindung von Stelle, Mittel und Wirkung — und aus dem „weil“. Ohne dieses Wort bleibt jede Analyse eine Aufzählung.",
+ bsp:"Schwach: „Der Autor benutzt eine rhetorische Frage.“ — Stark: „Durch die rhetorische Frage zieht der Autor den Leser auf seine Seite, weil er die Antwort mitliefert und Widerspruch gar nicht erst zulässt.“",
+ kann:"In unseren Analysen steht hinter jedem Mittel ein Satz mit „weil“.", p:"Paper 1"},
+
+/* --- Textsorten --- */
+{id:"s23",d:"texte",n:"Kernaussagen erkennen",kz:"Die tragenden Gedanken vom Beiwerk trennen.",
+ was:"Jeder Absatz hat meist einen Gedanken; alles andere veranschaulicht ihn. Wer diesen Gedanken je Absatz in fünf Wörtern notieren kann, hat die Zusammenfassung schon fast fertig.",
+ bsp:"Absatz über den Pianisten: Kerngedanke ist nicht der Pianist, sondern „Kompetenz braucht Wissen“. Der Pianist ist nur das Bild dafür.",
+ kann:"Wir notieren zu jedem Absatz eine Randnotiz von höchstens fünf Wörtern.", p:"Paper 1"},
+{id:"s24",d:"texte",n:"In eigenen Worten zusammenfassen",kz:"Umformulieren, nicht abschreiben.",
+ was:"Zusammenfassen heißt: kürzen, ordnen, neu formulieren. Übernommene Formulierungen fallen sofort auf und werden nicht gewertet. Beispiele, Wiederholungen und Ausschmückungen fallen als Erstes weg.",
+ bsp:"Statt „Es gibt Sätze, die in jeder Lehrerkonferenz Applaus bekommen“ — „Der Autor kritisiert eine unhinterfragte Selbstverständlichkeit im Schulbetrieb.“",
+ kann:"Unsere Zusammenfassung enthält keinen Ausdruck von mehr als drei Wörtern aus dem Original.", p:"Paper 1"},
+{id:"s25",d:"texte",n:"Eine Rede schreiben",kz:"Anrede, Zuwendung, Steigerung, Schluss.",
+ was:"Eine Rede spricht jemanden an, nimmt ihn mit und endet mit einem Appell oder einem Bild, das bleibt. Sie darf wiederholen, weil man beim Hören nicht zurückblättern kann.",
+ bsp:"„Liebe Mitschülerinnen und Mitschüler, ich möchte euch heute etwas zumuten: zehn Zeilen in der Woche.“ Anrede, Ankündigung einer Zumutung, konkrete Zahl — in einem Satz.",
+ kann:"Unsere Rede klingt vorgelesen besser als gelesen.", p:"Paper 1"},
+{id:"s26",d:"texte",n:"Bericht und Artikel schreiben",kz:"Sachlich, geordnet, mit Überschrift und Kern zuerst.",
+ was:"Der Bericht antwortet auf Wer, Was, Wann, Wo, Wie, Warum — sachlich, im Präteritum, ohne Wertung. Der Zeitungsartikel darf zusätzlich einen Einstieg haben, der neugierig macht, bleibt aber überprüfbar.",
+ bsp:"Bericht: „Am Freitagnachmittag stellte die Schule das neue Konzept vor.“ Nicht: „Endlich stellte die Schule ihr längst überfälliges Konzept vor.“",
+ kann:"Wir schreiben eine Seite ohne ein einziges wertendes Adjektiv, wenn die Sorte es verlangt.", p:"Paper 1"},
+{id:"s27",d:"texte",n:"Register wechseln",kz:"Denselben Inhalt für andere Leser neu formulieren.",
+ was:"Beim gelenkten Schreiben ändert sich der Adressat, nicht der Sachverhalt. Angepasst werden Anrede, Satzlänge, Wortwahl, Grad der Erklärung und Nähe. Der Inhalt bleibt derselbe — das ist die eigentliche Prüfung.",
+ bsp:"An die Schulleitung: „Ich möchte anregen, den Vorschlag zu prüfen.“ — An Mitschüler: „Probieren wir es doch einfach mal aus.“ Gleiche Sache, anderes Register.",
+ kann:"Wir schreiben denselben Absatz zweimal für zwei Adressaten, ohne den Inhalt zu ändern.", p:"Paper 1"},
+{id:"s28",d:"texte",n:"Aus fremder Perspektive schreiben",kz:"Tagebuch, Brief oder Monolog einer Figur.",
+ was:"Gefordert ist Deutung, nicht Nacherzählung: Was hat die Figur wahrgenommen, was verschweigt sie sich selbst, wie spricht sie? Was im Text nur angedeutet ist, wird hier ausgesprochen — aber nur so weit, wie der Text es trägt.",
+ bsp:"Jonas' Tagebuch soll nicht erzählen, dass er ankam und Kaffee angeboten bekam, sondern warum er den Riemen der Tasche nicht losgelassen hat.",
+ kann:"Unser Text enthält mindestens einen Gedanken, der im Original nur zwischen den Zeilen steht.", p:"Paper 1"},
+
+/* --- Erzählen --- */
+{id:"s29",d:"erzaehl",n:"Eine Erzählung planen",kz:"Ausgangslage, Konflikt, Wendepunkt, Schluss — vor dem ersten Satz.",
+ was:"Fünf Planungszeilen entscheiden über den ganzen Text. Ohne Plan entsteht eine Aufzählung von Ereignissen, die irgendwann aufhört, weil die Zeit um ist. Der häufigste Grund für schwache Erzählungen ist kein Stilproblem.",
+ bsp:"Plan: 1 Rückkehr nach Jahren · 2 Vater öffnet nicht die Briefe · 3 Beide sehen aus dem Fenster · 4 Angebot mit Bedingung · 5 offener Schluss.",
+ kann:"Wir planen in unter fünf Minuten und halten uns dann daran.", p:"Paper 2"},
+{id:"s30",d:"erzaehl",n:"Spannung erzeugen",kz:"Zurückhalten, verzögern, andeuten.",
+ was:"Spannung entsteht aus einer Frage, die der Leser beantwortet haben will, und aus dem Aufschub der Antwort. Mittel: Vorausdeutung, Auslassung, Tempowechsel, ein Detail, das nicht passt.",
+ bsp:"„Vier Jahre.“ — Zwei Wörter, ein eigener Satz. Der Text erklärt nicht, warum. Genau deshalb liest man weiter.",
+ kann:"Wir können in unserem Text die Stelle zeigen, an der eine Frage aufgeworfen wird.", p:"Paper 2"},
+{id:"s31",d:"erzaehl",n:"Zeigen statt behaupten",kz:"Genau beschreiben, statt Gefühle zu benennen.",
+ was:"„Er war traurig“ ist eine Behauptung, die dem Leser nichts gibt. Wahrnehmbares — Handlung, Geste, Geräusch, Blick, ein Gegenstand — lässt ihn selbst schließen, und das ist der Unterschied zwischen Erzählen und Berichten.",
+ bsp:"Nicht: „Der Vater war einsam.“ Sondern: „Er trug Hausschuhe, mitten am Nachmittag.“",
+ kann:"In unserem Text stehen weniger Gefühlswörter als Wahrnehmungen.", p:"Paper 2"},
+{id:"s32",d:"erzaehl",n:"Perspektive durchhalten",kz:"Erzählform und Zeitform bleiben, wo sie sind.",
+ was:"Wer in der dritten Person aus Jonas' Sicht erzählt, darf nicht plötzlich wissen, was der Vater denkt. Unbeabsichtigte Wechsel sind der häufigste strukturelle Fehler in Paper 2 — und sie fallen jedem Leser auf.",
+ bsp:"Bruch: „Jonas sah aus dem Fenster. Sein Vater dachte an den letzten Sommer.“ Woher soll Jonas das wissen?",
+ kann:"Wir prüfen einen fertigen Text gezielt nur auf Perspektiv- und Zeitwechsel.", p:"Paper 2"},
+{id:"s33",d:"erzaehl",n:"Einen Schluss gestalten",kz:"Enden, ohne alles aufzulösen — und ohne Traum.",
+ was:"Ein guter Schluss antwortet auf den Anfang, ohne alles zu erklären. Er kann offen sein, muss aber gewollt wirken. Verboten sind faktisch: „Alles war nur ein Traum“, der plötzliche Tod und der Satz „Und so lernte ich, dass …“.",
+ bsp:"„Es gibt Kaffee. Wenn du bleibst.“ Nichts ist entschieden, und trotzdem ist es ein Ende: Die Frage des Anfangs liegt jetzt beim Leser.",
+ kann:"Unser letzter Satz nimmt ein Wort oder ein Bild vom Anfang wieder auf.", p:"Paper 2"},
+
+/* --- Erörtern --- */
+{id:"s34",d:"eroert",n:"Eine These formulieren",kz:"Eine Position, die man bestreiten kann.",
+ was:"Eine These ist kein Thema und keine Frage, sondern eine Behauptung, der man widersprechen könnte. Wer nichts behauptet, hat nichts zu begründen — und schreibt am Ende einen Aufsatz ohne Richtung.",
+ bsp:"Kein These: „In diesem Text geht es um Handys an Schulen.“ — These: „Ein Handyverbot löst kein Problem, das die Schule nicht selbst geschaffen hat.“",
+ kann:"Zu jeder unserer Thesen fällt uns sofort ein Gegner ein.", p:"Paper 2"},
+{id:"s35",d:"eroert",n:"Begründen statt behaupten",kz:"Der Unterschied zwischen „ist so“ und „ist so, weil“.",
+ was:"Eine Begründung nennt den Grund und macht ihn nachvollziehbar. „Jeder weiß“, „das ist doch klar“ und „viele Studien zeigen“ ohne Angabe sind keine Begründungen, sondern der Verzicht darauf — und werden auch so bewertet.",
+ bsp:"Behauptung: „Lesen ist wichtig.“ Begründung: „Wer viel liest, verfügt über mehr Formulierungen, weil er sie im Zusammenhang gesehen hat und nicht in einer Liste.“",
+ kann:"Wir können hinter jede Kernaussage unseres Textes ein „weil“ setzen, ohne ins Stocken zu geraten.", p:"Paper 2"},
+{id:"s36",d:"eroert",n:"Gegenargumente entkräften",kz:"Das stärkste Gegenargument nennen — und beantworten.",
+ was:"Eine Erörterung wird nicht dadurch stark, dass die Gegenseite fehlt, sondern dadurch, dass sie in ihrer besten Fassung vorkommt und trotzdem nicht trägt. Wer nur schwache Gegenargumente zitiert, schwächt sich selbst.",
+ bsp:"„Natürlich sind Handys auch Werkzeuge: für Recherche, Übersetzung, Organisation. Nur müsste die Schule diese Aufgaben dann selbst übernehmen — und genau das plant niemand.“",
+ kann:"Wir schreiben das stärkste Gegenargument auf, bevor wir unsere Gliederung machen.", p:"Paper 2"},
+{id:"s37",d:"eroert",n:"Beispiele richtig einsetzen",kz:"Ein Beispiel belegt, es ersetzt nicht.",
+ was:"Beispiele machen ein Argument anschaulich, aber sie beweisen es nicht. Sie gehören hinter die Begründung, nicht an ihre Stelle — und sie brauchen einen Satz, der sie mit der Behauptung zurückverbindet.",
+ bsp:"Behauptung — Begründung — Beispiel — Rückbindung: „… So zeigt schon der Fall X, dass die Regel in der Praxis nicht greift.“ Der letzte Halbsatz ist der, den die meisten weglassen.",
+ kann:"Nach jedem Beispiel folgt bei uns ein Satz, der zur Behauptung zurückführt.", p:"Paper 2"},
+{id:"s38",d:"eroert",n:"Einen Schluss ziehen",kz:"Mehr sagen als die Einleitung — nicht dasselbe.",
+ was:"Der Schluss soll eine Folgerung enthalten, die vorher noch nicht dastand: eine Bedingung, eine offene Frage mit Richtung, eine Konsequenz. „Zusammenfassend lässt sich sagen, dass es Vor- und Nachteile gibt“ ist keine.",
+ bsp:"„Wer Handys verbietet, muss auch sagen, wie die Schule die Aufgaben übernimmt, die sie bisher an die Geräte ausgelagert hat.“",
+ kann:"Unser Schluss enthält mindestens einen Gedanken, der in der Einleitung nicht stand.", p:"Paper 2"},
+
+/* --- Sprache --- */
+{id:"s39",d:"sprache",n:"Kommasetzung",kz:"Nebensätze, Infinitivgruppen, Einschübe.",
+ was:"Drei Regeln decken fast alles ab: Nebensätze werden abgetrennt; angekündigte Infinitivgruppen ebenfalls; Einschübe werden auf beiden Seiten eingeschlossen. Der häufigste Fehler ist die halbe Klammer.",
+ bsp:"Falsch: „Er versprach, mir zu helfen und kam nicht.“ Richtig: „Er versprach, mir zu helfen, und kam nicht.“",
+ kann:"Wir finden in einem eigenen Text drei fehlende Kommas, ohne dass jemand sie anstreicht.", p:"Paper 1 · Paper 2"},
+{id:"s40",d:"sprache",n:"Groß- und Kleinschreibung",kz:"Vor allem: Nominalisierungen erkennen.",
+ was:"Großgeschrieben wird, was als Substantiv gebraucht wird — erkennbar an Artikel, Pronomen oder Mengenwort davor: das Lesen, nichts Neues, viel Gutes, etwas Schönes, alles Wichtige.",
+ bsp:"„Wir haben viel Neues gelernt.“ — nach viel, wenig, etwas, nichts, allerlei steht das Adjektiv groß.",
+ kann:"Wir erkennen die Nominalisierung am Signalwort davor, ohne zu raten.", p:"Paper 1 · Paper 2"},
+{id:"s41",d:"sprache",n:"Konjunktiv I und II",kz:"Fremde Rede wiedergeben, ohne sie zu übernehmen.",
+ was:"Der Konjunktiv I ist die Normalform der indirekten Rede: Er sagte, er habe … Der Konjunktiv II tritt nur ein, wenn Konjunktiv I mit dem Indikativ zusammenfällt (sie haben — sie hätten). Der Indikativ macht aus fremder Rede eine eigene Behauptung.",
+ bsp:"Direkt: „Ich habe die Briefe nicht gelesen.“ Indirekt: Er sagte, er habe die Briefe nicht gelesen. Nicht: … er hat die Briefe nicht gelesen.",
+ kann:"Wir geben eine Seite fremder Rede wieder, ohne einmal in den Indikativ zu rutschen.", p:"Paper 1 · Paper 2"},
+{id:"s42",d:"sprache",n:"Satzbau und Bezüge",kz:"Klar, wer gemeint ist und was wozu gehört.",
+ was:"Pronomen brauchen ein eindeutiges Bezugswort, Infinitivsätze dasselbe Subjekt wie der Hauptsatz, lange Sätze eine erkennbare Verbklammer. Unklare Bezüge kosten Verständlichkeit, nicht nur Stilpunkte.",
+ bsp:"Unklar: „Als er ihn traf, war er müde.“ — Unklar: „Um den Text zu verstehen, muss er mehrmals gelesen werden.“ (Wer versteht hier?)",
+ kann:"Wir lesen einen eigenen Text einmal nur auf „er, sie, es, dieser“ hin durch.", p:"Paper 1 · Paper 2"},
+{id:"s43",d:"sprache",n:"Präziser Wortschatz",kz:"Das genaue Wort statt des naheliegenden.",
+ was:"Präzision entsteht durch konkrete Substantive und starke Verben, nicht durch längere Sätze. Vage Wörter — Sache, Ding, machen, irgendwie, man — sind Platzhalter für ein Wort, das man noch nicht gesucht hat.",
+ bsp:"„Der Autor macht etwas mit den Fachleuten“ — nein: Er unterstellt ihnen etwas. Ein Wort, und die Aussage steht.",
+ kann:"Wir ersetzen in einem fertigen Text zehn allgemeine Wörter durch genaue.", p:"Paper 1 · Paper 2"},
+{id:"s44",d:"sprache",n:"Stil an die Textsorte anpassen",kz:"Nicht immer gleich schreiben.",
+ was:"Ein Tagebuch klingt anders als ein Leserbrief, ein Leserbrief anders als eine Analyse. Wer immer denselben Ton trifft, trifft ihn meistens nicht. Angepasst werden Satzlänge, Wortwahl, Nähe und Grad der Wertung.",
+ bsp:"„Der vorliegende Kommentar vertritt die These, dass …“ ist in einer Analyse richtig und in einer Rede vor Mitschülern falsch.",
+ kann:"Wir können unseren eigenen Text einer Textsorte zuordnen, ohne dass jemand die Aufgabe kennt.", p:"Paper 1 · Paper 2"},
+
+/* --- Arbeitsweise --- */
+{id:"s45",d:"arbeit",n:"Zeit in der Prüfung einteilen",kz:"Planen, schreiben, prüfen — mit festen Anteilen.",
+ was:"Bewährt: etwa ein Fünftel der Zeit planen, drei Fünftel schreiben, ein Fünftel prüfen. Wer bis zur letzten Minute schreibt, gibt einen ungelesenen Text ab — und ungelesene Texte enthalten immer Fehler, die man selbst gefunden hätte.",
+ bsp:"45 Minuten für eine Komposition: 7 Minuten Plan, 28 Minuten Text, 10 Minuten Durchsicht. Die letzten zehn Minuten sind keine verlorene Schreibzeit.",
+ kann:"Wir schreiben eine Übungskomposition mit Uhr und halten die Anteile ein.", p:"Paper 1 · Paper 2"},
+{id:"s46",d:"arbeit",n:"Vor dem Schreiben planen",kz:"Fünf Zeilen Gliederung, immer.",
+ was:"Der Plan legt Reihenfolge und Ende fest. Er verhindert, dass ein Text auf halbem Weg die Richtung ändert oder dass man auf den Schluss zurennt, ohne einen zu haben.",
+ bsp:"Erörterung: These · stärkstes Gegenargument · Entkräftung · zwei eigene Argumente mit Beispiel · Folgerung.",
+ kann:"Wir fangen keinen Prüfungstext ohne Gliederung an, auch wenn die Zeit knapp scheint.", p:"Paper 1 · Paper 2"},
+{id:"s47",d:"arbeit",n:"Überarbeiten",kz:"Nicht durchlesen — gezielt suchen.",
+ was:"Überarbeiten heißt, mit einer bestimmten Frage durch den Text zu gehen: einmal nur Kommas, einmal nur Wiederholungen, einmal nur Bezüge. Wer alles gleichzeitig sucht, findet nichts. Am besten mit einem Tag Abstand.",
+ bsp:"Durchgang 1: Kommas. Durchgang 2: dasselbe Wort zweimal in drei Zeilen. Durchgang 3: er, sie, es — auf wen?",
+ kann:"Unsere zweite Fassung unterscheidet sich sichtbar von der ersten.", p:"Paper 1 · Paper 2"},
+{id:"s48",d:"arbeit",n:"Aus Fehlern lernen",kz:"Fehlerheft führen und wirklich benutzen.",
+ was:"Derselbe Fehler dreimal ist keine Schwäche, sondern eine Gewohnheit. Wer korrigierte Texte nur auf die Note ansieht, wiederholt sie zuverlässig. Das Fehlerheft wird am Tag der Rückgabe geführt, nicht später.",
+ bsp:"Drei Spalten: falsche Fassung · richtige Fassung · Regel in eigenen Worten. Vor der nächsten Arbeit nur diese Seiten lesen.",
+ kann:"Wir können sagen, welchen Fehler wir zuletzt abgestellt haben.", p:"Paper 1 · Paper 2"}
+];
+
+/* =========================================================
+   ZUSTAND
+   ========================================================= */
+const KEY="isn_kompetenztafel_v1";
+const VERSION=1;
+function heuteISO(){ return new Date().toISOString().slice(0,10); }
+function leer(){
+  return {version:VERSION, meta:{kurs:"Deutsch A · Klasse 10", datum:heuteISO(), anlass:"Standortbestimmung zum Schuljahresbeginn"},
+          platz:{}, notiz:{}, fokus:{}, reihe:SKILLS.map(s=>s.id), i:0, zoom:0};
+}
+let S=leer();
+
+function setSaveState(t,c){ const e=document.getElementById("saveState"); e.textContent=t; e.style.color=c||"var(--moss)"; }
+function speichern(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S));
+    setSaveState("gesichert "+new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}),"var(--moss)");
+  }catch(e){ setSaveState("Browser speichert nicht — bitte exportieren","var(--oxide)"); }
+}
+let t0=null;
+function autosave(){ clearTimeout(t0); t0=setTimeout(speichern,400); }
+function laden(){
+  try{ const r=localStorage.getItem(KEY); if(!r) return false;
+    const o=JSON.parse(r);
+    if(o&&o.version===VERSION){
+      S=Object.assign(leer(),o);
+      const ids=SKILLS.map(s=>s.id);
+      S.reihe=(S.reihe||[]).filter(x=>ids.indexOf(x)>=0);
+      ids.forEach(x=>{ if(S.reihe.indexOf(x)<0) S.reihe.push(x); });
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+/* =========================================================
+   HILFEN
+   ========================================================= */
+function el(h){ const d=document.createElement("div"); d.innerHTML=h.trim(); return d.firstElementChild; }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+function nl(s){ return esc(s).replace(/\n\n/g,"</p><p>").replace(/\n/g,"<br>"); }
+function skill(id){ return SKILLS.find(s=>s.id===id); }
+function offen(){ return S.reihe.filter(id=>!S.platz[id]); }
+function inZone(z){ return S.reihe.filter(id=>S.platz[id]===z); }
+function aktuell(){ const o=offen(); if(!o.length) return null; if(S.i>=o.length) S.i=0; return o[S.i]; }
+
+/* =========================================================
+   ZEICHNEN
+   ========================================================= */
+function renderAll(){ renderDeck(); renderZones(); renderBaro(); renderCounter(); }
+
+function renderCounter(){
+  const platziert=SKILLS.length-offen().length;
+  document.getElementById("cnt").textContent=platziert+" von "+SKILLS.length+" eingeordnet";
+}
+function renderBaro(){
+  const b=document.getElementById("baro"); b.innerHTML="";
+  const tot=SKILLS.length;
+  ZONEN.forEach((z,i)=>{
+    const n=inZone(z.id).length;
+    b.appendChild(el('<i class="b'+(i+1)+'" style="width:'+(n/tot*100)+'%" title="'+esc(z.n)+': '+n+'"></i>'));
+  });
+  b.appendChild(el('<i class="b0" style="flex:1"></i>'));
+}
+
+function renderDeck(){
+  const d=document.getElementById("deck"); d.innerHTML="";
+  const id=aktuell();
+  if(!id){
+    d.appendChild(el('<div class="done"><h2>Alle '+SKILLS.length+' Kompetenzen sind eingeordnet.</h2>'
+      +'<p class="muted">Ihr könnt Karten weiter zwischen den Spalten verschieben oder jetzt den Bericht erstellen.</p></div>'));
+    return;
+  }
+  const s=skill(id);
+  const stack=el('<div class="stack"></div>');
+  const c=el('<div class="bigcard" tabindex="0">'
+    +'<div class="dom"><span class="dot" style="background:'+DOM[s.d].c+'"></span>'+esc(DOM[s.d].n)+' · '+esc(s.p)+'</div>'
+    +'<div class="nm">'+esc(s.n)+'</div>'
+    +'<p class="kz">'+esc(s.kz)+'</p>'
+    +'<div class="deckrow"></div></div>');
+  const row=c.querySelector(".deckrow");
+  ZONEN.forEach((z,i)=>{
+    const b=el('<button class="zbtn" data-z="'+i+'"><b>'+(i+1)+'</b>'+esc(z.n)+'</button>');
+    b.onclick=ev=>{ ev.stopPropagation(); platzieren(id,z.id); };
+    row.appendChild(b);
+  });
+  const mehr=el('<button class="zbtn" style="border-color:var(--slate);color:var(--slate)"><b>I</b>Mehr dazu</button>');
+  mehr.onclick=ev=>{ ev.stopPropagation(); openInfo(id); };
+  row.appendChild(mehr);
+  const spaeter=el('<button class="zbtn"><b>→</b>Später</button>');
+  spaeter.onclick=ev=>{ ev.stopPropagation(); S.i=(S.i+1)%Math.max(1,offen().length); autosave(); renderDeck(); };
+  row.appendChild(spaeter);
+  row.appendChild(el('<span class="hint">Karte ziehen · oder Tasten 1–4 · I für Infos · → später</span>'));
+
+  dragbar(c, id, null);
+  stack.appendChild(c);
+  d.appendChild(stack);
+}
+
+function renderZones(){
+  const w=document.getElementById("zones"); w.innerHTML="";
+  ZONEN.forEach(z=>{
+    const liste=inZone(z.id);
+    const col=el('<div class="zone" data-zone="'+z.id+'" style="--zc:'+z.c+'">'
+      +'<div class="zhead"><span><span class="zn">'+esc(z.n)+'</span><br><span class="zs">'+esc(z.s)+'</span></span>'
+      +'<span class="zc">'+liste.length+'</span></div><div class="zbody"></div></div>');
+    const body=col.querySelector(".zbody");
+    if(!liste.length) body.appendChild(el('<div class="zempty">Karten hierher ziehen</div>'));
+    liste.forEach(id=>{
+      const s=skill(id);
+      const chip=el('<div class="chip" tabindex="0"><span class="cd" style="background:'+DOM[s.d].c+'"></span>'
+        +'<span>'+esc(s.n)+'</span>'
+        +(S.notiz[id]&&S.notiz[id].trim()?'<span class="nt" title="Notiz vorhanden">●</span>':'')
+        +(S.fokus[id]?'<span class="st" title="Fokus">★</span>':'')+'</div>');
+      dragbar(chip, id, z.id);
+      body.appendChild(chip);
+    });
+    w.appendChild(col);
+  });
+}
+
+function platzieren(id, zone){
+  S.platz[id]=zone;
+  const o=offen(); if(S.i>=o.length) S.i=0;
+  autosave(); renderAll();
+}
+
+/* =========================================================
+   ZIEHEN (Maus, Touch, Stift)
+   ========================================================= */
+let drag=null;
+function dragbar(node, id, fromZone){
+  node.addEventListener("pointerdown", e=>{
+    if(e.button&&e.button!==0) return;
+    drag={id:id, from:fromZone, x0:e.clientX, y0:e.clientY, moved:false, ghost:null, node:node};
+    node.setPointerCapture&&node.setPointerCapture(e.pointerId);
+  });
+  node.addEventListener("pointermove", e=>{
+    if(!drag||drag.id!==id) return;
+    const dx=e.clientX-drag.x0, dy=e.clientY-drag.y0;
+    if(!drag.moved && Math.hypot(dx,dy)<7) return;
+    if(!drag.moved){
+      drag.moved=true;
+      drag.ghost=el('<div class="ghost">'+esc(skill(id).n)+'</div>');
+      document.body.appendChild(drag.ghost);
+    }
+    drag.ghost.style.left=(e.clientX+14)+"px";
+    drag.ghost.style.top=(e.clientY+14)+"px";
+    markZone(e.clientX,e.clientY);
+  });
+  node.addEventListener("pointerup", e=>{
+    if(!drag||drag.id!==id) return;
+    const moved=drag.moved;
+    if(drag.ghost) drag.ghost.remove();
+    clearZones();
+    if(moved){
+      const z=zoneAt(e.clientX,e.clientY);
+      if(z) platzieren(id,z);
+    }else{
+      openInfo(id);
+    }
+    drag=null;
+  });
+  node.addEventListener("pointercancel", ()=>{ if(drag&&drag.ghost) drag.ghost.remove(); clearZones(); drag=null; });
+  node.addEventListener("keydown", e=>{
+    const k=e.key;
+    if(k>="1"&&k<="4"){ platzieren(id, ZONEN[Number(k)-1].id); e.preventDefault(); }
+    else if(k==="Enter"||k===" "){ openInfo(id); e.preventDefault(); }
+  });
+}
+function zoneAt(x,y){
+  const t=document.elementFromPoint(x,y);
+  const z=t&&t.closest?t.closest("[data-zone]"):null;
+  return z?z.getAttribute("data-zone"):null;
+}
+function markZone(x,y){
+  const z=zoneAt(x,y);
+  document.querySelectorAll(".zone").forEach(n=>{
+    n.classList.toggle("over", n.getAttribute("data-zone")===z);
+  });
+}
+function clearZones(){ document.querySelectorAll(".zone").forEach(n=>n.classList.remove("over")); }
+
+/* =========================================================
+   INFOFENSTER
+   ========================================================= */
+function openInfo(id){
+  const s=skill(id), m=document.getElementById("mbox");
+  m.innerHTML=
+   '<div class="mh"><div class="dom"><span class="dot" style="width:10px;height:10px;border-radius:50%;background:'+DOM[s.d].c+'"></span>'
+   +esc(DOM[s.d].n)+' · '+esc(s.p)+'</div><h3>'+esc(s.n)+'</h3><p style="margin:0;color:var(--ink-soft)">'+esc(s.kz)+'</p></div>'
+   +'<div class="mb">'
+   +'<h4>Worum es geht</h4><p>'+nl(s.was)+'</p>'
+   +'<h4>Beispiel</h4><div class="bsp"><p style="margin:0">'+nl(s.bsp)+'</p></div>'
+   +'<h4>Wir können es, wenn …</h4><p>'+esc(s.kann)+'</p>'
+   +'<h4>Notiz aus der Stunde</h4><textarea id="mnote" placeholder="Was habt ihr besprochen? Beispiele, Fragen, Vereinbarungen.">'+esc(S.notiz[id]||"")+'</textarea>'
+   +'<h4>Einordnung</h4><div class="zpick" id="mzpick"></div>'
+   +'<div class="mrow"><button class="star'+(S.fokus[id]?" on":"")+'" id="mstar">★ Nehmen wir uns zuerst vor</button>'
+   +'<span class="sp"></span><button class="tb solid" id="mclose">Schließen</button></div></div>';
+
+  const pick=m.querySelector("#mzpick");
+  ZONEN.forEach(z=>{
+    const on=S.platz[id]===z.id;
+    const b=el('<button'+(on?' class="on" style="background:'+z.c+'"':'')+'>'+esc(z.n)+'</button>');
+    b.onclick=()=>{ platzieren(id,z.id); openInfo(id); };
+    pick.appendChild(b);
+  });
+  const zurueck=el('<button>zurück in den Stapel</button>');
+  zurueck.onclick=()=>{ delete S.platz[id]; autosave(); renderAll(); openInfo(id); };
+  pick.appendChild(zurueck);
+
+  m.querySelector("#mnote").oninput=e=>{ S.notiz[id]=e.target.value; autosave(); renderZones(); };
+  m.querySelector("#mstar").onclick=e=>{
+    S.fokus[id]=!S.fokus[id];
+    e.target.classList.toggle("on",!!S.fokus[id]);
+    autosave(); renderZones();
+  };
+  m.querySelector("#mclose").onclick=closeInfo;
+  document.getElementById("modal").classList.add("on");
+}
+function closeInfo(){ document.getElementById("modal").classList.remove("on"); }
+document.getElementById("modal").addEventListener("pointerdown", e=>{ if(e.target.id==="modal") closeInfo(); });
+
+/* =========================================================
+   TASTATUR
+   ========================================================= */
+document.addEventListener("keydown", e=>{
+  if(document.body.classList.contains("bericht")) return;
+  const tag=(e.target.tagName||"").toLowerCase();
+  if(tag==="textarea"||tag==="input") { if(e.key==="Escape") e.target.blur(); return; }
+  const offenM=document.getElementById("modal").classList.contains("on");
+  if(e.key==="Escape"){ if(offenM) closeInfo(); return; }
+  if(offenM) return;
+  const id=aktuell(); if(!id) return;
+  if(e.key>="1"&&e.key<="4"){ platzieren(id, ZONEN[Number(e.key)-1].id); e.preventDefault(); }
+  else if(e.key==="ArrowRight"){ S.i=(S.i+1)%Math.max(1,offen().length); autosave(); renderDeck(); e.preventDefault(); }
+  else if(e.key==="ArrowLeft"){ const n=offen().length; S.i=(S.i-1+n)%Math.max(1,n); autosave(); renderDeck(); e.preventDefault(); }
+  else if(e.key.toLowerCase()==="i"){ openInfo(id); e.preventDefault(); }
+});
+
+/* =========================================================
+   BERICHT
+   ========================================================= */
+function renderBericht(){
+  const b=document.getElementById("bericht");
+  const tot=SKILLS.length, off=offen().length;
+  const fokusListe=SKILLS.filter(s=>S.fokus[s.id]);
+  let h='<div class="noprint" style="display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap">'
+    +'<button class="tb solid" id="rBack">Zurück zur Tafel</button>'
+    +'<button class="tb" id="rPrint">Drucken oder als PDF sichern</button>'
+    +'<button class="tb" id="rExp">Exportieren</button></div>';
+  h+='<p class="eyebrow">Kompetenz-Tafel · Deutsch A · IGCSE 0505</p>';
+  h+='<h1>Wo stehen wir?</h1>';
+  h+='<div class="rmeta">'
+    +'<div><label>Kurs</label><input type="text" id="mKurs" value="'+esc(S.meta.kurs)+'"></div>'
+    +'<div><label>Datum</label><input type="text" id="mDatum" value="'+esc(S.meta.datum)+'"></div>'
+    +'<div><label>Anlass</label><input type="text" id="mAnlass" value="'+esc(S.meta.anlass)+'"></div></div>';
+
+  h+='<div class="rbar">';
+  ZONEN.forEach((z,i)=>{ const n=inZone(z.id).length;
+    if(n) h+='<i style="width:'+(n/tot*100)+'%;background:'+z.c+'">'+n+'</i>'; });
+  if(off) h+='<i style="width:'+(off/tot*100)+'%;background:var(--rule-soft);color:var(--ink-soft)">'+off+'</i>';
+  h+='</div><p style="font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);letter-spacing:.05em">'
+    +ZONEN.map(z=>esc(z.n)+" "+inZone(z.id).length).join(" · ")+(off?" · noch offen "+off:"")+' · insgesamt '+tot+'</p>';
+
+  if(fokusListe.length){
+    h+='<h2>Das nehmen wir uns zuerst vor</h2><div class="fokus"><ol style="margin:0;padding-left:20px">';
+    fokusListe.forEach(s=>{ h+='<li style="margin-bottom:4px">'+esc(s.n)+' <span style="font-family:var(--mono);font-size:11px;color:var(--ink-faint)">'+esc(DOM[s.d].n)+'</span></li>'; });
+    h+='</ol></div>';
+  }
+
+  ZONEN.forEach(z=>{
+    const liste=inZone(z.id);
+    h+='<h2><span style="display:inline-block;width:11px;height:11px;background:'+z.c+';margin-right:9px"></span>'
+      +esc(z.n)+' <span style="font-family:var(--mono);font-size:13px;color:var(--ink-faint)">'+liste.length+' · '+esc(z.s)+'</span></h2>';
+    if(!liste.length){ h+='<p style="color:var(--ink-faint);font-style:italic">Keine Kompetenzen in dieser Spalte.</p>'; return; }
+    liste.forEach(id=>{
+      const s=skill(id), note=(S.notiz[id]||"").trim();
+      h+='<div class="rline"><div><div class="rn">'+(S.fokus[id]?'★ ':'')+esc(s.n)+'</div>'
+        +(note?'<div class="rnote">'+nl(note)+'</div>':'')+'</div>'
+        +'<div class="rd">'+esc(DOM[s.d].n)+'<br>'+esc(s.p)+'</div></div>';
+    });
+  });
+
+  if(off){
+    h+='<h2>Noch nicht besprochen</h2>';
+    offen().forEach(id=>{ const s=skill(id);
+      h+='<div class="rline"><div class="rn">'+esc(s.n)+'</div><div class="rd">'+esc(DOM[s.d].n)+'</div></div>'; });
+  }
+  h+='<p style="margin-top:34px;font-size:13px;color:var(--ink-soft)">Erstellt mit der Kompetenz-Tafel Deutsch A. '
+    +'Die Einordnung ist eine gemeinsame Einschätzung der Klasse, keine Bewertung einzelner Lernpartner:innen.</p>';
+  b.innerHTML=h;
+
+  b.querySelector("#rBack").onclick=()=>{ document.body.classList.remove("bericht"); };
+  b.querySelector("#rPrint").onclick=()=>window.print();
+  b.querySelector("#rExp").onclick=exportieren;
+  b.querySelector("#mKurs").oninput=e=>{S.meta.kurs=e.target.value;autosave();};
+  b.querySelector("#mDatum").oninput=e=>{S.meta.datum=e.target.value;autosave();};
+  b.querySelector("#mAnlass").oninput=e=>{S.meta.anlass=e.target.value;autosave();};
+}
+
+/* =========================================================
+   DATEI
+   ========================================================= */
+function dateiname(){
+  const k=(S.meta.kurs||"Kurs").replace(/[^\wÄÖÜäöüß\- ]/g,"").replace(/\s+/g,"_");
+  return "Kompetenztafel_"+k+"_"+(S.meta.datum||heuteISO())+".json";
+}
+function exportieren(){
+  speichern();
+  const daten=Object.assign({},S,{stand:ZONEN.map(z=>({zone:z.n, kompetenzen:inZone(z.id).map(id=>skill(id).n)}))});
+  const blob=new Blob([JSON.stringify(daten,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=dateiname();
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  setSaveState("Datei exportiert","var(--slate)");
+}
+function importieren(f){
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const o=JSON.parse(r.result);
+      if(!o||typeof o!=="object"||!o.platz) throw new Error("Format");
+      S=Object.assign(leer(),o); S.version=VERSION;
+      const ids=SKILLS.map(s=>s.id);
+      S.reihe=(S.reihe||[]).filter(x=>ids.indexOf(x)>=0);
+      ids.forEach(x=>{ if(S.reihe.indexOf(x)<0) S.reihe.push(x); });
+      speichern(); renderAll();
+      if(document.body.classList.contains("bericht")) renderBericht();
+    }catch(e){ alert("Diese Datei lässt sich nicht lesen. Wähle die Datei, die du aus diesem Programm exportiert hast."); }
+  };
+  r.onerror=()=>alert("Die Datei konnte nicht gelesen werden.");
+  r.readAsText(f);
+}
+
+/* =========================================================
+   LEISTE
+   ========================================================= */
+document.getElementById("bSave").onclick=speichern;
+document.getElementById("bExp").onclick=exportieren;
+document.getElementById("bImp").onclick=()=>document.getElementById("fileIn").click();
+document.getElementById("fileIn").onchange=e=>{ const f=e.target.files&&e.target.files[0]; if(f) importieren(f); e.target.value=""; };
+document.getElementById("bRep").onclick=()=>{ renderBericht(); document.body.classList.add("bericht"); window.scrollTo(0,0); };
+document.getElementById("bMisch").onclick=()=>{
+  const o=offen();
+  for(let i=o.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=o[i]; o[i]=o[j]; o[j]=t; }
+  const platziert=S.reihe.filter(id=>S.platz[id]);
+  S.reihe=platziert.concat(o); S.i=0; autosave(); renderDeck();
+};
+const ZOOMS=[1,1.15,1.3];
+document.getElementById("bZoom").onclick=()=>{
+  S.zoom=(S.zoom+1)%ZOOMS.length;
+  document.documentElement.style.setProperty("--f",ZOOMS[S.zoom]);
+  document.getElementById("bZoom").textContent=["A+","A++","A"][S.zoom];
+  autosave();
+};
+window.addEventListener("beforeunload",()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} });
+
+/* =========================================================
+   START
+   ========================================================= */
+(function init(){
+  const gefunden=laden();
+  document.documentElement.style.setProperty("--f",ZOOMS[S.zoom||0]);
+  document.getElementById("bZoom").textContent=["A+","A++","A"][S.zoom||0];
+  renderAll();
+  if(gefunden) setSaveState("gespeicherter Stand geladen","var(--slate)");
+  else{
+    try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); }
+    catch(e){ setSaveState("nur Export möglich","var(--oxide)"); }
+  }
+})();
+</script>
+</body>
+</html>
