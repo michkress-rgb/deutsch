@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ermittlungsakte Fehlschlüsse – Klassen 8/9</title>
+<style>
+:root{
+  --ink:#17162A;
+  --ink-soft:#3B3956;
+  --paper:#EDEBF3;
+  --card:#FFFFFF;
+  --line:#C9C6DA;
+  --stamp:#C41E5C;
+  --ok:#0E7C61;
+  --gold:#C9A227;
+  --shadow:0 2px 0 rgba(23,22,42,.10), 0 10px 26px rgba(23,22,42,.10);
+  --font-display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --font-body:"Avenir Next",Avenir,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-mono:"American Typewriter","Courier New",Courier,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:17px;line-height:1.55;
+  padding:0 0 64px;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+
+/* ---------- Kopfleiste ---------- */
+.topbar{
+  background:var(--ink);color:#EDEBF3;
+  border-bottom:5px solid var(--stamp);
+  padding:14px 0 12px;margin-bottom:26px;
+}
+.topbar .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-family:var(--font-mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;opacity:.75}
+.topbar h1{font-family:var(--font-display);font-size:22px;margin:0;letter-spacing:.01em;flex:1 1 220px}
+.btn-home{
+  font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  background:none;border:1.5px solid rgba(237,235,243,.45);color:#EDEBF3;
+  padding:9px 14px;border-radius:2px;cursor:pointer;min-height:40px;
+}
+.btn-home:hover{background:rgba(237,235,243,.12)}
+
+/* ---------- Typo ---------- */
+h2{font-family:var(--font-display);font-size:28px;margin:0 0 6px;line-height:1.2}
+h3{font-family:var(--font-display);font-size:20px;margin:0 0 6px}
+.eyebrow{
+  font-family:var(--font-mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--stamp);margin:0 0 4px;
+}
+.lede{color:var(--ink-soft);margin:0 0 22px;max-width:66ch}
+.rule{border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);height:3px;margin:26px 0}
+
+/* ---------- Kacheln ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:22px 0}
+.tile{
+  background:var(--card);border:1px solid var(--line);border-left:7px solid var(--ink);
+  border-radius:3px;padding:16px 18px;text-align:left;cursor:pointer;box-shadow:var(--shadow);
+  font:inherit;color:inherit;transition:transform .15s ease, border-left-color .15s ease;
+  display:flex;flex-direction:column;gap:4px;min-height:118px;
+}
+.tile:hover,.tile:focus-visible{transform:translateY(-3px);border-left-color:var(--stamp)}
+.tile .nr{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.2em;color:var(--ink-soft)}
+.tile .tt{font-family:var(--font-display);font-size:21px}
+.tile .td{font-size:14.5px;color:var(--ink-soft);line-height:1.4}
+.tile .status{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;color:var(--ok);margin-top:auto}
+.tile.locked{opacity:.55}
+
+/* ---------- Fortschritt ---------- */
+.progress{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:14px 18px;box-shadow:var(--shadow)}
+.bar{height:12px;background:#DDDAE9;border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar > i{display:block;height:100%;background:var(--ok);width:0;transition:width .5s ease}
+.pct{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--ink-soft)}
+
+/* ---------- Dienstmarken ---------- */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-top:12px}
+.badge{
+  background:var(--card);border:1px dashed var(--line);border-radius:3px;padding:12px 10px;text-align:center;
+  opacity:.45;filter:grayscale(1);transition:.25s;
+}
+.badge.on{opacity:1;filter:none;border:1.5px solid var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.16)}
+.badge .ic{font-size:30px;line-height:1.1}
+.badge .bn{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.badge .bd{font-size:12.5px;color:var(--ink-soft);line-height:1.35;margin-top:3px}
+
+/* ---------- Karten / Flip ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.flip{perspective:1400px;height:520px;cursor:pointer}
+.flip.on .face:not(.back),.sus.on .face:not(.back){pointer-events:none}
+.flip:not(.on) .face.back,.sus:not(.on) .face.back{pointer-events:none}
+.flip-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.flip.on .flip-in{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:var(--card);border:1px solid var(--line);border-radius:3px;box-shadow:var(--shadow);
+  padding:0;display:flex;flex-direction:column;overflow:hidden;
+  user-select:none;-webkit-user-select:none;
+}
+.face .inner{padding:18px;display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.face.back{transform:rotateY(180deg);background:
+  repeating-linear-gradient(180deg,#fff,#fff 27px,#F3F1FA 27px,#F3F1FA 28px);}
+.face .nr{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.2em;color:var(--stamp)}
+.face .tt{font-family:var(--font-display);font-size:23px;line-height:1.15;margin:6px 0 8px}
+.face .kurz{color:var(--ink-soft);font-size:15px}
+.face .flipmark{margin-top:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft);text-transform:uppercase}
+.face h4{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--stamp);margin:12px 0 4px}
+.face p{margin:0 0 6px;font-size:15px}
+.face.back p{font-size:14.5px}
+.face.back .zitat{font-size:13.5px}
+.face ul{margin:0;padding-left:18px;font-size:14.5px}
+.face .witz{font-size:14px;color:var(--ink-soft);font-style:italic;margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.zitat{font-family:var(--font-mono);font-size:14px;background:#F5F3FB;border-left:3px solid var(--line);padding:8px 10px;margin:2px 0 6px}
+
+/* ---------- Stempel ---------- */
+.stamp{
+  font-family:var(--font-mono);font-weight:700;font-size:17px;letter-spacing:.16em;text-transform:uppercase;
+  border:3.5px solid currentColor;border-radius:5px;padding:5px 12px;display:inline-block;
+  transform:rotate(-7deg);opacity:.92;
+}
+.stamp.ja{color:var(--ok)}
+.stamp.nein{color:var(--stamp)}
+.stamp-anim{animation:stampIn .32s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes stampIn{0%{transform:rotate(-7deg) scale(2.4);opacity:0}60%{opacity:1}100%{transform:rotate(-7deg) scale(1);opacity:.92}}
+
+/* ---------- Buttons ---------- */
+.btn{
+  font-family:var(--font-mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--ink);color:#fff;border:0;border-radius:3px;padding:13px 20px;cursor:pointer;min-height:46px;
+}
+.btn:hover{background:var(--ink-soft)}
+.btn.ghost{background:none;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.ghost:hover{background:rgba(23,22,42,.07)}
+.btn[disabled]{opacity:.4;cursor:default}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+
+/* ---------- Antwortkarten (Gegenüberstellung) ---------- */
+.line-up{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:18px}
+.sus{perspective:1400px;height:300px;cursor:pointer}
+.sus .face .inner{padding:16px;justify-content:center}
+.sus .aussage{font-size:16.5px}
+.sus .verdachtsnr{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.2em;color:var(--ink-soft);margin-bottom:10px}
+.sus .why{font-size:14.5px;margin-top:12px}
+.sus.done{cursor:default}
+
+/* ---------- Ablage (Ziehen) ---------- */
+.ablage{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+@media(max-width:820px){.ablage{grid-template-columns:1fr}}
+.zettel{
+  background:#FFFCEA;border:1px solid #E4DDB4;border-radius:3px;padding:12px 14px;margin-bottom:10px;
+  box-shadow:0 1px 0 rgba(0,0,0,.08),0 4px 10px rgba(0,0,0,.07);font-size:15.5px;cursor:grab;
+  touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.zettel.picked{outline:3px solid var(--stamp);outline-offset:2px}
+.zettel.dragging{position:fixed;z-index:99;width:280px;transform:rotate(-2deg);cursor:grabbing;opacity:.95}
+.ordner{
+  background:var(--card);border:1.5px dashed var(--line);border-radius:3px;padding:10px 12px;margin-bottom:10px;min-height:64px;
+}
+.ordner.hover{border-color:var(--stamp);background:#FDF1F5}
+.ordner .on{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.ordner .oname{font-family:var(--font-display);font-size:18px}
+.ordner .slot{margin-top:6px}
+.ordner .slot .zettel{margin-bottom:6px;cursor:pointer}
+.zettel.richtig{background:#E7F6F1;border-color:var(--ok)}
+.zettel.falsch{background:#FCEBF1;border-color:var(--stamp)}
+.col h3{margin-bottom:10px}
+
+/* ---------- Quiz ---------- */
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{
+  background:var(--card);border:1.5px solid var(--line);border-radius:3px;padding:14px 16px;text-align:left;
+  font:inherit;color:inherit;cursor:pointer;min-height:52px;
+}
+.opt:hover{border-color:var(--ink)}
+.opt.ja{border-color:var(--ok);background:#E7F6F1}
+.opt.nein{border-color:var(--stamp);background:#FCEBF1}
+.opt[disabled]{cursor:default}
+.frage{background:var(--card);border:1px solid var(--line);border-left:7px solid var(--stamp);border-radius:3px;padding:18px;box-shadow:var(--shadow)}
+.frage .q{font-size:18px;margin:6px 0 0}
+.meta{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--ink-soft);margin-bottom:12px;text-transform:uppercase}
+.feedback{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:3px;padding:14px 16px}
+.feedback p{margin:8px 0 0;font-size:15px}
+
+/* ---------- Spurensuche ---------- */
+.sachtext{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:20px 22px;box-shadow:var(--shadow);font-size:17px;line-height:1.75}
+.satz{cursor:pointer;border-radius:2px;padding:1px 2px;transition:background .15s}
+.satz:hover{background:#FFF6C2}
+.satz.gefunden{background:#D8F0E7;box-shadow:inset 0 -2px 0 var(--ok)}
+.satz.sauber{background:#EFEDF7;color:var(--ink-soft)}
+.satz .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--ok);white-space:nowrap}
+.modal{position:fixed;inset:0;background:rgba(23,22,42,.55);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:0}
+.modal-in{background:var(--paper);border-top:5px solid var(--stamp);border-radius:6px 6px 0 0;width:100%;max-width:720px;max-height:82vh;overflow-y:auto;padding:20px 18px 30px}
+.picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:12px}
+.picker button{font:inherit;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:3px;padding:12px;cursor:pointer;min-height:48px}
+.picker button:hover{border-color:var(--stamp)}
+
+/* ---------- Herzen ---------- */
+.herzen{font-size:20px;letter-spacing:3px}
+.textliste{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:18px}
+
+/* ---------- Urkunde ---------- */
+.urkunde{background:var(--card);border:3px double var(--ink);border-radius:4px;padding:34px 26px;text-align:center;box-shadow:var(--shadow)}
+.urkunde .gross{font-family:var(--font-display);font-size:34px;margin:10px 0}
+
+.hinweis{font-size:14.5px;color:var(--ink-soft);font-family:var(--font-mono);letter-spacing:.03em}
+:focus-visible{outline:3px solid var(--stamp);outline-offset:2px}
+@media(max-width:640px){
+  h2{font-size:24px}
+  .flip{height:600px}
+  body{font-size:16.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="wrap">
+    <span class="logo">Akte&nbsp;FS</span>
+    <h1>Ermittlungsakte Fehlschlüsse</h1>
+    <button class="btn-home" id="homeBtn">Zur Übersicht</button>
+  </div>
+</div>
+<main class="wrap" id="app"></main>
+<div id="modalHost"></div>
+<script>
+/* =========================================================
+   DATEN
+   ========================================================= */
+const FS = [
+{id:"ad_hominem",nr:"FS-01",name:"Angriff auf die Person",lat:"argumentum ad hominem",
+ kurz:"Nicht das Argument wird geprüft, sondern die Person angegriffen.",
+ def:"Statt die Aussage zu widerlegen, richtet sich der Angriff gegen Charakter, Aussehen, Alter, Herkunft oder Verhalten der sprechenden Person. Das eigentliche Argument bleibt dabei unberührt stehen – es wird schlicht übersprungen.",
+ sig:["„Das sagt gerade der Richtige!“","„Du bist doch erst 14, was weißt du schon?“","Beleidigung statt Beleg"],
+ bsp:"„Lisas Vorschlag zum Klimaschutz ist Unsinn – sie fliegt doch selbst in den Urlaub.“",
+ gegen:"Frag zurück: „Was hat das mit der Sache zu tun?“ Prüfe das Argument getrennt von der Person.",
+ witz:"Auch unsympathische Menschen können recht haben. Ärgerlich, aber wahr."},
+
+{id:"strohmann",nr:"FS-02",name:"Strohmann-Argument",lat:"straw man",
+ kurz:"Die Gegenposition wird verzerrt – und die Karikatur wird widerlegt.",
+ def:"Aus dem echten Argument wird eine übertriebene Version gebaut, ein „Strohmann“. Dieser wird dann triumphierend umgeworfen. Das echte Argument hat nie jemand angefasst.",
+ sig:["„Du willst also, dass …“","Extremwörter: alle, nie, komplett, abschaffen","plötzliche Übertreibung"],
+ bsp:"„Herr Meier will weniger Hausaufgaben. Er will also, dass wir gar nichts mehr lernen.“",
+ gegen:"Die eigene Position wörtlich wiederholen: „Das habe ich nicht gesagt. Ich habe gesagt …“",
+ witz:"Ein Strohmann brennt herrlich schnell. Nur war er leider nie der Gegner."},
+
+{id:"falsches_dilemma",nr:"FS-03",name:"Falsches Dilemma",lat:"Schwarz-Weiß-Denken",
+ kurz:"Nur zwei Möglichkeiten werden gezeigt, obwohl es mehr gibt.",
+ def:"Die Auswahl wird künstlich auf zwei Extreme verengt: entweder – oder. Zwischentöne, Kompromisse und dritte Wege verschwinden aus dem Blick.",
+ sig:["„Entweder … oder …“","„Wer nicht für uns ist, ist gegen uns.“","keine Zwischenstufen im Text"],
+ bsp:"„Entweder wir schaffen die Noten ab oder niemand lernt hier je wieder etwas.“",
+ gegen:"Such die dritte Möglichkeit. Fast immer gibt es sie.",
+ witz:"Die Welt hat mehr Schalter als „an“ und „aus“."},
+
+{id:"autoritaet",nr:"FS-04",name:"Autoritätsargument",lat:"argumentum ad verecundiam",
+ kurz:"Berühmtheit ersetzt den Beleg.",
+ def:"Eine Behauptung soll stimmen, weil eine bekannte oder mächtige Person sie vertritt. Zum Fehlschluss wird es, wenn diese Person kein Fachwissen zum Thema hat oder wenn ihr Name den Beleg ersetzen soll. Sich auf echte Fachleute mit Belegen zu stützen, ist dagegen völlig in Ordnung.",
+ sig:["„Sogar X sagt das.“","Werbung mit Prominenten","Titel statt Begründung"],
+ bsp:"„Diese Zahnpasta ist die beste – ein berühmter Fußballspieler wirbt dafür.“",
+ gegen:"Frag: Ist diese Person Fachfrau oder Fachmann für genau dieses Thema? Und wo sind die Daten?",
+ witz:"Ein Torwart kennt sich mit Ecken aus, nicht mit Zahnschmelz."},
+
+{id:"mehrheit",nr:"FS-05",name:"Argument der Mehrheit",lat:"argumentum ad populum",
+ kurz:"„Alle machen das“ soll als Begründung reichen.",
+ def:"Die Zahl der Zustimmenden wird zum Beweis erklärt. Wie viele Menschen etwas glauben, sagt aber nichts darüber, ob es stimmt.",
+ sig:["„Alle wissen doch …“","„Millionen Kundinnen können sich nicht irren.“","„Das ist Mainstream / Trend.“"],
+ bsp:"„In meiner Klasse haben alle ein neues Handy, also brauche ich auch eins.“",
+ gegen:"Frag: Was spricht inhaltlich dafür – unabhängig davon, wie viele mitmachen?",
+ witz:"Millionen Menschen können sich sehr wohl irren. Fragen Sie die Erde, sie war früher flach."},
+
+{id:"verallgemeinerung",nr:"FS-06",name:"Voreilige Verallgemeinerung",lat:"Pars pro toto",
+ kurz:"Aus wenigen Fällen wird eine Regel für alle gemacht.",
+ def:"Ein oder zwei Einzelfälle werden zur allgemeinen Aussage aufgeblasen. Die Stichprobe ist viel zu klein oder einseitig ausgewählt.",
+ sig:["„Immer …“, „Nie …“, „Typisch …“","„Ich kenne einen, der …“","Einzelbeispiel als Beweis"],
+ bsp:"„Zwei Achtklässler haben den Bus verpasst. Diese Generation ist einfach unpünktlich.“",
+ gegen:"Frag nach der Datenmenge: Wie viele Fälle? Wer wurde gefragt? Wie ausgewählt?",
+ witz:"Zwei Datenpunkte sind eine Linie, keine Wahrheit."},
+
+{id:"dammbruch",nr:"FS-07",name:"Dammbruchargument",lat:"slippery slope",
+ kurz:"Ein kleiner Schritt führt angeblich zwangsläufig ins Chaos.",
+ def:"Von einer harmlosen Maßnahme wird eine Kette von Folgen behauptet, die immer schlimmer werden – ohne Beleg für ein einziges Kettenglied. Am Ende steht die Katastrophe.",
+ sig:["„Wenn wir X erlauben, dann bald Y und am Ende Z.“","„Das ist erst der Anfang.“","Folgekette ohne Belege"],
+ bsp:"„Wenn Handys in der Pause erlaubt sind, redet bald niemand mehr miteinander und am Ende schließt die Schule.“",
+ gegen:"Prüfe jedes Kettenglied einzeln: Ist dieser Schritt wirklich belegt oder nur behauptet?",
+ witz:"Vom ersten Keks direkt zum Weltuntergang – erstaunlich kurze Strecke."},
+
+{id:"zirkelschluss",nr:"FS-08",name:"Zirkelschluss",lat:"circulus vitiosus",
+ kurz:"Die Behauptung begründet sich selbst.",
+ def:"Der Beweis setzt genau das schon voraus, was er beweisen soll. Man dreht sich im Kreis: A gilt, weil A gilt – nur anders formuliert.",
+ sig:["Begründung wiederholt die These","„… weil es eben so ist.“","gleiche Wörter auf beiden Seiten von „weil“"],
+ bsp:"„Der Artikel ist glaubwürdig, denn darin steht, dass er glaubwürdig ist.“",
+ gegen:"Streiche die These und schau, ob die Begründung allein noch etwas Neues sagt.",
+ witz:"Ein Kreis ist eine schöne Form, aber ein schlechtes Argument."},
+
+{id:"kausal",nr:"FS-09",name:"Falscher Kausalschluss",lat:"post hoc ergo propter hoc",
+ kurz:"Was nacheinander passiert, wird zu Ursache und Wirkung erklärt.",
+ def:"Zwei Dinge treten gemeinsam oder nacheinander auf – daraus wird geschlossen, das eine verursache das andere. Zufall, eine dritte Ursache oder die umgekehrte Richtung werden nicht geprüft.",
+ sig:["„Seit … ist …“","„Immer wenn X, dann Y.“","Zusammenhang ohne Erklärung"],
+ bsp:"„Seit die neue Mensa geöffnet hat, sind die Mathenoten schlechter. Das Essen ist schuld.“",
+ gegen:"Frag nach dem Mechanismus: Wie genau soll das eine das andere bewirken? Gibt es eine dritte Ursache?",
+ witz:"Der Hahn kräht, dann geht die Sonne auf. Trotzdem ist er nicht zuständig."},
+
+{id:"mitleid",nr:"FS-10",name:"Appell an das Mitleid",lat:"argumentum ad misericordiam",
+ kurz:"Gefühle ersetzen die Begründung.",
+ def:"Statt sachlicher Gründe werden Mitleid, Angst oder Empörung erzeugt. Gefühle sind in Texten erlaubt und oft passend – zum Fehlschluss werden sie erst, wenn sie das Argument ersetzen statt es zu begleiten.",
+ sig:["Betonung von Leid und Anstrengung","„Denken Sie doch an …“","dramatische Bilder ohne Sachbezug"],
+ bsp:"„Sie müssen mir eine bessere Note geben – ich habe drei Nächte nicht geschlafen und mein Hamster ist gestorben.“",
+ gegen:"Frage: Was bleibt vom Argument übrig, wenn ich das Gefühl abziehe?",
+ witz:"Der Hamster tut uns aufrichtig leid. Die Rechtschreibung bleibt trotzdem falsch."},
+
+{id:"whataboutism",nr:"FS-11",name:"Whataboutism",lat:"tu quoque – „du doch auch“",
+ kurz:"Der Vorwurf wird mit einem Gegenvorwurf beantwortet.",
+ def:"Statt auf die Kritik einzugehen, wird auf ein Fehlverhalten der anderen Seite verwiesen. Selbst wenn der Gegenvorwurf stimmt, ist die ursprüngliche Kritik damit nicht beantwortet.",
+ sig:["„Und was ist mit …?“","„Sie machen das doch auch!“","Themenwechsel per Gegenangriff"],
+ bsp:"„Ja, ich war zu spät. Aber Sie haben unsere Arbeiten auch drei Wochen nicht zurückgegeben.“",
+ gegen:"Beides trennen: „Darüber reden wir gleich. Zuerst: Stimmt der Vorwurf gegen mich?“",
+ witz:"Zwei Fehler ergeben keine Wahrheit, sondern zwei Fehler."},
+
+{id:"analogie",nr:"FS-12",name:"Falsche Analogie",lat:"falscher Vergleich",
+ kurz:"Zwei Dinge werden verglichen, die im entscheidenden Punkt unähnlich sind.",
+ def:"Ein Vergleich ist nur so gut wie die Ähnlichkeit an der Stelle, um die es geht. Bei der falschen Analogie stimmt die Ähnlichkeit nur an einer Nebenstelle – der Schluss wird trotzdem gezogen.",
+ sig:["„Das ist doch genau wie …“","„Eine Schule ist wie ein Unternehmen.“","Vergleich mit Krieg, Tieren, Maschinen"],
+ bsp:"„Eine Schule ist wie eine Firma: Wer schlechte Leistung bringt, wird entlassen.“",
+ gegen:"Frag: Worin ähneln sich die beiden Dinge wirklich – und ist das genau der Punkt, um den es geht?",
+ witz:"Ein Fahrrad und ein Fisch bewegen sich beide vorwärts. Trotzdem würde ich keinen Karpfen satteln."},
+
+{id:"tradition",nr:"FS-13",name:"Traditionsargument",lat:"argumentum ad antiquitatem",
+ kurz:"„Das war schon immer so“ soll als Grund gelten.",
+ def:"Das Alter einer Sache wird zum Argument für ihre Richtigkeit erklärt. Wie lange etwas gemacht wird, sagt jedoch nichts darüber, ob es sinnvoll ist.",
+ sig:["„Schon immer …“","„Das hat sich bewährt.“","„Früher hat das auch niemanden gestört.“"],
+ bsp:"„Die Klassenfahrt geht seit 30 Jahren nach Berlin. Also fahren wir wieder nach Berlin.“",
+ gegen:"Frag: Welche Gründe sprechen heute dafür – abgesehen davon, dass es alt ist?",
+ witz:"Aderlass war jahrhundertelang üblich. Danke, wir verzichten."},
+
+{id:"natur",nr:"FS-14",name:"Naturargument",lat:"appeal to nature",
+ kurz:"„Natürlich“ wird mit „gut“ gleichgesetzt.",
+ def:"Aus der Herkunft eines Stoffes oder Verhaltens wird auf seinen Wert geschlossen: natürlich sei gut, künstlich sei schlecht. Beides ist unabhängig voneinander.",
+ sig:["„rein natürlich“, „ohne Chemie“","„Das ist eben die Natur des Menschen.“","„naturbelassen“ als Qualitätsversprechen"],
+ bsp:"„Dieser Tee hilft garantiert – er ist rein pflanzlich und völlig natürlich.“",
+ gegen:"Frag nach der Wirkung, nicht nach der Herkunft: Was ist untersucht worden?",
+ witz:"Tollkirschen sind vollkommen natürlich. Bitte trotzdem nicht naschen."},
+
+{id:"ablenkung",nr:"FS-15",name:"Nebelkerze",lat:"red herring – Ablenkungsmanöver",
+ kurz:"Ein neues Thema lenkt von der eigentlichen Frage ab.",
+ def:"Auf eine unbequeme Frage folgt eine Antwort zu etwas ganz anderem, oft zu etwas Erfreulichem. Die ursprüngliche Frage bleibt unbeantwortet, wirkt aber erledigt.",
+ sig:["„Viel wichtiger ist doch …“","„Reden wir lieber über …“","Themenwechsel mitten in der Antwort"],
+ bsp:"„Sie fragen nach den fehlenden Fahrrädern? Reden wir lieber über den Sieg unserer Volleyballmannschaft.“",
+ gegen:"Die Frage höflich wiederholen. Wortwörtlich.",
+ witz:"Der Nebel ist beeindruckend. Die Frage steht trotzdem noch da."},
+
+{id:"unwissenheit",nr:"FS-16",name:"Argument der Unwissenheit",lat:"argumentum ad ignorantiam",
+ kurz:"Fehlender Gegenbeweis gilt als Beweis.",
+ def:"Weil etwas nicht widerlegt wurde, soll es wahr sein. Damit wird die Beweislast umgedreht: Nicht die Behauptung muss belegt werden, sondern ihr Gegenteil.",
+ sig:["„Niemand konnte beweisen, dass …“","„Es ist nicht ausgeschlossen, dass …“","„Beweis mir doch das Gegenteil!“"],
+ bsp:"„Niemand konnte beweisen, dass es im Keller keine Geister gibt. Also gibt es sie.“",
+ gegen:"Wer behauptet, muss belegen. Fehlender Gegenbeweis ist kein Beweis.",
+ witz:"Niemand hat bewiesen, dass in meiner Federtasche kein Drache wohnt. Trotzdem füttere ich ihn nicht."}
+];
+
+/* Drei Verdächtige pro Fall: genau einer ist der gesuchte Fehlschluss */
+const UEB = {
+ad_hominem:[
+ {t:"„Frau Bergers Vorschlag für längere Pausen ist Quatsch – die hat doch selbst nie Sport gemacht.“",ok:1,w:"Genau. Angegriffen wird die Person, nicht der Vorschlag. Ob längere Pausen sinnvoll sind, bleibt völlig ungeklärt."},
+ {t:"„Längere Pausen sind sinnvoll, weil eine Untersuchung zeigt, dass die Konzentration danach steigt.“",ok:0,w:"Nein, das ist ein sauberes Argument: Behauptung plus Beleg."},
+ {t:"„Entweder längere Pausen oder wir brechen alle zusammen.“",ok:0,w:"Nein, das ist ein Falsches Dilemma: nur zwei Möglichkeiten, obwohl es viele gibt."}],
+strohmann:[
+ {t:"„Tom will weniger Plastik in der Mensa. Er will uns also vorschreiben, was wir essen dürfen.“",ok:1,w:"Genau. Aus „weniger Plastik“ wird „Essensvorschriften“ – eine Karikatur, die leichter anzugreifen ist."},
+ {t:"„Tom will weniger Plastik in der Mensa. Das finde ich gut, weil unsere Tonnen täglich überquellen.“",ok:0,w:"Nein, hier wird zugestimmt und begründet. Alles in Ordnung."},
+ {t:"„Tom hat keine Ahnung von Umweltschutz, er trägt selbst Turnschuhe aus Kunststoff.“",ok:0,w:"Nein, das ist ein Angriff auf die Person (FS-01)."}],
+falsches_dilemma:[
+ {t:"„Entweder wir schaffen die Noten ab oder niemand lernt hier je wieder etwas.“",ok:1,w:"Genau. Zwischen „gar keine Noten“ und „totaler Stillstand“ liegen sehr viele Möglichkeiten."},
+ {t:"„Wer die Noten abschaffen will, hat vermutlich selbst schlechte Noten.“",ok:0,w:"Nein, das ist ein Angriff auf die Person (FS-01)."},
+ {t:"„Noten haben wir schon immer gegeben, also behalten wir sie.“",ok:0,w:"Nein, das ist ein Traditionsargument (FS-13)."}],
+autoritaet:[
+ {t:"„Dieses Mittel wirkt bestimmt – ein bekannter Schauspieler empfiehlt es im Fernsehen.“",ok:1,w:"Genau. Berühmtheit ersetzt hier den Beleg. Schauspielkunst sagt nichts über Wirkstoffe."},
+ {t:"„Fachgesellschaften raten zu Vollkorn, weil mehrere große Studien darauf hindeuten.“",ok:0,w:"Nein, hier stützt sich die Aussage auf echte Fachleute und auf Daten. Das ist zulässig."},
+ {t:"„Millionen Menschen nehmen dieses Mittel, es muss also wirken.“",ok:0,w:"Nein, das ist das Argument der Mehrheit (FS-05)."}],
+mehrheit:[
+ {t:"„In meiner Klasse haben alle ein neues Handy, also brauche ich auch eins.“",ok:1,w:"Genau. Die Zahl der anderen ist kein Grund. Sie sagt nichts über den Bedarf."},
+ {t:"„Ich hätte gern ein neues Handy, weil meins keine Updates mehr bekommt.“",ok:0,w:"Nein, hier steht ein echter sachlicher Grund."},
+ {t:"„Ohne neues Handy verliere ich alle Freunde und breche am Ende die Schule ab.“",ok:0,w:"Nein, das ist ein Dammbruchargument (FS-07)."}],
+verallgemeinerung:[
+ {t:"„Zwei Achtklässler haben den Bus verpasst. Diese Generation ist einfach unpünktlich.“",ok:1,w:"Genau. Zwei Fälle werden zur Aussage über Millionen Menschen aufgeblasen."},
+ {t:"„In einer Umfrage unter 900 Jugendlichen kamen zwölf Prozent mindestens einmal pro Woche zu spät.“",ok:0,w:"Nein, hier passt die Aussage zur Datenmenge. Sauber."},
+ {t:"„Seit dem neuen Busfahrplan regnet es dauernd – der Fahrplan bringt Pech.“",ok:0,w:"Nein, das ist ein Falscher Kausalschluss (FS-09)."}],
+dammbruch:[
+ {t:"„Wenn Handys in der Pause erlaubt sind, redet bald niemand mehr miteinander und am Ende schließt die Schule.“",ok:1,w:"Genau. Eine ganze Folgenkette wird behauptet, ohne ein einziges Glied zu belegen."},
+ {t:"„Handys in der Pause könnten Gespräche verdrängen; drei Schulen berichten davon.“",ok:0,w:"Nein, das ist eine begrenzte Behauptung mit Hinweis auf Erfahrungen. Zulässig."},
+ {t:"„Ein Handyverbot gab es hier schon immer, also bleibt es.“",ok:0,w:"Nein, das ist ein Traditionsargument (FS-13)."}],
+zirkelschluss:[
+ {t:"„Der Artikel ist glaubwürdig, weil darin steht, dass er auf glaubwürdigen Quellen beruht.“",ok:1,w:"Genau. Die Begründung setzt schon voraus, was sie beweisen soll."},
+ {t:"„Der Artikel ist glaubwürdig, weil seine Zahlen mit denen des Statistischen Bundesamts übereinstimmen.“",ok:0,w:"Nein, hier kommt der Beleg von außen. Sauber."},
+ {t:"„Der Artikel ist glaubwürdig, weil ihn eine berühmte Sängerin geteilt hat.“",ok:0,w:"Nein, das ist ein Autoritätsargument (FS-04)."}],
+kausal:[
+ {t:"„Seit die neue Mensa geöffnet hat, sind die Mathenoten schlechter. Das Essen ist schuld.“",ok:1,w:"Genau. Zwei Ereignisse folgen aufeinander – mehr ist nicht gezeigt."},
+ {t:"„Die Mathenoten sind schlechter, weil vier Wochen Unterricht ausgefallen sind.“",ok:0,w:"Nein, hier wird eine nachvollziehbare Ursache genannt, die man prüfen kann."},
+ {t:"„Wer sich über die Mensa beschwert, ist einfach verwöhnt.“",ok:0,w:"Nein, das ist ein Angriff auf die Person (FS-01)."}],
+mitleid:[
+ {t:"„Sie müssen mir eine bessere Note geben – ich habe drei Nächte nicht geschlafen und mein Hamster ist gestorben.“",ok:1,w:"Genau. Das Gefühl ersetzt hier die Leistung, um die es eigentlich geht."},
+ {t:"„Ich bitte um eine Fristverlängerung, weil ich zwei Wochen krank war; die Bescheinigung liegt bei.“",ok:0,w:"Nein, hier steht ein sachlicher Grund mit Nachweis. Völlig in Ordnung."},
+ {t:"„Alle anderen haben auch eine Verlängerung bekommen.“",ok:0,w:"Nein, das ist das Argument der Mehrheit (FS-05)."}],
+whataboutism:[
+ {t:"„Ja, ich war zu spät. Aber Sie haben unsere Arbeiten auch drei Wochen nicht zurückgegeben.“",ok:1,w:"Genau. Der Vorwurf wird mit einem Gegenvorwurf beantwortet, nicht mit einer Erklärung."},
+ {t:"„Ich war zu spät, weil der Zug ausgefallen ist. Hier ist die Verspätungsbestätigung.“",ok:0,w:"Nein, das ist eine sachliche Erklärung mit Beleg."},
+ {t:"„Wer einmal zu spät kommt, kommt bald täglich zu spät und fliegt am Ende von der Schule.“",ok:0,w:"Nein, das ist ein Dammbruchargument (FS-07)."}],
+analogie:[
+ {t:"„Eine Schule ist wie eine Firma: Wer schlechte Leistung bringt, wird entlassen.“",ok:1,w:"Genau. Der Vergleich bricht genau an der entscheidenden Stelle: Schulen haben einen Bildungsauftrag, Firmen einen Gewinnauftrag."},
+ {t:"„Eine Schule ist wie eine Firma: Beide brauchen einen Haushaltsplan, damit das Geld reicht.“",ok:0,w:"Nein, hier trägt der Vergleich genau in dem Punkt, um den es geht."},
+ {t:"„Schulen waren immer so aufgebaut, das muss so bleiben.“",ok:0,w:"Nein, das ist ein Traditionsargument (FS-13)."}],
+tradition:[
+ {t:"„Die Klassenfahrt geht seit 30 Jahren nach Berlin. Also fahren wir wieder nach Berlin.“",ok:1,w:"Genau. Das Alter der Gewohnheit ist der einzige genannte Grund."},
+ {t:"„Wir fahren nach Berlin, weil die Ausstellung genau zu unserem Geschichtsthema passt.“",ok:0,w:"Nein, hier steht ein inhaltlicher Grund."},
+ {t:"„Wer nicht nach Berlin will, ist einfach unkultiviert.“",ok:0,w:"Nein, das ist ein Angriff auf die Person (FS-01)."}],
+natur:[
+ {t:"„Dieser Tee hilft garantiert gegen Kopfschmerzen – er ist rein pflanzlich und völlig natürlich.“",ok:1,w:"Genau. Die Herkunft wird zum Wirkungsnachweis erklärt. Das ist keiner."},
+ {t:"„Dieser Tee half in zwei kleinen Untersuchungen einem Teil der Befragten leicht gegen Kopfschmerzen.“",ok:0,w:"Nein, hier wird vorsichtig und mit Bezug auf Untersuchungen formuliert."},
+ {t:"„Diesen Tee trinken bei uns alle gegen Kopfschmerzen, also wirkt er.“",ok:0,w:"Nein, das ist das Argument der Mehrheit (FS-05)."}],
+ablenkung:[
+ {t:"„Sie fragen nach den fehlenden Fahrrädern im Schuppen? Reden wir lieber über den Sieg unserer Volleyballmannschaft.“",ok:1,w:"Genau. Das Thema wird gewechselt, die Frage bleibt offen."},
+ {t:"„Zu den fehlenden Fahrrädern: Wir haben nachgezählt, es sind sieben seit März.“",ok:0,w:"Nein, das ist eine direkte Antwort auf die Frage."},
+ {t:"„Wer nach Fahrrädern fragt, hat vermutlich selbst keins.“",ok:0,w:"Nein, das ist ein Angriff auf die Person (FS-01)."}],
+unwissenheit:[
+ {t:"„Niemand konnte beweisen, dass es im Keller keine Geister gibt. Also gibt es sie.“",ok:1,w:"Genau. Aus fehlendem Gegenbeweis wird ein Beweis gemacht."},
+ {t:"„Für Geister im Keller gibt es keinen Beleg; die Geräusche stammen von der Heizung.“",ok:0,w:"Nein, hier wird eine überprüfbare Erklärung angeboten."},
+ {t:"„Der Hausmeister sagt, es gibt Geister, und der arbeitet hier seit 40 Jahren.“",ok:0,w:"Nein, das ist ein Autoritätsargument (FS-04)."}]
+};
+
+/* Zusätzliche Aussagen für gemischte Fälle */
+const MIX = [
+ {t:"„Bio-Limonade ist gesünder, schließlich ist sie ohne künstliche Zusätze – also natürlich.“",id:"natur"},
+ {t:"„Unser Schulhof wurde immer schon so genutzt. Warum sollten wir daran etwas ändern?“",id:"tradition"},
+ {t:"„Der Sportunterricht ist wie das Militär: Wer nicht mithält, wird aussortiert.“",id:"analogie"},
+ {t:"„Sie kritisieren unsere Verspätungen? Ihre eigene Vertretungsplanung war letzten Winter auch ein Chaos.“",id:"whataboutism"},
+ {t:"„Seit die Schulhomepage neu ist, melden sich weniger Eltern. Die Homepage schreckt Eltern ab.“",id:"kausal"},
+ {t:"„Wenn wir eine Ausnahme für eine Klasse machen, wollen es morgen alle und übermorgen gibt es keine Regeln mehr.“",id:"dammbruch"},
+ {t:"„Die Mensa ist gut, weil gutes Essen dort ausgegeben wird.“",id:"zirkelschluss"},
+ {t:"„Man kann nicht ausschließen, dass die neue Lampe im Flur Kopfschmerzen macht. Also macht sie Kopfschmerzen.“",id:"unwissenheit"},
+ {t:"„Marie will mehr Bücher in der Bibliothek. Sie will also alle Computer abschaffen.“",id:"strohmann"},
+ {t:"„Entweder wir kaufen neue Tablets oder unsere Schule ist digital am Ende.“",id:"falsches_dilemma"},
+ {t:"„Mein Onkel hat nie Sport gemacht und ist 90 geworden. Sport bringt also nichts.“",id:"verallgemeinerung"},
+ {t:"„Bitte streichen Sie die Strafarbeit – ich habe das ganze Wochenende geweint.“",id:"mitleid"},
+ {t:"„Der Vorschlag stammt von den Sechstklässlern, das sagt ja wohl alles über sein Niveau.“",id:"ad_hominem"},
+ {t:"„Ein weltbekannter Fernsehkoch benutzt genau diese Pfanne, also ist sie die beste.“",id:"autoritaet"},
+ {t:"„Diese App haben schon zehn Millionen Menschen heruntergeladen, sie kann also nicht schlecht sein.“",id:"mehrheit"},
+ {t:"„Sie möchten über die Kosten sprechen? Schauen wir uns doch erst einmal die schönen neuen Vorhänge an.“",id:"ablenkung"},
+ {t:"„Wer für eine spätere erste Stunde ist, will einfach nur länger schlafen und hat keine Argumente.“",id:"strohmann"},
+ {t:"„Kaffee kann nicht schädlich sein, Menschen trinken ihn schließlich seit Jahrhunderten.“",id:"tradition"},
+ {t:"„Wenn Aufsätze mit dem Computer geschrieben werden dürfen, kann bald niemand mehr einen Stift halten und die Schrift stirbt aus.“",id:"dammbruch"},
+ {t:"„Unsere Klassenkasse ist wie ein Staatshaushalt: Wer Schulden macht, gehört bestraft.“",id:"analogie"}
+];
+
+/* Sachtexte für die Spurensuche */
+const TEXTE = [
+{titel:"Tempo 30 vor der Schule",art:"Leserbrief, Regionalzeitung",
+ saetze:[
+ {t:"Seit Wochen wird bei uns über Tempo 30 vor der Grundschule diskutiert.",f:null},
+ {t:"Die Messungen der Stadt zeigen, dass morgens jedes vierte Auto zu schnell fährt.",f:null},
+ {t:"Wer gegen Tempo 30 ist, will offenbar, dass Kinder überfahren werden.",f:"strohmann",e:"Aus „gegen Tempo 30“ wird „für überfahrene Kinder“ – eine Karikatur der Gegenposition."},
+ {t:"Herr Wagner vom Gewerbeverein ist ohnehin nicht ernst zu nehmen, er fährt selbst einen viel zu großen Wagen.",f:"ad_hominem",e:"Angegriffen wird Herr Wagner, nicht sein Argument."},
+ {t:"Entweder wir führen Tempo 30 ein oder wir sperren die Straße vollständig.",f:"falsches_dilemma",e:"Zwischen beiden Extremen liegen viele Möglichkeiten: Zebrastreifen, Lotsendienst, Poller, versetzte Anfangszeiten."},
+ {t:"In mehreren Städten ist die Zahl der Unfälle nach der Einführung messbar gesunken.",f:null},
+ {t:"Und wenn wir jetzt nachgeben, gilt bald überall Tempo 80 und niemand hält sich mehr an Regeln.",f:"dammbruch",e:"Eine Kette von Katastrophenfolgen wird behauptet, ohne ein einziges Glied zu belegen."}]},
+
+{titel:"NaturKraft – der Riegel für echte Energie",art:"Werbetext",
+ saetze:[
+ {t:"Der neue NaturKraft-Riegel kommt ohne künstliche Zusätze aus.",f:null},
+ {t:"Weil er rein natürlich ist, kann er dir gar nicht schaden.",f:"natur",e:"Natürlich bedeutet nicht harmlos. Fingerhut und Tollkirsche sind ebenfalls natürlich."},
+ {t:"Über 200 000 Menschen essen ihn täglich – so viele können sich nicht irren.",f:"mehrheit",e:"Verkaufszahlen sagen nichts über die Wirkung."},
+ {t:"Auch die bekannte Sängerin Nele Brandt hat ihn in ihrer Sendung gelobt.",f:"autoritaet",e:"Berühmtheit ersetzt hier den Nachweis. Gesang qualifiziert nicht für Ernährungsfragen."},
+ {t:"Der Riegel enthält zwölf Gramm Eiweiß pro Portion.",f:null},
+ {t:"Und niemand hat je bewiesen, dass unsere Rezeptur nicht die gesündeste auf dem Markt ist.",f:"unwissenheit",e:"Fehlender Gegenbeweis ist kein Beweis. Wer behauptet, muss belegen."}]},
+
+{titel:"Rede zur Wahl der Schulsprecherin",art:"Wahlrede, Aula",
+ saetze:[
+ {t:"Liebe Lernpartnerinnen und Lernpartner, ich bitte euch heute um eure Stimme.",f:null},
+ {t:"Meine Gegenkandidatin hat im letzten Jahr zweimal eine Sitzung verpasst – so jemand kann diese Schule nicht vertreten.",f:"ad_hominem",e:"Statt ihres Programms wird ihre Person bewertet."},
+ {t:"Ich habe im vergangenen Jahr die überdachten Fahrradständer durchgesetzt; die Unterlagen liegen im Sekretariat.",f:null},
+ {t:"Wählt mich – ich habe in den Ferien vier Wochen an diesem Programm gearbeitet und kaum geschlafen.",f:"mitleid",e:"Anstrengung ist bewundernswert, aber kein Argument für die Qualität des Programms."},
+ {t:"Meine Familie ist seit drei Generationen an dieser Schule, deshalb weiß ich am besten, was hier richtig ist.",f:"tradition",e:"Die Dauer einer Verbindung begründet keine bessere Idee."},
+ {t:"Wenn ihr meine Gegenkandidatin wählt, gibt es bald keine Schülervertretung mehr und am Ende entscheidet die Schulleitung allein.",f:"dammbruch",e:"Eine unbelegte Folgenkette bis zur Katastrophe."}]},
+
+{titel:"Hausaufgaben abschaffen?",art:"Forumsbeitrag",
+ saetze:[
+ {t:"In unserem Forum wird gerade heftig über die Abschaffung der Hausaufgaben gestritten.",f:null},
+ {t:"Eine Untersuchung aus Zürich deutet darauf hin, dass kurze Übungsphasen zu Hause bei jüngeren Kindern wenig bringen.",f:null},
+ {t:"Meine Cousine hat nie Hausaufgaben gemacht und trotzdem einen guten Abschluss – Hausaufgaben sind also überflüssig.",f:"verallgemeinerung",e:"Ein einziger Fall wird zur Regel für alle erklärt."},
+ {t:"Seit unsere Schule mehr Hausaufgaben gibt, sind die Krankmeldungen gestiegen. Die Hausaufgaben machen uns krank.",f:"kausal",e:"Zwei Entwicklungen fallen zusammen. Eine Ursache ist damit nicht gezeigt – die Grippewelle im Januar zum Beispiel auch nicht ausgeschlossen."},
+ {t:"Hausaufgaben sind sinnvoll, weil sinnvolle Aufgaben nun einmal zu Hause erledigt werden.",f:"zirkelschluss",e:"Die Begründung wiederholt die Behauptung mit anderen Wörtern."},
+ {t:"Bevor wir überhaupt über Hausaufgaben reden, sollten wir uns lieber um das schlechte WLAN kümmern.",f:"ablenkung",e:"Ein neues Thema verdrängt die eigentliche Frage."}]},
+
+{titel:"Das Handyverbot – ein Kommentar",art:"Schülerzeitung",
+ saetze:[
+ {t:"Seit August gilt an unserer Schule ein Handyverbot bis Klasse 10.",f:null},
+ {t:"Eine Schule ist wie ein Gefängnis: Auch dort nimmt man den Leuten alles ab, was Freude macht.",f:"analogie",e:"Der Vergleich bricht an der entscheidenden Stelle: Wer eine Schule besucht, wird nicht bestraft, sondern unterrichtet."},
+ {t:"Die Schulleitung sagt, das Verbot verbessere die Pausen; Zahlen dazu hat sie bisher nicht vorgelegt.",f:null},
+ {t:"Wer für das Verbot ist, will uns doch nur vollständig von der Außenwelt abschneiden.",f:"strohmann",e:"Aus „Handys in der Pause weg“ wird „Abschottung von der Welt“."},
+ {t:"Ja, wir schauen viel auf unsere Handys. Aber im Lehrerzimmer tippen alle ständig auf ihren Geräten herum.",f:"whataboutism",e:"Der Gegenvorwurf beantwortet die Kritik nicht."},
+ {t:"Bisher konnte niemand zeigen, dass Handys in der Pause schaden – also schaden sie nicht.",f:"unwissenheit",e:"Aus fehlendem Nachweis wird ein Nachweis gemacht."}]}
+];
+
+/* Dienstmarken */
+const MARKEN = [
+ {id:"kartei",ic:"🔍",n:"Spürnase",d:"Alle 16 Steckbriefe gelesen"},
+ {id:"lineup",ic:"🕵️",n:"Blick fürs Detail",d:"12 Gegenüberstellungen im ersten Versuch"},
+ {id:"ablage",ic:"🗂️",n:"Aktenordnung",d:"Eine Ablage-Runde ohne Fehler"},
+ {id:"mix",ic:"🎯",n:"Treffsicher",d:"Mindestens 10 von 12 gemischten Fällen"},
+ {id:"serie",ic:"🔥",n:"Sieben am Stück",d:"Sieben richtige Antworten in Folge"},
+ {id:"text",ic:"📰",n:"Textdetektiv:in",d:"Alle fünf Sachtexte durchleuchtet"},
+ {id:"meister",ic:"🏅",n:"Meister:in",d:"Die Meisterprüfung bestanden"},
+ {id:"sauber",ic:"⭐",n:"Ohne Kratzer",d:"Meisterprüfung mit allen drei Leben"}
+];
+
+/* Kommentare der Ermittlungsleitung */
+const LOB = ["Sauber ermittelt.","Der Fall ist geklärt.","Das war Präzisionsarbeit.","Ihre Lupe sitzt richtig herum.","Notiert und abgeheftet.","Die Akte darf geschlossen werden."];
+const TROST = ["Der Verdächtige ist noch flüchtig.","Knapp daneben – die Fährte war gut gelegt.","Passiert den Besten. Und den Zweitbesten auch.","Noch einmal von vorn, Kommissar:in.","Das war eine Nebelkerze. Sie sind darauf hereingefallen – wie geplant."];
+</script>
+<script>
+/* =========================================================
+   ZUSTAND
+   ========================================================= */
+const S={
+  gelesen:new Set(), lineupOK:new Set(), lineupGemacht:new Set(),
+  ablageSauber:false, mixBest:0, texteFertig:new Set(),
+  meisterBestanden:false, meisterSauber:false,
+  serie:0, maxSerie:0, marken:new Set()
+};
+const app=document.getElementById("app");
+const host=document.getElementById("modalHost");
+const byId=i=>FS.find(f=>f.id===i);
+const nameOf=i=>byId(i).name;
+const mische=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const zufall=a=>a[Math.floor(Math.random()*a.length)];
+
+/* Tippen zuverlässig erkennen: auf dem iPad geht ein "click" verloren,
+   sobald der Finger beim Antippen ein paar Pixel wandert. */
+function tippbar(el,fn){
+  let x=0,y=0,t=0,erledigt=false;
+  el.addEventListener("pointerdown",e=>{x=e.clientX;y=e.clientY;t=Date.now();});
+  el.addEventListener("pointerup",e=>{
+    if(Math.hypot(e.clientX-x,e.clientY-y)<14&&Date.now()-t<1200){
+      erledigt=true;fn();setTimeout(()=>{erledigt=false;},400);
+    }
+  });
+  el.addEventListener("click",()=>{if(!erledigt)fn();});
+  el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();if(!erledigt){erledigt=true;fn();setTimeout(()=>{erledigt=false;},400);}}});
+}
+
+const ALLE=[...MIX];
+FS.forEach(f=>{ALLE.push({t:f.bsp,id:f.id});UEB[f.id].filter(x=>x.ok).forEach(x=>ALLE.push({t:x.t,id:f.id}));});
+
+/* =========================================================
+   DIENSTMARKEN
+   ========================================================= */
+function pruefeMarken(){
+  const neu=[];
+  const gib=(id,b)=>{if(b&&!S.marken.has(id)){S.marken.add(id);neu.push(id);}};
+  gib("kartei",S.gelesen.size>=16);
+  gib("lineup",S.lineupOK.size>=12);
+  gib("ablage",S.ablageSauber);
+  gib("mix",S.mixBest>=10);
+  gib("serie",S.maxSerie>=7);
+  gib("text",S.texteFertig.size>=5);
+  gib("meister",S.meisterBestanden);
+  gib("sauber",S.meisterSauber);
+  neu.forEach(id=>zeigeMarke(MARKEN.find(m=>m.id===id)));
+}
+function zeigeMarke(m){
+  const d=document.createElement("div");
+  d.style.cssText="position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:80;background:#17162A;color:#fff;border:2px solid #C9A227;border-radius:4px;padding:14px 20px;box-shadow:0 12px 30px rgba(0,0,0,.35);text-align:center;max-width:90vw";
+  d.innerHTML='<div style="font-size:30px">'+m.ic+'</div><div style="font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#C9A227;margin-top:4px">Dienstmarke verliehen</div><div style="font-family:var(--font-display);font-size:20px">'+m.n+'</div><div style="font-size:13px;opacity:.8">'+m.d+'</div>';
+  host.appendChild(d);
+  setTimeout(()=>{d.style.transition="opacity .5s";d.style.opacity="0";setTimeout(()=>d.remove(),520);},3200);
+}
+function treffer(ok){ if(ok){S.serie++;S.maxSerie=Math.max(S.maxSerie,S.serie);}else{S.serie=0;} pruefeMarken(); }
+
+/* =========================================================
+   ÜBERSICHT
+   ========================================================= */
+function fortschritt(){
+  const done=S.gelesen.size+S.lineupGemacht.size+S.texteFertig.size+(S.mixBest>=10?1:0)+(S.ablageSauber?1:0)+(S.meisterBestanden?1:0);
+  return {done,total:40,pct:Math.round(done/40*100)};
+}
+function home(){
+  const p=fortschritt();
+  const kacheln=[
+    ["01","Die Kartei","16 Steckbriefe. Tippe eine Karte an, sie dreht sich um.",S.gelesen.size+" / 16 gelesen","kartei"],
+    ["02","Gegenüberstellung","Drei Verdächtige, ein Fehlschluss. Wer war es?",S.lineupGemacht.size+" / 16 Fälle","lineup"],
+    ["03","Die Ablage","Zieh die Beweisstücke in den richtigen Aktenordner.",S.ablageSauber?"Ordnung hergestellt":"noch unsortiert","ablage"],
+    ["04","Gemischte Fälle","Zwölf Aussagen quer durch die Kartei.",S.mixBest>0?("Bestwert "+S.mixBest+" / 12"):"noch kein Bestwert","mix"],
+    ["05","Spurensuche im Text","Fünf echte Textsorten. Finde die Fehlschlüsse im Satz.",S.texteFertig.size+" / 5 Texte","spur"],
+    ["06","Die Meisterprüfung","15 Fragen, drei Leben. Für alle, die alles kennen.",S.meisterBestanden?"bestanden":"offen","meister"]
+  ];
+  app.innerHTML=
+  '<p class="eyebrow">Dienststelle für Argumentprüfung · Klassen 8 und 9</p>'+
+  '<h2>Wer hier schlecht argumentiert, wird gefunden.</h2>'+
+  '<p class="lede">Ein Sachtext will überzeugen. Manchmal mit guten Gründen – und manchmal mit Tricks, die nur so aussehen wie Gründe. Solche Tricks heißen <strong>Fehlschlüsse</strong> (auch: Scheinargumente oder Argumentationsfehler). Diese Dienststelle bildet dich in 16 Fällen aus. Danach erkennst du sie in freier Wildbahn: in Werbung, in Kommentaren, in Wahlreden – und gelegentlich in deinen eigenen Sätzen.</p>'+
+  '<div class="progress"><div style="font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase">Ermittlungsstand</div><div class="bar"><i style="width:'+p.pct+'%"></i></div><div class="pct">'+p.done+' von '+p.total+' Schritten · '+p.pct+' %</div></div>'+
+  '<div class="tiles">'+kacheln.map(k=>'<button class="tile" data-go="'+k[4]+'"><span class="nr">Auftrag '+k[0]+'</span><span class="tt">'+k[1]+'</span><span class="td">'+k[2]+'</span><span class="status">'+k[3]+'</span></button>').join("")+'</div>'+
+  '<hr class="rule">'+
+  '<p class="eyebrow">Dienstmarken</p><h3>Was du bisher verdient hast</h3>'+
+  '<div class="badges">'+MARKEN.map(m=>'<div class="badge'+(S.marken.has(m.id)?" on":"")+'"><div class="ic">'+m.ic+'</div><div class="bn">'+m.n+'</div><div class="bd">'+m.d+'</div></div>').join("")+'</div>'+
+  '<p class="hinweis" style="margin-top:22px">Hinweis: Der Fortschritt gilt für diese Sitzung. Wenn du die Seite neu lädst, beginnt die Ermittlung von vorn.</p>';
+  app.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>ROUTES[b.dataset.go]());
+}
+
+/* =========================================================
+   01 KARTEI
+   ========================================================= */
+function kartei(){
+  app.innerHTML='<p class="eyebrow">Auftrag 01</p><h2>Die Kartei</h2>'+
+  '<p class="lede">16 Steckbriefe. Vorderseite: der Name und der Trick in einem Satz. Tippe die Karte an – auf der Rückseite stehen Erklärung, Erkennungszeichen, ein Beispiel und das Gegenmittel.</p>'+
+  '<div class="grid" id="k"></div>'+
+  '<div class="btnrow"><button class="btn ghost" id="auf">Alle Rückseiten zeigen</button><button class="btn ghost" id="zu">Alle zurückdrehen</button><button class="btn" id="weiter">Weiter zur Gegenüberstellung</button></div>';
+  const g=document.getElementById("k");
+  FS.forEach(f=>{
+    const d=document.createElement("div");
+    d.className="flip";d.tabIndex=0;d.setAttribute("role","button");
+    d.innerHTML='<div class="flip-in">'+
+      '<div class="face"><div class="inner"><span class="nr">'+f.nr+'</span><div class="tt">'+f.name+'</div>'+
+        '<div class="zitat">'+f.lat+'</div><p class="kurz">'+f.kurz+'</p>'+
+        '<span class="flipmark">↻ Antippen zum Umdrehen</span></div></div>'+
+      '<div class="face back"><div class="inner"><span class="nr">'+f.nr+' · Rückseite</span>'+
+        '<h4>Was passiert da?</h4><p>'+f.def+'</p>'+
+        '<h4>Erkennungszeichen</h4><ul>'+f.sig.map(s=>"<li>"+s+"</li>").join("")+'</ul>'+
+        '<h4>Beispiel</h4><div class="zitat">'+f.bsp+'</div>'+
+        '<h4>Gegenmittel</h4><p>'+f.gegen+'</p>'+
+        '<p class="witz">'+f.witz+'</p>'+
+        '<span class="flipmark">↻ Antippen für die Vorderseite</span></div></div></div>';
+    const um=()=>{d.classList.toggle("on");if(d.classList.contains("on")){S.gelesen.add(f.id);pruefeMarken();}};
+    tippbar(d,um);
+    g.appendChild(d);
+  });
+  document.getElementById("zu").onclick=()=>g.querySelectorAll(".flip").forEach(x=>x.classList.remove("on"));
+  document.getElementById("auf").onclick=()=>{g.querySelectorAll(".flip").forEach(x=>x.classList.add("on"));FS.forEach(f=>S.gelesen.add(f.id));pruefeMarken();};
+  document.getElementById("weiter").onclick=()=>ROUTES.lineup();
+}
+
+/* =========================================================
+   02 GEGENÜBERSTELLUNG
+   ========================================================= */
+let lineupIdx=0;
+function lineup(){
+  const f=FS[lineupIdx];
+  const karten=mische(UEB[f.id].map((x,i)=>({...x})));
+  let ersterVersuch=true,geloest=false;
+  app.innerHTML='<p class="eyebrow">Auftrag 02 · '+f.nr+' ('+(lineupIdx+1)+' von 16)</p>'+
+  '<h2>'+f.name+'</h2><p class="lede">'+f.kurz+' <strong>Welche der drei Aussagen ist ein '+f.name+'?</strong> Tippe eine Karte an – sie dreht sich um.</p>'+
+  '<div class="line-up" id="lu"></div>'+
+  '<div class="btnrow"><button class="btn ghost" id="zurueck">Vorheriger Fall</button><button class="btn ghost" id="loesen">Lösung zeigen</button><button class="btn" id="next">Nächster Fall</button><span class="hinweis" id="serie">Serie: '+S.serie+'</span></div>'+
+  '<p class="hinweis" style="margin-top:10px">Klemmt eine Karte? „Lösung zeigen“ dreht alle drei um und du kannst weitergehen.</p>';
+  const lu=document.getElementById("lu");
+  karten.forEach((k,i)=>{
+    const d=document.createElement("div");
+    d.className="sus";d.tabIndex=0;
+    d.innerHTML='<div class="flip-in">'+
+      '<div class="face"><div class="inner"><div class="verdachtsnr">Verdächtige Aussage '+(i+1)+'</div><p class="aussage">'+k.t+'</p><span class="flipmark">↻ Antippen</span></div></div>'+
+      '<div class="face back"><div class="inner"><div class="'+(k.ok?"stamp ja":"stamp nein")+' stamp-anim" style="align-self:flex-start">'+(k.ok?"Entlarvt":"Nicht dieser")+'</div><p class="why">'+k.w+'</p></div></div></div>';
+    const dreh=()=>{
+      if(d.classList.contains("on"))return;
+      d.classList.add("on","done");
+      if(ersterVersuch){
+        ersterVersuch=false;
+        treffer(!!k.ok);
+        if(k.ok)S.lineupOK.add(f.id);
+        document.getElementById("serie").textContent="Serie: "+S.serie;
+      }
+      if(k.ok){geloest=true;S.lineupGemacht.add(f.id);pruefeMarken();}
+    };
+    tippbar(d,dreh);
+    d.__dreh=dreh;
+    lu.appendChild(d);
+  });
+  document.getElementById("loesen").onclick=()=>{
+    ersterVersuch=false;
+    lu.querySelectorAll(".sus").forEach(x=>{x.classList.add("on","done");});
+    S.lineupGemacht.add(f.id);pruefeMarken();
+  };
+  document.getElementById("next").onclick=()=>{
+    S.lineupGemacht.add(f.id);
+    lineupIdx=(lineupIdx+1)%16;
+    if(lineupIdx===0){pruefeMarken();home();}else lineup();
+  };
+  document.getElementById("zurueck").onclick=()=>{lineupIdx=(lineupIdx+15)%16;lineup();};
+}
+
+/* =========================================================
+   03 ABLAGE (ziehen oder antippen)
+   ========================================================= */
+let gewaehlt=null;
+function ablage(){
+  const auswahl=mische(FS).slice(0,6);
+  const zettelDaten=mische(auswahl.map(f=>({id:f.id,t:zufall(ALLE.filter(a=>a.id===f.id)).t})));
+  app.innerHTML='<p class="eyebrow">Auftrag 03</p><h2>Die Ablage</h2>'+
+  '<p class="lede">Sechs Beweisstücke, sechs Aktenordner. Zieh jeden Zettel in den passenden Ordner – oder tippe erst den Zettel an und dann den Ordner. Beides geht.</p>'+
+  '<div class="ablage"><div class="col"><h3>Beweisstücke</h3><div id="pool"></div></div>'+
+  '<div class="col"><h3>Aktenordner</h3><div id="ordner"></div></div></div>'+
+  '<div class="btnrow"><button class="btn" id="pruef" disabled>Ablage prüfen</button><button class="btn ghost" id="neu">Neue Runde</button><span class="hinweis" id="stand"></span></div><div id="erg"></div>';
+  const pool=document.getElementById("pool"),ord=document.getElementById("ordner");
+  zettelDaten.forEach((z,i)=>{
+    const e=document.createElement("div");
+    e.className="zettel";e.dataset.id=z.id;e.textContent=z.t;e.tabIndex=0;
+    ziehbar(e);pool.appendChild(e);
+  });
+  auswahl.forEach(f=>{
+    const o=document.createElement("div");
+    o.className="ordner";o.dataset.id=f.id;
+    o.innerHTML='<div class="on">'+f.nr+'</div><div class="oname">'+f.name+'</div><div class="slot"></div>';
+    o.addEventListener("click",()=>{if(gewaehlt){ablegen(gewaehlt,o);gewaehlt=null;}});
+    ord.appendChild(o);
+  });
+  const stand=()=>{
+    const offen=pool.querySelectorAll(".zettel").length;
+    document.getElementById("pruef").disabled=offen>0;
+    document.getElementById("stand").textContent=offen>0?(offen+" Zettel noch offen"):"Alles abgelegt";
+  };
+  window.__stand=stand; stand();
+  document.getElementById("neu").onclick=ablage;
+  document.getElementById("pruef").onclick=()=>{
+    let richtig=0;
+    ord.querySelectorAll(".ordner").forEach(o=>{
+      o.querySelectorAll(".zettel").forEach(z=>{
+        const ok=z.dataset.id===o.dataset.id;
+        z.classList.add(ok?"richtig":"falsch");z.dataset.fixed="1";
+        if(ok)richtig++;else z.insertAdjacentHTML("beforeend",'<div style="font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;margin-top:6px;color:var(--stamp)">Gehört zu: '+nameOf(z.dataset.id)+'</div>');
+      });
+    });
+    document.getElementById("pruef").disabled=true;
+    const sauber=richtig===6;
+    if(sauber)S.ablageSauber=true;
+    treffer(sauber);
+    document.getElementById("erg").innerHTML='<div class="feedback"><span class="'+(sauber?"stamp ja":"stamp nein")+' stamp-anim">'+(sauber?"Akte geschlossen":"Nachbesserung nötig")+'</span><p>'+richtig+' von 6 richtig abgelegt. '+(sauber?zufall(LOB):zufall(TROST))+'</p></div>';
+    pruefeMarken();
+  };
+}
+function ablegen(z,o){
+  if(z.dataset.fixed)return;
+  o.querySelector(".slot").appendChild(z);
+  z.classList.remove("picked");
+  if(window.__stand)window.__stand();
+}
+function ziehbar(el){
+  el.addEventListener("pointerdown",e=>{
+    if(el.dataset.fixed)return;
+    const r=el.getBoundingClientRect(),ox=e.clientX-r.left,oy=e.clientY-r.top;
+    const sx=e.clientX,sy=e.clientY;let bewegt=false;
+    el.setPointerCapture(e.pointerId);
+    const mv=ev=>{
+      if(!bewegt&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>9){bewegt=true;el.classList.add("dragging");el.style.width=r.width+"px";}
+      if(bewegt){
+        el.style.left=(ev.clientX-ox)+"px";el.style.top=(ev.clientY-oy)+"px";
+        document.querySelectorAll(".ordner").forEach(o=>o.classList.remove("hover"));
+        const t=zielUnter(ev.clientX,ev.clientY); if(t)t.classList.add("hover");
+      }
+    };
+    const up=ev=>{
+      el.removeEventListener("pointermove",mv);el.removeEventListener("pointerup",up);el.removeEventListener("pointercancel",up);
+      if(bewegt){
+        el.classList.remove("dragging");el.style.left=el.style.top=el.style.width="";
+        document.querySelectorAll(".ordner").forEach(o=>o.classList.remove("hover"));
+        const t=zielUnter(ev.clientX,ev.clientY); if(t)ablegen(el,t);
+      }else{
+        if(el.closest(".ordner")){gewaehlt=null;el.classList.remove("picked");document.getElementById("pool").appendChild(el);if(window.__stand)window.__stand();}
+        else{document.querySelectorAll(".zettel").forEach(z=>z.classList.remove("picked"));
+             gewaehlt=el;el.classList.add("picked");}
+      }
+    };
+    el.addEventListener("pointermove",mv);el.addEventListener("pointerup",up);el.addEventListener("pointercancel",up);
+  });
+  el.addEventListener("click",e=>e.stopPropagation());
+  el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();document.querySelectorAll(".zettel").forEach(z=>z.classList.remove("picked"));gewaehlt=el;el.classList.add("picked");}});
+}
+function zielUnter(x,y){const liste=document.elementsFromPoint(x,y);for(const n of liste){const o=n.closest&&n.closest(".ordner");if(o)return o;}return null;}
+</script>
+<script>
+/* =========================================================
+   04 GEMISCHTE FÄLLE
+   ========================================================= */
+function optsNamen(id){
+  const andere=mische(FS.filter(f=>f.id!==id)).slice(0,3).map(f=>f.name);
+  return mische([nameOf(id),...andere]);
+}
+function mix(){
+  const fragen=mische(ALLE).slice(0,12);
+  let i=0,punkte=0;
+  const zeichnen=()=>{
+    if(i>=12){
+      S.mixBest=Math.max(S.mixBest,punkte);
+      pruefeMarken();
+      app.innerHTML='<p class="eyebrow">Auftrag 04 · Abschluss</p><h2>'+punkte+' von 12 Fällen geklärt</h2>'+
+      '<p class="lede">'+(punkte>=10?"Hervorragend. Die Dienststelle ist beeindruckt.":punkte>=7?"Solide Arbeit. Ein paar Verdächtige sind noch flüchtig.":"Zurück in die Kartei – ein zweiter Blick lohnt sich.")+'</p>'+
+      '<div class="btnrow"><button class="btn" id="nochmal">Noch eine Runde</button><button class="btn ghost" id="hm">Zur Übersicht</button></div>';
+      document.getElementById("nochmal").onclick=mix;
+      document.getElementById("hm").onclick=home;
+      return;
+    }
+    const q=fragen[i],opts=optsNamen(q.id);
+    app.innerHTML='<p class="eyebrow">Auftrag 04 · Gemischte Fälle</p>'+
+    '<div class="meta"><span>Fall '+(i+1)+' von 12</span><span>Geklärt: '+punkte+'</span><span>Serie: '+S.serie+'</span></div>'+
+    '<div class="frage"><span class="nr" style="font-family:var(--font-mono);font-size:11.5px;letter-spacing:.2em;color:var(--ink-soft)">Beweisstück</span><p class="q">'+q.t+'</p></div>'+
+    '<p class="lede" style="margin:16px 0 0">Welcher Fehlschluss ist das?</p><div class="opts" id="o"></div>'+
+    '<div class="btnrow"><button class="btn ghost" id="zeig">Antwort zeigen</button></div><div id="fb"></div>';
+    const o=document.getElementById("o");
+    const aufloesen=ok=>{
+      o.querySelectorAll(".opt").forEach(x=>{x.disabled=true;if(x.textContent===nameOf(q.id))x.classList.add("ja");});
+      const zb=document.getElementById("zeig"); if(zb)zb.disabled=true;
+      if(ok)punkte++;
+      treffer(ok);
+      const f=byId(q.id);
+      document.getElementById("fb").innerHTML='<div class="feedback"><span class="'+(ok?"stamp ja":"stamp nein")+' stamp-anim">'+(ok?"Entlarvt":"Noch flüchtig")+'</span>'+
+      '<p><strong>'+f.nr+' · '+f.name+':</strong> '+f.kurz+'</p><p>'+f.gegen+'</p><p class="hinweis">'+(ok?zufall(LOB):zufall(TROST))+'</p>'+
+      '<div class="btnrow"><button class="btn" id="w">Nächster Fall</button></div></div>';
+      document.getElementById("w").onclick=()=>{i++;zeichnen();};
+    };
+    document.getElementById("zeig").onclick=()=>aufloesen(false);
+    opts.forEach(n=>{
+      const b=document.createElement("button");b.className="opt";b.textContent=n;
+      b.onclick=()=>{
+        const ok=n===nameOf(q.id);
+        if(!ok)b.classList.add("nein");
+        aufloesen(ok);
+      };
+      o.appendChild(b);
+    });
+  };
+  zeichnen();
+}
+
+/* =========================================================
+   05 SPURENSUCHE IM TEXT
+   ========================================================= */
+function spurListe(){
+  app.innerHTML='<p class="eyebrow">Auftrag 05</p><h2>Spurensuche im Text</h2>'+
+  '<p class="lede">Fünf Sachtexte, wie sie dir wirklich begegnen. Tippe jeden Satz an, den du für verdächtig hältst, und ordne ihm den passenden Fehlschluss zu. Saubere Sätze darfst du ebenfalls prüfen – melde sie einfach als in Ordnung.</p>'+
+  '<div class="textliste">'+TEXTE.map((t,i)=>'<button class="tile" data-t="'+i+'"><span class="nr">'+t.art+'</span><span class="tt">'+t.titel+'</span><span class="td">'+t.saetze.filter(s=>s.f).length+' Fehlschlüsse versteckt</span><span class="status">'+(S.texteFertig.has(i)?"✓ abgeschlossen":"offen")+'</span></button>').join("")+'</div>';
+  app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>spurText(+b.dataset.t));
+}
+function spurText(ti){
+  const T=TEXTE[ti];
+  const ziel=T.saetze.filter(s=>s.f).length;
+  let gefunden=0;
+  app.innerHTML='<p class="eyebrow">Auftrag 05 · '+T.art+'</p><h2>'+T.titel+'</h2>'+
+  '<div class="meta"><span id="zaehler">0 von '+ziel+' gefunden</span><span>Serie: '+S.serie+'</span></div>'+
+  '<div class="sachtext" id="st"></div><div id="fb2"></div>'+
+  '<div class="btnrow"><button class="btn ghost" id="zurueckL">Andere Texte</button><button class="btn ghost" id="loesung">Auflösung zeigen</button></div>';
+  const st=document.getElementById("st");
+  T.saetze.forEach((s,i)=>{
+    const sp=document.createElement("span");
+    sp.className="satz";sp.tabIndex=0;sp.textContent=s.t+" ";
+    const oeffnen=()=>{if(sp.dataset.done)return;picker(s,sp);};
+    sp.onclick=oeffnen; sp.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();oeffnen();}};
+    st.appendChild(sp);
+  });
+  const melden=(txt,ok)=>{document.getElementById("fb2").innerHTML='<div class="feedback"><span class="'+(ok?"stamp ja":"stamp nein")+' stamp-anim">'+(ok?"Treffer":"Daneben")+'</span><p>'+txt+'</p></div>';};
+  function picker(s,sp){
+    const m=document.createElement("div");m.className="modal";
+    m.innerHTML='<div class="modal-in"><p class="eyebrow">Satz prüfen</p><div class="zitat">'+s.t+'</div>'+
+    '<p style="margin:10px 0 0">Was steckt in diesem Satz?</p><div class="picker" id="pk">'+
+    '<button data-v="rein" style="border-color:var(--ok);color:var(--ok)">✓ Der Satz ist in Ordnung</button>'+
+    FS.map(f=>'<button data-v="'+f.id+'"><span style="font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft)">'+f.nr+'</span><br>'+f.name+'</button>').join("")+
+    '</div><div class="btnrow"><button class="btn ghost" id="abbr">Abbrechen</button></div></div>';
+    host.appendChild(m);
+    m.querySelector("#abbr").onclick=()=>m.remove();
+    m.onclick=e=>{if(e.target===m)m.remove();};
+    m.querySelectorAll("#pk button").forEach(b=>b.onclick=()=>{
+      const v=b.dataset.v;m.remove();
+      if(!s.f){
+        if(v==="rein"){sp.classList.add("sauber");sp.dataset.done="1";melden("Richtig, dieser Satz argumentiert sauber. Er nennt eine Beobachtung oder einen Beleg, ohne einen Trick zu benutzen.",true);treffer(true);}
+        else{melden("Dieser Satz ist in Ordnung. Er enthält keinen Fehlschluss – lies ihn noch einmal und achte darauf, ob wirklich etwas Unerlaubtes behauptet wird.",false);treffer(false);}
+        return;
+      }
+      if(v===s.f){
+        sp.classList.add("gefunden");sp.dataset.done="1";
+        sp.innerHTML=s.t+' <span class="tag">['+byId(s.f).nr+']</span> ';
+        gefunden++;document.getElementById("zaehler").textContent=gefunden+" von "+ziel+" gefunden";
+        melden("<strong>"+byId(s.f).name+".</strong> "+s.e,true);treffer(true);
+        if(gefunden===ziel){S.texteFertig.add(ti);pruefeMarken();
+          document.getElementById("fb2").innerHTML+='<div class="feedback"><h3>Text durchleuchtet</h3><p>Alle '+ziel+' Fehlschlüsse gefunden. '+zufall(LOB)+'</p><div class="btnrow"><button class="btn" id="naechst">Nächster Text</button></div></div>';
+          document.getElementById("naechst").onclick=spurListe;}
+      }else if(v==="rein"){
+        melden("Nicht ganz – in diesem Satz steckt sehr wohl ein Fehlschluss. Sieh genauer hin.",false);treffer(false);
+      }else{
+        melden("Der Satz ist tatsächlich verdächtig, aber es ist kein "+nameOf(v)+". Versuch es noch einmal.",false);treffer(false);
+      }
+    });
+  }
+  document.getElementById("zurueckL").onclick=spurListe;
+  document.getElementById("loesung").onclick=()=>{
+    T.saetze.forEach((s,i)=>{const sp=st.children[i];
+      if(s.f){sp.className="satz gefunden";sp.innerHTML=s.t+' <span class="tag">['+byId(s.f).nr+' '+byId(s.f).name+']</span> ';}
+      else{sp.className="satz sauber";}
+      sp.dataset.done="1";});
+    document.getElementById("fb2").innerHTML='<div class="feedback"><span class="stamp ja stamp-anim">Auflösung</span><p>Die grün markierten Sätze enthalten Fehlschlüsse, die grauen argumentieren sauber. Die Aktennummer steht jeweils dahinter.</p>'+
+    '<div class="btnrow"><button class="btn" id="naechst2">Nächster Text</button></div></div>';
+    document.getElementById("naechst2").onclick=spurListe;
+  };
+}
+
+/* =========================================================
+   06 MEISTERPRÜFUNG
+   ========================================================= */
+function meister(){
+  app.innerHTML='<p class="eyebrow">Auftrag 06</p><h2>Die Meisterprüfung</h2>'+
+  '<p class="lede">15 Fragen quer durch alle 16 Fehlschlüsse: Aussagen zuordnen, Beschreibungen erkennen, Beispiele auswählen. Du hast drei Leben. Bei drei Fehlern beginnt die Prüfung von vorn – das ist kein Drama, sondern Ausbildung.</p>'+
+  '<div class="btnrow"><button class="btn" id="los">Prüfung beginnen</button><button class="btn ghost" id="hm2">Lieber noch üben</button></div>';
+  document.getElementById("los").onclick=pruefung;
+  document.getElementById("hm2").onclick=home;
+}
+function baueFragen(){
+  const a=[],b=[],c=[];
+  mische(ALLE).slice(0,7).forEach(x=>a.push({q:"Welcher Fehlschluss steckt in dieser Aussage?",z:x.t,ans:nameOf(x.id),opts:optsNamen(x.id),fid:x.id}));
+  mische(FS).slice(0,4).forEach(f=>b.push({q:"Welcher Fehlschluss wird hier beschrieben?",z:f.kurz,ans:f.name,opts:optsNamen(f.id),fid:f.id}));
+  mische(FS).slice(0,4).forEach(f=>{
+    const r=zufall(ALLE.filter(x=>x.id===f.id)).t;
+    const w=mische(ALLE.filter(x=>x.id!==f.id)).slice(0,3).map(x=>x.t);
+    c.push({q:"Welche Aussage ist ein "+f.name+"?",z:f.kurz,ans:r,opts:mische([r,...w]),fid:f.id,lang:true});
+  });
+  return mische([...a,...b,...c]);
+}
+function pruefung(){
+  const F=baueFragen();let i=0,leben=3,richtig=0,uebersprungen=0;
+  const zeichnen=()=>{
+    if(leben<=0){
+      app.innerHTML='<p class="eyebrow">Auftrag 06 · Abbruch</p><h2>Prüfung nicht bestanden</h2>'+
+      '<p class="lede">Drei Fehler – die Akte geht zurück auf den Schreibtisch. '+richtig+' Fragen hattest du richtig. Schau dir die betroffenen Steckbriefe noch einmal an und komm wieder. Die Dienststelle hat Geduld.</p>'+
+      '<div class="btnrow"><button class="btn" id="wieder">Neuer Versuch</button><button class="btn ghost" id="k2">Zur Kartei</button></div>';
+      document.getElementById("wieder").onclick=pruefung;document.getElementById("k2").onclick=kartei;return;
+    }
+    if(i>=F.length){
+      if(richtig<11){
+        app.innerHTML='<p class="eyebrow">Auftrag 06 · Ergebnis</p><h2>'+richtig+' von '+F.length+' richtig</h2>'+
+        '<p class="lede">Für die Meisterprüfung brauchst du mindestens 11 richtige Antworten'+(uebersprungen?' – übersprungene Fragen zählen nicht mit':'')+'. Das ist gut zu schaffen: Geh noch einmal durch die Kartei und die gemischten Fälle, dann noch ein Versuch.</p>'+
+        '<div class="btnrow"><button class="btn" id="wieder2">Neuer Versuch</button><button class="btn ghost" id="k3">Zur Kartei</button><button class="btn ghost" id="hm4">Zur Übersicht</button></div>';
+        document.getElementById("wieder2").onclick=pruefung;document.getElementById("k3").onclick=kartei;document.getElementById("hm4").onclick=home;return;
+      }
+      S.meisterBestanden=true;if(leben===3&&uebersprungen===0)S.meisterSauber=true;pruefeMarken();
+      app.innerHTML='<div class="urkunde"><p class="eyebrow">Dienststelle für Argumentprüfung</p>'+
+      '<div class="gross">Meisterprüfung bestanden</div>'+
+      '<p style="max-width:52ch;margin:0 auto">'+richtig+' von '+F.length+' Fragen richtig, mit '+leben+' verbliebenen Leben. Du erkennst die 16 häufigsten Fehlschlüsse – in Werbetexten, in Kommentaren, in Reden und im Streitgespräch am Küchentisch.</p>'+
+      '<p style="margin-top:18px;font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--stamp)">Ab jetzt gilt: Wer dich überzeugen will, braucht Gründe.</p></div>'+
+      '<div class="btnrow"><button class="btn" id="hm3">Zur Übersicht</button><button class="btn ghost" id="wh">Noch einmal</button></div>';
+      document.getElementById("hm3").onclick=home;document.getElementById("wh").onclick=pruefung;return;
+    }
+    const q=F[i];
+    app.innerHTML='<p class="eyebrow">Auftrag 06 · Meisterprüfung</p>'+
+    '<div class="meta"><span>Frage '+(i+1)+' von '+F.length+'</span><span class="herzen">'+"♥".repeat(leben)+"♡".repeat(3-leben)+'</span><span>Richtig: '+richtig+'</span></div>'+
+    '<div class="frage"><p class="q">'+q.q+'</p>'+(q.z?'<div class="zitat" style="margin-top:10px">'+q.z+'</div>':'')+'</div>'+
+    '<div class="opts" id="o"></div>'+
+    '<div class="btnrow"><button class="btn ghost" id="skip">Antwort zeigen und weiter</button><span class="hinweis">kostet kein Leben, zählt aber nicht als richtig</span></div><div id="fb"></div>';
+    const o=document.getElementById("o");
+    const aufloesen=(ok,verloren)=>{
+      o.querySelectorAll(".opt").forEach(x=>{x.disabled=true;if(x.textContent===q.ans)x.classList.add("ja");});
+      const sk=document.getElementById("skip"); if(sk)sk.disabled=true;
+      if(ok)richtig++;
+      if(verloren)leben--;
+      treffer(ok);
+      const f=byId(q.fid);
+      document.getElementById("fb").innerHTML='<div class="feedback"><span class="'+(ok?"stamp ja":"stamp nein")+' stamp-anim">'+(ok?"Richtig":verloren?"Ein Leben weniger":"Übersprungen")+'</span>'+
+      '<p><strong>'+f.nr+' · '+f.name+':</strong> '+f.def+'</p><p class="hinweis">'+(ok?zufall(LOB):zufall(TROST))+'</p>'+
+      '<div class="btnrow"><button class="btn" id="w2">Weiter</button></div></div>';
+      document.getElementById("w2").onclick=()=>{i++;zeichnen();};
+    };
+    document.getElementById("skip").onclick=()=>{uebersprungen++;aufloesen(false,false);};
+    q.opts.forEach(t=>{
+      const b=document.createElement("button");b.className="opt";b.textContent=t;
+      b.onclick=()=>{
+        const ok=t===q.ans;
+        if(!ok)b.classList.add("nein");
+        aufloesen(ok,!ok);
+      };
+      o.appendChild(b);
+    });
+  };
+  zeichnen();
+}
+
+/* =========================================================
+   START
+   ========================================================= */
+const ROUTES={home,kartei,lineup,ablage,mix,spur:spurListe,meister};
+document.getElementById("homeBtn").onclick=()=>{host.querySelectorAll(".modal").forEach(m=>m.remove());home();};
+home();
+</script>
+</body>
+</html>
