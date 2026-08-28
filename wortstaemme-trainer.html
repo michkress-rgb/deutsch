@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wurzelwerk – Wortstämme-Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --soil:#14161B;
+  --soil2:#1E212A;
+  --soil3:#272B36;
+  --line:#3A4050;
+  --chalk:#F4F6F3;
+  --dim:#A2ABBD;
+  --root:#C6F24E;
+  --clay:#FF8A5B;
+  --water:#5AD1E0;
+  --wrong:#FF5D73;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,sans-serif;
+  --mono:"Space Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--soil);
+  color:var(--chalk);
+  font-family:var(--body);
+  font-size:17px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:60px;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 500px at 12% -10%, rgba(198,242,78,.10), transparent 60%),
+    radial-gradient(700px 500px at 92% 0%, rgba(90,209,224,.09), transparent 60%);
+}
+.wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 20px}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(20,22,27,.93);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:18px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em;line-height:1;cursor:pointer;background:none;border:0;color:var(--chalk);display:flex;align-items:baseline;gap:8px}
+.brand span{font-family:var(--mono);font-size:11px;color:var(--root);letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.stats{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;line-height:1.1}
+.stat b{font-family:var(--display);font-size:19px;font-weight:800}
+.stat small{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.xpwrap{min-width:160px}
+.xpbar{height:9px;background:var(--soil3);border-radius:99px;overflow:hidden;margin-top:5px;border:1px solid var(--line)}
+.xpfill{height:100%;width:0;background:linear-gradient(90deg,var(--water),var(--root));border-radius:99px;transition:width .5s cubic-bezier(.2,.9,.2,1)}
+.streakhot b{color:var(--clay)}
+
+/* ---------- home ---------- */
+.hero{padding:46px 0 28px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--root);margin-bottom:14px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6.5vw,58px);line-height:.98;letter-spacing:-.03em;max-width:16ch}
+h1 em{font-style:normal;color:var(--root)}
+.lede{margin-top:16px;max-width:56ch;color:var(--dim);font-size:17px}
+
+.sectionhead{display:flex;align-items:baseline;gap:12px;margin:34px 0 14px;padding-top:14px;border-top:1px solid var(--line)}
+.sectionhead h2{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em}
+.sectionhead p{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-left:auto}
+
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px}
+.mode{
+  text-align:left;background:var(--soil2);border:1px solid var(--line);border-radius:16px;
+  padding:18px;color:var(--chalk);cursor:pointer;font-family:var(--body);
+  display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden;
+  transition:transform .16s,border-color .16s,background .16s;
+}
+.mode:hover,.mode:focus-visible{transform:translateY(-3px);border-color:var(--root);background:var(--soil3)}
+.mode .ico{font-size:26px;line-height:1}
+.mode h3{font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-.01em}
+.mode p{font-size:14px;color:var(--dim);line-height:1.4}
+.mode .tag{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--soil);background:var(--root);padding:3px 7px;border-radius:99px;font-weight:700}
+.mode.done::after{content:"✓";position:absolute;top:12px;right:14px;color:var(--root);font-weight:700}
+
+/* ---------- badges ---------- */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+.badge{background:var(--soil2);border:1px dashed var(--line);border-radius:14px;padding:14px 10px;text-align:center;opacity:.42}
+.badge.have{opacity:1;border-style:solid;border-color:var(--root);background:linear-gradient(180deg,rgba(198,242,78,.12),var(--soil2))}
+.badge .e{font-size:26px;display:block;filter:grayscale(1)}
+.badge.have .e{filter:none}
+.badge b{display:block;font-size:12.5px;margin-top:6px;font-weight:600}
+.badge small{display:block;font-size:11px;color:var(--dim);line-height:1.3;margin-top:2px}
+
+/* ---------- game shell ---------- */
+.gamehead{display:flex;align-items:center;gap:14px;margin:26px 0 18px;flex-wrap:wrap}
+.back{background:var(--soil2);border:1px solid var(--line);color:var(--chalk);border-radius:99px;padding:8px 15px;cursor:pointer;font-family:var(--body);font-size:14px;font-weight:500}
+.back:hover{border-color:var(--root)}
+.gamehead h2{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.pcount{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.pbar{height:6px;background:var(--soil3);border-radius:99px;overflow:hidden;margin-bottom:26px;border:1px solid var(--line)}
+.pfill{height:100%;background:var(--root);width:0;transition:width .35s}
+
+.card{background:var(--soil2);border:1px solid var(--line);border-radius:20px;padding:28px}
+.prompt{text-align:center;padding:22px 10px 26px}
+.prompt .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:16px}
+
+/* specimen tag: the signature element */
+.specimen{display:inline-flex;flex-direction:column;align-items:center;gap:0}
+.specimen .tagline{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--soil);padding:3px 10px;border-radius:99px;font-weight:700}
+.specimen.lat .tagline{background:var(--clay)}
+.specimen.ger .tagline{background:var(--water)}
+.specimen .stemtext{font-family:var(--mono);font-weight:700;font-size:clamp(32px,8vw,54px);letter-spacing:.06em;margin-top:10px}
+.specimen.lat .stemtext{color:var(--clay)}
+.specimen.ger .stemtext{color:var(--water)}
+.specimen .rootline{width:1px;height:20px;background:var(--line);margin-top:6px}
+.bigword{font-family:var(--display);font-weight:800;font-size:clamp(30px,7vw,50px);letter-spacing:-.02em;line-height:1.05}
+.bigmeaning{font-family:var(--display);font-weight:600;font-size:clamp(21px,4.4vw,31px);letter-spacing:-.01em;line-height:1.2;max-width:22ch;margin:0 auto}
+.defprompt{font-size:clamp(17px,3vw,21px);line-height:1.45;max-width:40ch;margin:0 auto;color:var(--chalk)}
+
+/* options */
+.opts{display:grid;gap:10px;margin-top:6px}
+.opts.two{grid-template-columns:1fr 1fr}
+@media(max-width:620px){.opts.two{grid-template-columns:1fr}}
+.opt{
+  text-align:left;background:var(--soil3);border:1px solid var(--line);color:var(--chalk);
+  border-radius:14px;padding:15px 17px;cursor:pointer;font-family:var(--body);font-size:16px;line-height:1.35;
+  transition:transform .12s,border-color .12s,background .12s;position:relative;
+}
+.opt:hover:not(:disabled){border-color:var(--root);transform:translateX(3px)}
+.opt:disabled{cursor:default}
+.opt .om{display:block;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.08em;margin-top:3px}
+.opt.right{background:rgba(198,242,78,.16);border-color:var(--root);color:var(--chalk)}
+.opt.wrongpick{background:rgba(255,93,115,.16);border-color:var(--wrong)}
+.opt.stem{font-family:var(--mono);font-weight:700;letter-spacing:.05em}
+
+.feedback{margin-top:18px;border-radius:14px;padding:15px 18px;font-size:15.5px;display:none;border:1px solid}
+.feedback.show{display:block;animation:pop .25s}
+.feedback.good{background:rgba(198,242,78,.1);border-color:var(--root)}
+.feedback.bad{background:rgba(255,93,115,.1);border-color:var(--wrong)}
+.feedback b{font-family:var(--display);font-weight:800;display:block;margin-bottom:3px;font-size:16px}
+@keyframes pop{from{transform:scale(.97);opacity:0}to{transform:scale(1);opacity:1}}
+
+.btnrow{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{background:var(--root);color:var(--soil);border:0;border-radius:99px;padding:13px 24px;font-family:var(--display);font-weight:800;font-size:16px;cursor:pointer;transition:transform .12s,filter .12s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--chalk);font-family:var(--body);font-weight:600}
+.btn.ghost:hover{border-color:var(--root)}
+
+/* flashcards */
+.flip{perspective:1400px;margin:0 auto;max-width:560px}
+.flipinner{position:relative;transition:transform .5s cubic-bezier(.4,.1,.2,1);transform-style:preserve-3d;min-height:260px}
+.flip.open .flipinner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--soil2);border:1px solid var(--line);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;gap:8px}
+.face.b{transform:rotateY(180deg);border-color:var(--root)}
+.face .hint{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);position:absolute;bottom:16px}
+.wordchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.wordchips span{font-size:13px;background:var(--soil3);border:1px solid var(--line);border-radius:99px;padding:4px 11px;color:var(--dim)}
+
+/* matching */
+.matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:620px){.matchgrid{grid-template-columns:1fr 1fr;gap:8px}}
+.mcol{display:flex;flex-direction:column;gap:9px}
+.mitem{background:var(--soil3);border:1px solid var(--line);color:var(--chalk);border-radius:13px;padding:14px;cursor:pointer;font-family:var(--body);font-size:15px;text-align:left;line-height:1.3;transition:.14s}
+.mitem.stemcell{font-family:var(--mono);font-weight:700;letter-spacing:.05em;font-size:16px}
+.mitem:hover:not(.gone){border-color:var(--root)}
+.mitem.sel{border-color:var(--root);background:rgba(198,242,78,.15)}
+.mitem.gone{opacity:.2;pointer-events:none;border-style:dashed}
+.mitem.shake{animation:shake .35s;border-color:var(--wrong)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* sorting / drag */
+.buckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.bucket{background:var(--soil2);border:2px dashed var(--line);border-radius:16px;padding:14px;min-height:130px;transition:.14s}
+.bucket.over{border-color:var(--root);background:rgba(198,242,78,.09)}
+.bucket .bstem{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.05em}
+.bucket.lat .bstem{color:var(--clay)}
+.bucket.ger .bstem{color:var(--water)}
+.bucket .bmean{font-size:12.5px;color:var(--dim);margin-top:2px;line-height:1.3}
+.bucket .drops{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.bucket .drops span{font-size:13px;background:rgba(198,242,78,.14);border:1px solid var(--root);border-radius:99px;padding:4px 10px}
+.pool{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;min-height:56px}
+.chip{background:var(--soil3);border:1px solid var(--line);border-radius:99px;padding:10px 17px;cursor:grab;font-size:15.5px;font-weight:500;touch-action:none;user-select:none;transition:border-color .14s,transform .14s}
+.chip:hover{border-color:var(--root)}
+.chip.picked{border-color:var(--root);background:rgba(198,242,78,.16);transform:scale(1.05)}
+.chip.ghost{position:fixed;z-index:99;pointer-events:none;opacity:.92;border-color:var(--root);box-shadow:0 10px 26px rgba(0,0,0,.5)}
+.chip.nope{animation:shake .35s;border-color:var(--wrong)}
+.hintline{text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin:16px 0 10px}
+
+/* reference sheet */
+.reftable{display:grid;gap:10px}
+.refrow{background:var(--soil2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:130px 1fr;gap:14px;align-items:start}
+@media(max-width:620px){.refrow{grid-template-columns:1fr;gap:6px}}
+.refrow .s{font-family:var(--mono);font-weight:700;font-size:16px;letter-spacing:.05em}
+.refrow.lat .s{color:var(--clay)}
+.refrow.ger .s{color:var(--water)}
+.refrow .m{font-family:var(--display);font-weight:600;font-size:16px}
+.refrow .w{font-size:14px;color:var(--dim);margin-top:5px;line-height:1.5}
+.refrow .w b{color:var(--chalk);font-weight:600}
+
+/* results */
+.result{text-align:center;padding:34px 20px}
+.result .score{font-family:var(--display);font-weight:800;font-size:clamp(48px,12vw,84px);line-height:1;letter-spacing:-.04em;color:var(--root)}
+.result .msg{font-family:var(--display);font-weight:800;font-size:24px;margin-top:12px}
+.result .sub{color:var(--dim);margin-top:8px}
+.reviewlist{text-align:left;margin-top:24px;display:grid;gap:8px}
+.reviewlist div{background:var(--soil3);border-left:3px solid var(--wrong);border-radius:0 10px 10px 0;padding:10px 14px;font-size:14.5px}
+.reviewlist div b{font-family:var(--mono)}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);z-index:80;background:var(--root);color:var(--soil);border-radius:16px;padding:14px 22px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 34px rgba(0,0,0,.5);transition:transform .45s cubic-bezier(.2,1.2,.3,1);max-width:90vw}
+#toast.show{transform:translate(-50%,0)}
+#toast .e{font-size:30px}
+#toast b{font-family:var(--display);font-weight:800;display:block;font-size:16px}
+#toast small{font-size:13px;opacity:.8}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:90}
+:focus-visible{outline:2px solid var(--root);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <button class="brand" onclick="home()">Wurzelwerk <span>Wortstämme</span></button>
+    <div class="stats">
+      <div class="stat"><b id="sLevel">1</b><small>Level</small></div>
+      <div class="stat xpwrap"><b id="sXp">0 XP</b><div class="xpbar"><div class="xpfill" id="sXpFill"></div></div></div>
+      <div class="stat"><b id="sRight">0</b><small>Richtig</small></div>
+      <div class="stat" id="sStreakBox"><b id="sStreak">0</b><small>Serie</small></div>
+    </div>
+  </div>
+</header>
+
+<main id="view" class="wrap"></main>
+
+<div id="toast"><div class="e">🏅</div><div><b></b><small></small></div></div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* ============================================================
+   DATEN
+   ============================================================ */
+const STEMS = [
+{id:"dict",g:"lat",stem:"DICT-",mean:"sagen, sprechen",words:[
+  {w:"Diktat",d:"Text, den jemand vorspricht und den man mitschreibt"},
+  {w:"diktieren",d:"jemandem etwas zum Aufschreiben vorsprechen; etwas vorschreiben"},
+  {w:"Diktator",d:"Alleinherrscher, der allen vorschreibt, was zu tun ist"},
+  {w:"Diktion",d:"die Art und Weise, wie jemand spricht oder schreibt"},
+  {w:"Verdikt",d:"Urteil, Urteilsspruch"}]},
+
+{id:"gno",g:"lat",stem:"GNO-/GNOS-",mean:"wissen, erkennen",words:[
+  {w:"Diagnose",d:"Feststellung einer Krankheit durch Erkennen der Anzeichen"},
+  {w:"Prognose",d:"Vorhersage, wie sich etwas entwickeln wird"},
+  {w:"Agnostiker",d:"jemand, der meint, über Gott könne man nichts sicher wissen"},
+  {w:"Physiognomie",d:"das Erscheinungsbild eines Gesichts, aus dem man auf den Menschen schließt"},
+  {w:"Gnosis",d:"Erkenntnis, besonders geheime religiöse Erkenntnis"}]},
+
+{id:"cult",g:"lat",stem:"CULT-",mean:"pflegen, bebauen, verehren",words:[
+  {w:"Kultur",d:"alles, was Menschen pflegen und hervorbringen: Kunst, Sprache, Bräuche"},
+  {w:"Kult",d:"religiöse Verehrung; auch etwas, das begeistert verehrt wird"},
+  {w:"kultivieren",d:"Land bebauen; etwas pflegen und weiterentwickeln"},
+  {w:"Agrikultur",d:"Ackerbau, Landwirtschaft"},
+  {w:"Kultstätte",d:"Ort, an dem etwas oder jemand verehrt wird"}]},
+
+{id:"theo",g:"lat",stem:"THEO-",mean:"Gott, göttlich",words:[
+  {w:"Theologie",d:"die Lehre von Gott"},
+  {w:"Atheist",d:"jemand, der nicht an Gott glaubt"},
+  {w:"Monotheismus",d:"der Glaube an nur einen einzigen Gott"},
+  {w:"Theokratie",d:"Staat, in dem im Namen Gottes regiert wird"},
+  {w:"Pantheon",d:"Tempel für alle Götter; auch die Gesamtheit der Götter"}]},
+
+{id:"klast",g:"lat",stem:"KLAST-",mean:"zerbrechen, niederreißen",words:[
+  {w:"Ikonoklast",d:"Bilderstürmer: jemand, der religiöse Bilder zerstört"},
+  {w:"Ikonoklasmus",d:"der Bildersturm, die Zerstörung von Bildern"},
+  {w:"Bilderstürmer",d:"deutsches Wort für Ikonoklast"}]},
+
+{id:"phil",g:"lat",stem:"PHIL-",mean:"lieben, mögen",words:[
+  {w:"Philosophie",d:"die Liebe zur Weisheit"},
+  {w:"Philanthrop",d:"Menschenfreund; jemand, der anderen Gutes tut"},
+  {w:"bibliophil",d:"bücherliebend"},
+  {w:"Philharmonie",d:"großes Orchester bzw. sein Konzerthaus („Freund des Wohlklangs“)"},
+  {w:"Philologie",d:"Wissenschaft von Sprache und Literatur"}]},
+
+{id:"ikon",g:"lat",stem:"IKON-",mean:"Bild, Abbild",words:[
+  {w:"Ikone",d:"Heiligenbild der Ostkirche; auch eine berühmte Symbolfigur"},
+  {w:"Ikonographie",d:"die Lehre davon, was Bilder darstellen und bedeuten"},
+  {w:"ikonisch",d:"bildhaft; sinnbildlich für etwas stehend"},
+  {w:"Ikonostase",d:"Bilderwand in einer orthodoxen Kirche"}]},
+
+{id:"vest",g:"lat",stem:"VEST-",mean:"Kleid, Kleidung",words:[
+  {w:"Weste",d:"ärmelloses Kleidungsstück"},
+  {w:"Investitur",d:"feierliche Einsetzung in ein Amt, früher durch Einkleidung"},
+  {w:"investieren",d:"Geld anlegen; ursprünglich „einkleiden, ausstatten“"},
+  {w:"Travestie",d:"Verkleidung; scherzhafte Umformung eines bekannten Werks"}]},
+
+{id:"lumin",g:"lat",stem:"LUMIN-",mean:"Licht, beleuchten",words:[
+  {w:"Illumination",d:"festliche Beleuchtung; auch plötzliche Erleuchtung"},
+  {w:"Illuminaten",d:"Geheimbund des 18. Jahrhunderts: „die Erleuchteten“"},
+  {w:"lumineszierend",d:"von selbst leuchtend, ohne dabei heiß zu werden"},
+  {w:"luminös",d:"leuchtend, hell"}]},
+
+{id:"volv",g:"lat",stem:"VOLV-/VOLUT-",mean:"drehen, rollen, wälzen",words:[
+  {w:"Revolution",d:"Umwälzung, Umsturz der bestehenden Ordnung"},
+  {w:"Evolution",d:"allmähliche Entwicklung und Umformung der Lebewesen"},
+  {w:"Volumen",d:"Rauminhalt; ursprünglich eine Schriftrolle"},
+  {w:"Revolver",d:"Pistole mit einer sich drehenden Trommel"},
+  {w:"involviert",d:"in etwas verwickelt, daran beteiligt"}]},
+
+{id:"spir",g:"lat",stem:"SPIR-",mean:"atmen; Geist, Seele",words:[
+  {w:"Spiritualität",d:"religiöse Innerlichkeit, Geistigkeit"},
+  {w:"Inspiration",d:"Eingebung; ein Einfall, der einem „eingehaucht“ wird"},
+  {w:"Konspiration",d:"Verschwörung; wörtlich „gemeinsam atmen“"},
+  {w:"exspirieren",d:"ausatmen"},
+  {w:"Spirituose",d:"hochprozentiges alkoholisches Getränk („Weingeist“)"}]},
+
+{id:"gleich",g:"ger",stem:"GLEICH-",mean:"gleich, so gut wie",words:[
+  {w:"vergleichen",d:"zwei Dinge nebeneinanderstellen und auf Gemeinsamkeiten prüfen"},
+  {w:"ausgleichen",d:"einen Unterschied aufheben, etwas gleich machen"},
+  {w:"Gleichung",d:"mathematische Aussage, dass zwei Seiten denselben Wert haben"},
+  {w:"Gleichnis",d:"Geschichte, die etwas durch einen Vergleich erklärt"},
+  {w:"gleichgültig",d:"egal; ohne Anteilnahme"}]},
+
+{id:"geb",g:"ger",stem:"GEB-",mean:"geben, schenken, Besitz wechseln",words:[
+  {w:"Gabe",d:"Geschenk; auch eine besondere Begabung"},
+  {w:"Ausgabe",d:"Geld, das man ausgibt; auch die Auflage eines Buches"},
+  {w:"Abgabe",d:"Steuer oder Gebühr; das Abgeben von etwas"},
+  {w:"vergeben",d:"verzeihen; auch etwas weggeben oder zuteilen"},
+  {w:"begabt",d:"talentiert, mit Fähigkeiten beschenkt"},
+  {w:"Mitgift",d:"Vermögen, das eine Braut mit in die Ehe gibt"}]},
+
+{id:"gebaer",g:"ger",stem:"GEBÄR-",mean:"hervorbringen, zur Welt bringen",words:[
+  {w:"Geburt",d:"das Zur-Welt-Kommen eines Kindes"},
+  {w:"gebürtig",d:"von Geburt an aus einem bestimmten Ort stammend"},
+  {w:"Geburtstag",d:"der Jahrestag der eigenen Geburt"},
+  {w:"Gebärmutter",d:"Organ, in dem ein Kind heranwächst"},
+  {w:"Frühgeburt",d:"Geburt deutlich vor dem errechneten Termin"}]},
+
+{id:"gerat",g:"ger",stem:"GERAT-",mean:"geraten, gelingen, hingelangen",words:[
+  {w:"geraten",d:"unabsichtlich irgendwohin kommen; auch: gut gelingen"},
+  {w:"missraten",d:"misslingen, schlecht ausfallen"},
+  {w:"wohlgeraten",d:"gut gelungen, gut ausgefallen"},
+  {w:"Geratewohl",d:"„aufs Geratewohl“: auf gut Glück, ohne festen Plan"}]},
+
+{id:"giess",g:"ger",stem:"GIEß-/GUSS-",mean:"gießen, einschenken, formen",words:[
+  {w:"Guss",d:"das Gießen; ein Schwall Flüssigkeit; gegossenes Metall"},
+  {w:"Regenguss",d:"kräftiger, plötzlicher Regen"},
+  {w:"vergießen",d:"Flüssigkeit verschütten; Tränen weinen"},
+  {w:"begießen",d:"etwas mit Flüssigkeit übergießen, z. B. Pflanzen"},
+  {w:"Gießerei",d:"Betrieb, in dem flüssiges Metall in Formen gegossen wird"},
+  {w:"Erguss",d:"das Ausströmen von etwas; auch ein Schwall von Worten"}]},
+
+{id:"gelt",g:"ger",stem:"GELT-",mean:"Wert haben, gültig sein",words:[
+  {w:"Geltung",d:"Ansehen und Wirkung; auch die Gültigkeit einer Regel"},
+  {w:"gültig",d:"wirksam, anerkannt, noch in Kraft"},
+  {w:"Geld",d:"Zahlungsmittel; das, was einen Wert hat"},
+  {w:"Entgelt",d:"Bezahlung für eine geleistete Arbeit"},
+  {w:"vergelten",d:"etwas zurückgeben – belohnen oder heimzahlen"},
+  {w:"geltend machen",d:"einen Anspruch fordern und durchsetzen wollen"}]},
+
+{id:"goenn",g:"ger",stem:"GÖNN-/GUNST-",mean:"zugestehen, gönnen, gestatten",words:[
+  {w:"vergönnen",d:"jemandem etwas gewähren oder gestatten"},
+  {w:"Gunst",d:"Wohlwollen, freundliche Zuwendung"},
+  {w:"Missgunst",d:"Neid; jemandem etwas nicht gönnen"},
+  {w:"günstig",d:"vorteilhaft, passend; auch preiswert"},
+  {w:"begünstigen",d:"jemandem Vorteile verschaffen"},
+  {w:"Vergnügen",d:"Freude, Spaß an einer Sache"}]},
+
+{id:"grab",g:"ger",stem:"GRAB-",mean:"graben, ausgraben; (be)decken, zudecken",words:[
+  {w:"Grab",d:"Stelle, an der ein Toter bestattet ist"},
+  {w:"Graben",d:"lange, ausgehobene Vertiefung im Boden"},
+  {w:"begraben",d:"bestatten, mit Erde zudecken"},
+  {w:"Grube",d:"Loch in der Erde; auch ein Bergwerk"},
+  {w:"Grabstein",d:"Stein, der ein Grab kennzeichnet"},
+  {w:"untergraben",d:"von unten aushöhlen; heimlich schwächen"}]},
+
+{id:"glaenz",g:"ger",stem:"GLÄNZ-/GLANZ-",mean:"scheinen, leuchten, widerspiegeln",words:[
+  {w:"Glanz",d:"helles Leuchten einer Oberfläche"},
+  {w:"glänzend",d:"leuchtend; auch: hervorragend, sehr gut"},
+  {w:"erglänzen",d:"aufleuchten, zu leuchten beginnen"},
+  {w:"Hochglanz",d:"sehr starker, spiegelnder Glanz"},
+  {w:"glanzvoll",d:"prächtig und eindrucksvoll"}]}
+];
+
+/* Unbekannte Wörter für den Detektiv-Modus */
+const DETECTIVE = [
+{w:"Benediktion",id:"dict",d:"der Segen – wörtlich „das Gutsagen“"},
+{w:"Malediktion",id:"dict",d:"der Fluch, die Verwünschung – wörtlich „das Schlechtsagen“"},
+{w:"Diktaphon",id:"dict",d:"Gerät, das gesprochene Texte aufnimmt"},
+{w:"Agnosie",id:"gno",d:"Unfähigkeit, Dinge zu erkennen, obwohl man sie sieht"},
+{w:"Prognostiker",id:"gno",d:"jemand, der Entwicklungen im Voraus vorhersagt"},
+{w:"Apikultur",id:"cult",d:"die Bienenhaltung, die Imkerei"},
+{w:"Monokultur",id:"cult",d:"Anbau nur einer einzigen Pflanzenart auf großer Fläche"},
+{w:"Theophanie",id:"theo",d:"das Erscheinen eines Gottes vor Menschen"},
+{w:"Polytheismus",id:"theo",d:"der Glaube an viele Götter"},
+{w:"klastisch",id:"klast",d:"aus Bruchstücken zerbrochener Gesteine bestehend"},
+{w:"anglophil",id:"phil",d:"England und alles Englische liebend"},
+{w:"Philodendron",id:"phil",d:"Kletterpflanze – wörtlich „baumliebend“"},
+{w:"Ikonolatrie",id:"ikon",d:"die Verehrung von Bildern"},
+{w:"Luminanz",id:"lumin",d:"die Leuchtdichte, also wie hell eine Fläche leuchtet"},
+{w:"illuminieren",id:"lumin",d:"beleuchten; eine Handschrift mit bunten Bildern schmücken"},
+{w:"Konvolut",id:"volv",d:"ein Bündel zusammengerollter oder gesammelter Schriftstücke"},
+{w:"Volute",id:"volv",d:"spiralförmig eingerollte Verzierung an einer Säule"},
+{w:"Respiration",id:"spir",d:"die Atmung"},
+{w:"Transpiration",id:"spir",d:"das Schwitzen, die Abgabe von Wasser über die Haut"},
+{w:"Gleichmut",id:"gleich",d:"ruhige, gleichbleibende Gelassenheit"},
+{w:"Hingabe",id:"geb",d:"das völlige Sich-Widmen an eine Sache"},
+{w:"Nachgeburt",id:"gebaer",d:"das, was nach dem Kind noch aus dem Mutterleib kommt"},
+{w:"Aufguss",id:"giess",d:"Getränk, das durch Übergießen mit heißem Wasser entsteht"},
+{w:"unentgeltlich",id:"gelt",d:"kostenlos, ohne Bezahlung"},
+{w:"Geltungsdrang",id:"gelt",d:"starkes Bedürfnis, beachtet und anerkannt zu werden"},
+{w:"Gönner",id:"goenn",d:"jemand, der einen anderen fördert und unterstützt"},
+{w:"Grabkammer",id:"grab",d:"Raum in einem Grabmal, in dem Tote bestattet wurden"},
+{w:"Abglanz",id:"glaenz",d:"schwacher Widerschein von etwas viel Größerem"},
+{w:"ungeraten",id:"gerat",d:"schlecht ausgefallen, misslungen"},
+{w:"Vestiar",id:"vest",d:"Kleiderkammer eines Klosters; wer für die Kleidung zuständig ist"}
+];
+
+const ALLWORDS = [];
+STEMS.forEach(s=>s.words.forEach(x=>ALLWORDS.push({...x,id:s.id,g:s.g,stem:s.stem,mean:s.mean})));
+const byId = {}; STEMS.forEach(s=>byId[s.id]=s);
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+const BADGES = [
+ {id:"start",e:"🌱",n:"Erster Spross",d:"Eine Runde beendet"},
+ {id:"s5",e:"🔥",n:"5er-Serie",d:"5 richtige in Folge"},
+ {id:"s10",e:"⚡",n:"10er-Serie",d:"10 richtige in Folge"},
+ {id:"perfect",e:"🏆",n:"Fehlerfrei",d:"Eine Runde ohne Fehler"},
+ {id:"r50",e:"📚",n:"50 Richtige",d:"50 richtige Antworten"},
+ {id:"r150",e:"🧠",n:"150 Richtige",d:"150 richtige Antworten"},
+ {id:"allstems",e:"🌳",n:"Alle Wurzeln",d:"Alle 20 Stämme gewusst"},
+ {id:"detect",e:"🕵️",n:"Wort-Detektiv",d:"10 unbekannte Wörter geknackt"},
+ {id:"fast",e:"⏱️",n:"Blitzpaare",d:"Zuordnen unter 45 Sekunden"},
+ {id:"explorer",e:"🧭",n:"Alles probiert",d:"Jeden Übungsmodus gespielt"},
+ {id:"lvl5",e:"⭐",n:"Level 5",d:"Level 5 erreicht"},
+ {id:"lvl10",e:"👑",n:"Level 10",d:"Level 10 erreicht"}
+];
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+const S = {xp:0,right:0,wrong:0,streak:0,best:0,badges:new Set(),modes:new Set(),known:new Set(),solved:0};
+const XP_PER_LEVEL = 120;
+const level = ()=>Math.floor(S.xp/XP_PER_LEVEL)+1;
+
+function refresh(){
+  document.getElementById("sLevel").textContent = level();
+  document.getElementById("sXp").textContent = S.xp+" XP";
+  document.getElementById("sXpFill").style.width = ((S.xp%XP_PER_LEVEL)/XP_PER_LEVEL*100)+"%";
+  document.getElementById("sRight").textContent = S.right;
+  document.getElementById("sStreak").textContent = S.streak;
+  document.getElementById("sStreakBox").classList.toggle("streakhot",S.streak>=3);
+}
+function award(n){
+  const before = level();
+  S.xp += n; refresh();
+  if(level()>before){ burst(120); toast("🎉","Level "+level()+"!","Weiter so."); }
+  if(level()>=5) give("lvl5"); if(level()>=10) give("lvl10");
+}
+function scoreRight(base=10){
+  S.right++; S.streak++; S.best=Math.max(S.best,S.streak);
+  award(base + Math.min(S.streak,8)*2);
+  if(S.streak>=5) give("s5"); if(S.streak>=10) give("s10");
+  if(S.right>=50) give("r50"); if(S.right>=150) give("r150");
+}
+function scoreWrong(){ S.wrong++; S.streak=0; refresh(); }
+function give(id){
+  if(S.badges.has(id)) return;
+  S.badges.add(id);
+  const b = BADGES.find(x=>x.id===id);
+  toast(b.e,"Abzeichen: "+b.n,b.d); burst(90);
+}
+
+/* ============================================================
+   EFFEKTE
+   ============================================================ */
+const cvs=document.getElementById("confetti"),ctx=cvs.getContext("2d");
+let parts=[],raf=null;
+function sizeC(){cvs.width=innerWidth;cvs.height=innerHeight}
+sizeC(); addEventListener("resize",sizeC);
+const COLORS=["#C6F24E","#5AD1E0","#FF8A5B","#F4F6F3","#FFD84D"];
+function burst(n=70,x=innerWidth/2,y=innerHeight*0.38){
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  for(let i=0;i<n;i++) parts.push({
+    x,y,vx:(Math.random()-.5)*13,vy:Math.random()*-13-3,
+    s:Math.random()*8+4,c:COLORS[Math.random()*COLORS.length|0],
+    r:Math.random()*6.28,vr:(Math.random()-.5)*.35,life:1
+  });
+  if(!raf) raf=requestAnimationFrame(tick);
+}
+function tick(){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  parts=parts.filter(p=>p.life>0);
+  parts.forEach(p=>{
+    p.vy+=.42; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life-=.008;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
+    ctx.globalAlpha=Math.max(p.life,0); ctx.fillStyle=p.c;
+    ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.62); ctx.restore();
+  });
+  if(parts.length) raf=requestAnimationFrame(tick); else {raf=null;ctx.clearRect(0,0,cvs.width,cvs.height);}
+}
+let tTimer=null;
+function toast(e,title,sub){
+  const t=document.getElementById("toast");
+  t.querySelector(".e").textContent=e;
+  t.querySelector("b").textContent=title;
+  t.querySelector("small").textContent=sub||"";
+  t.classList.add("show"); clearTimeout(tTimer);
+  tTimer=setTimeout(()=>t.classList.remove("show"),3200);
+}
+
+/* ============================================================
+   HILFSFUNKTIONEN
+   ============================================================ */
+const V=document.getElementById("view");
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.random()*a.length|0];
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function others(pool,not,n,key){
+  return shuffle(pool.filter(x=>x[key]!==not[key])).slice(0,n);
+}
+
+/* ============================================================
+   STARTSEITE
+   ============================================================ */
+const MODES=[
+ {id:"ref",  ico:"📜",t:"Wurzel-Übersicht",p:"Alle 20 Stämme mit Bedeutung und Beispielwörtern zum Nachlesen.",tag:"Lernen"},
+ {id:"flash",ico:"🃏",t:"Karteikarten",p:"Stamm ansehen, Bedeutung raten, umdrehen. Ganz ohne Druck.",tag:"Lernen"},
+ {id:"quiz", ico:"🎯",t:"Stamm-Quiz",p:"10 Fragen: Was bedeutet dieser Stamm – und zu welcher Bedeutung gehört er?"},
+ {id:"match",ico:"🧲",t:"Paare finden",p:"Stamm und Bedeutung zusammenklicken. Auf Zeit!"},
+ {id:"sort", ico:"📦",t:"Wörter sortieren",p:"Ziehe jedes Wort zu der Wurzel, aus der es gewachsen ist."},
+ {id:"ws",   ico:"🔎",t:"Welcher Stamm steckt drin?",p:"Ein Wort, vier Wurzeln. Finde die richtige."},
+ {id:"wm",   ico:"📖",t:"Wortbedeutungen",p:"Alle Beispielwörter und ihre Definitionen – 10 Fragen."},
+ {id:"det",  ico:"🕵️",t:"Wort-Detektiv",p:"Wörter, die du noch nie gesehen hast. Knacke sie über den Stamm!",tag:"Königsklasse"},
+ {id:"mix",  ico:"🎲",t:"Gemischtes Training",p:"15 Fragen quer durch alle Übungen. Das ist der Test-Modus."}
+];
+
+function home(){
+  V.innerHTML = `
+  <section class="hero">
+    <div class="eyebrow">Deutsch · Wortkunde · Klasse 7</div>
+    <h1>Ein Wort verstehen heißt: <em>seine Wurzel</em> erkennen.</h1>
+    <p class="lede">Zwanzig Wortstämme, über hundert Wörter. Wenn du die Wurzeln kennst, kannst du die Bedeutung
+    von Wörtern erschließen, die du noch nie gelesen hast. Genau das wird geübt.</p>
+  </section>
+
+  <div class="sectionhead"><h2>Übungen</h2><p>Wähle eine Übung</p></div>
+  <div class="modes">
+    ${MODES.map(m=>`<button class="mode ${S.modes.has(m.id)&&!m.tag?"done":""}" onclick="start('${m.id}')">
+      ${m.tag?`<span class="tag">${m.tag}</span>`:""}
+      <span class="ico">${m.ico}</span>
+      <h3>${m.t}</h3><p>${m.p}</p></button>`).join("")}
+  </div>
+
+  <div class="sectionhead"><h2>Abzeichen</h2><p>${S.badges.size} / ${BADGES.length}</p></div>
+  <div class="badges">
+    ${BADGES.map(b=>`<div class="badge ${S.badges.has(b.id)?"have":""}">
+      <span class="e">${b.e}</span><b>${b.n}</b><small>${b.d}</small></div>`).join("")}
+  </div>
+
+  <div class="sectionhead"><h2>Dein Stand</h2><p>Wird beim Neuladen zurückgesetzt</p></div>
+  <div class="card" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:18px;text-align:center">
+    <div><b style="font-family:var(--display);font-size:30px;display:block">${S.right}</b><small style="color:var(--dim)">richtig</small></div>
+    <div><b style="font-family:var(--display);font-size:30px;display:block">${S.wrong}</b><small style="color:var(--dim)">falsch</small></div>
+    <div><b style="font-family:var(--display);font-size:30px;display:block">${S.best}</b><small style="color:var(--dim)">längste Serie</small></div>
+    <div><b style="font-family:var(--display);font-size:30px;display:block">${S.known.size}/${STEMS.length}</b><small style="color:var(--dim)">Stämme sicher</small></div>
+  </div>`;
+  scrollTo({top:0,behavior:"instant"});
+}
+
+function start(id){
+  S.modes.add(id);
+  if(["quiz","match","sort","ws","wm","det","mix"].every(m=>S.modes.has(m))) give("explorer");
+  ({ref:refSheet,flash:flashcards,quiz:()=>run("quiz",10),match:matching,sort:sorting,
+    ws:()=>run("ws",10),wm:()=>run("wm",10),det:()=>run("det",10),mix:()=>run("mix",15)})[id]();
+  scrollTo({top:0,behavior:"instant"});
+}
+
+function shell(title,inner,progress){
+  V.innerHTML = `<div class="gamehead"><button class="back" onclick="home()">← Übersicht</button>
+    <h2>${title}</h2><span class="pcount" id="pcount"></span></div>
+    ${progress?`<div class="pbar"><div class="pfill" id="pfill"></div></div>`:""}
+    <div id="stage">${inner}</div>`;
+}
+
+/* ============================================================
+   1 · WURZEL-ÜBERSICHT
+   ============================================================ */
+function refSheet(){
+  shell("Wurzel-Übersicht",`
+  <p style="color:var(--dim);margin-bottom:18px;max-width:62ch">
+    Präge dir vor allem die <b style="color:var(--chalk)">Bedeutung</b> der Stämme ein. Die Beispielwörter zeigen,
+    wie die Wurzel im Wort steckt – jedes davon kann in der Übung vorkommen. Die Schreibweise wird nicht abgefragt.</p>
+  <div class="reftable">
+  ${STEMS.map(s=>`<div class="refrow ${s.g}">
+    <div class="s">${s.stem}<div style="font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-top:4px">${s.g==="lat"?"lat./griech.":"deutsch"}</div></div>
+    <div><div class="m">${s.mean}</div>
+    <div class="w">${s.words.map(x=>`<b>${x.w}</b> – ${x.d}`).join(" · ")}</div></div>
+  </div>`).join("")}
+  </div>
+  <div class="btnrow"><button class="btn" onclick="start('flash')">Weiter zu den Karteikarten →</button></div>`);
+}
+
+/* ============================================================
+   2 · KARTEIKARTEN
+   ============================================================ */
+let fcQueue=[],fcIdx=0;
+function flashcards(){
+  fcQueue = shuffle(STEMS); fcIdx=0;
+  shell("Karteikarten: Stämme","<div id='fc'></div>",true);
+  drawCard();
+}
+function drawCard(){
+  if(fcIdx>=fcQueue.length){
+    document.getElementById("stage").innerHTML=`<div class="card result">
+      <div class="score">${S.known.size}/${STEMS.length}</div>
+      <div class="msg">Stapel durchgearbeitet</div>
+      <p class="sub">So viele Stämme hast du als „gewusst“ markiert.</p>
+      <div class="btnrow" style="justify-content:center"><button class="btn" onclick="flashcards()">Nochmal mischen</button>
+      <button class="btn ghost" onclick="start('quiz')">Zum Stamm-Quiz</button></div></div>`;
+    if(S.known.size===STEMS.length){give("allstems");burst(160);}
+    return;
+  }
+  const s=fcQueue[fcIdx];
+  document.getElementById("pcount").textContent=`Karte ${fcIdx+1} / ${fcQueue.length}`;
+  document.getElementById("pfill").style.width=(fcIdx/fcQueue.length*100)+"%";
+  document.getElementById("fc").innerHTML=`
+  <div class="flip" id="flip" onclick="document.getElementById('flip').classList.toggle('open')">
+    <div class="flipinner">
+      <div class="face a">
+        <div class="specimen ${s.g}"><span class="tagline">${s.g==="lat"?"lat./griech.":"deutsch"}</span>
+        <span class="stemtext">${s.stem}</span></div>
+        <div class="hint">Klick zum Umdrehen</div>
+      </div>
+      <div class="face b">
+        <div class="bigmeaning">${s.mean}</div>
+        <div class="wordchips">${s.words.map(w=>`<span>${w.w}</span>`).join("")}</div>
+        <div class="hint">Klick zum Umdrehen</div>
+      </div>
+    </div>
+  </div>
+  <div class="btnrow" style="justify-content:center">
+    <button class="btn ghost" onclick="fcNext(false)">Nochmal üben</button>
+    <button class="btn" onclick="fcNext(true)">Gewusst ✓</button>
+  </div>`;
+}
+function fcNext(ok){
+  const s=fcQueue[fcIdx];
+  if(ok){ S.known.add(s.id); award(5); if(S.known.size===STEMS.length) give("allstems"); }
+  else { S.known.delete(s.id); fcQueue.push(s); }
+  fcIdx++; drawCard();
+}
+
+/* ============================================================
+   3 · FRAGE-RUNDEN (quiz / ws / wm / det / mix)
+   ============================================================ */
+let R=null;
+function makeQ(kind){
+  if(kind==="mix") kind=pick(["quiz","quiz","ws","wm","det"]);
+
+  if(kind==="quiz"){
+    const dir = Math.random()<.5;
+    const s=pick(STEMS), d=others(STEMS,s,3,"id");
+    if(dir) return {kind,promptHTML:specimen(s),ask:"Was bedeutet dieser Stamm?",
+      opts:shuffle([s,...d]).map(o=>({t:o.mean,ok:o.id===s.id})),
+      why:`<b>${s.stem}</b> bedeutet „${s.mean}“ – z. B. in ${s.words.slice(0,3).map(w=>w.w).join(", ")}.`};
+    return {kind,promptHTML:`<div class="bigmeaning">${s.mean}</div>`,ask:"Welcher Stamm hat diese Bedeutung?",
+      opts:shuffle([s,...d]).map(o=>({t:o.stem,ok:o.id===s.id,mono:true})),
+      why:`Richtig ist <b>${s.stem}</b> – z. B. in ${s.words.slice(0,3).map(w=>w.w).join(", ")}.`};
+  }
+
+  if(kind==="ws"){
+    const w=pick(ALLWORDS), s=byId[w.id], d=others(STEMS,s,3,"id");
+    return {kind,promptHTML:`<div class="bigword">${w.w}</div>`,ask:"Welcher Wortstamm steckt in diesem Wort?",
+      opts:shuffle([s,...d]).map(o=>({t:o.stem,sub:o.mean,ok:o.id===s.id,mono:true})),
+      why:`<b>${w.w}</b> kommt von <b>${s.stem}</b> (${s.mean}): ${w.d}.`};
+  }
+
+  if(kind==="wm"){
+    const w=pick(ALLWORDS), d=others(ALLWORDS,w,3,"w");
+    if(Math.random()<.5) return {kind,promptHTML:`<div class="bigword">${w.w}</div>`,ask:"Was bedeutet dieses Wort?",
+      opts:shuffle([w,...d]).map(o=>({t:o.d,ok:o.w===w.w})),
+      why:`<b>${w.w}</b>: ${w.d}. Stamm: <b>${w.stem}</b> (${w.mean}).`};
+    return {kind,promptHTML:`<div class="defprompt">„${w.d}“</div>`,ask:"Welches Wort wird hier beschrieben?",
+      opts:shuffle([w,...d]).map(o=>({t:o.w,ok:o.w===w.w})),
+      why:`Gesucht war <b>${w.w}</b> – vom Stamm <b>${w.stem}</b> (${w.mean}).`};
+  }
+
+  /* det */
+  const x=pick(DETECTIVE), s=byId[x.id], d=others(DETECTIVE,x,3,"w");
+  return {kind:"det",promptHTML:`<div class="bigword">${x.w}</div>`,
+    ask:"Dieses Wort kennst du wahrscheinlich nicht. Was bedeutet es?",
+    hint:`Der Stamm ist <b>${s.stem}</b> – „${s.mean}“.`,
+    opts:shuffle([x,...d]).map(o=>({t:o.d,ok:o.w===x.w})),
+    why:`<b>${x.w}</b> enthält <b>${s.stem}</b> („${s.mean}“) und bedeutet: ${x.d}.`};
+}
+function specimen(s){
+  return `<div class="specimen ${s.g}"><span class="tagline">${s.g==="lat"?"lat./griech.":"deutsch"}</span>
+  <span class="stemtext">${s.stem}</span><span class="rootline"></span></div>`;
+}
+
+const TITLES={quiz:"Stamm-Quiz",ws:"Welcher Stamm steckt drin?",wm:"Wortbedeutungen",det:"Wort-Detektiv",mix:"Gemischtes Training"};
+function run(kind,n){
+  R={kind,n,i:0,ok:0,miss:[],hintUsed:false};
+  shell(TITLES[kind],"<div id='q'></div>",true);
+  nextQ();
+}
+function nextQ(){
+  if(R.i>=R.n) return results();
+  R.q=makeQ(R.kind); R.hintUsed=false;
+  document.getElementById("pcount").textContent=`Frage ${R.i+1} / ${R.n} · ${R.ok} richtig`;
+  document.getElementById("pfill").style.width=(R.i/R.n*100)+"%";
+  const q=R.q;
+  document.getElementById("q").innerHTML=`
+  <div class="card">
+    <div class="prompt"><div class="kicker">${q.ask}</div>${q.promptHTML}</div>
+    <div class="opts ${q.opts.every(o=>o.t.length<26)?"two":""}" id="opts">
+      ${q.opts.map((o,i)=>`<button class="opt ${o.mono?"stem":""}" onclick="answer(${i})">${o.t}${o.sub?`<span class="om">${o.sub}</span>`:""}</button>`).join("")}
+    </div>
+    ${q.hint?`<div class="btnrow"><button class="btn ghost" id="hintBtn" onclick="showHint()">💡 Stamm-Tipp anzeigen</button></div>
+      <div class="feedback" id="hintBox" style="background:rgba(90,209,224,.1);border-color:var(--water)"></div>`:""}
+    <div class="feedback" id="fb"></div>
+  </div>`;
+}
+function showHint(){
+  R.hintUsed=true;
+  const h=document.getElementById("hintBox");
+  h.innerHTML=`<b>Tipp</b>${R.q.hint}`; h.classList.add("show");
+  document.getElementById("hintBtn").disabled=true;
+  document.getElementById("hintBtn").style.opacity=.4;
+}
+function answer(i){
+  const q=R.q, btns=[...document.querySelectorAll("#opts .opt")];
+  btns.forEach((b,j)=>{b.disabled=true; if(q.opts[j].ok) b.classList.add("right");});
+  const fb=document.getElementById("fb");
+  if(q.opts[i].ok){
+    R.ok++; scoreRight(R.kind==="det"?(R.hintUsed?8:16):10);
+    if(R.kind==="det"&&!R.hintUsed){S.solved++; if(S.solved>=10) give("detect");}
+    fb.className="feedback good show";
+    fb.innerHTML=`<b>${pick(["Sitzt!","Genau richtig.","Stark.","Wurzel erkannt!","Sauber."])}</b>${q.why}`;
+    burst(38, innerWidth/2, innerHeight*0.45);
+  } else {
+    btns[i].classList.add("wrongpick"); scoreWrong();
+    R.miss.push(q.why);
+    fb.className="feedback bad show";
+    fb.innerHTML=`<b>Noch nicht.</b>${q.why}`;
+  }
+  fb.insertAdjacentHTML("beforeend",
+    `<div class="btnrow"><button class="btn" id="nx" onclick="R.i++;nextQ()">Weiter →</button></div>`);
+  document.getElementById("nx").focus();
+}
+function results(){
+  const pct=Math.round(R.ok/R.n*100);
+  give("start");
+  if(R.ok===R.n){ give("perfect"); burst(200); }
+  else if(pct>=70) burst(90);
+  const msg = pct===100?"Perfekt. Keine einzige Lücke.":pct>=80?"Richtig gut!":pct>=60?"Solide – ein paar Wurzeln fehlen noch.":"Schau dir die Übersicht nochmal an.";
+  document.getElementById("pfill").style.width="100%";
+  document.getElementById("pcount").textContent="Fertig";
+  document.getElementById("stage").innerHTML=`
+  <div class="card result">
+    <div class="score">${R.ok}/${R.n}</div>
+    <div class="msg">${msg}</div>
+    <p class="sub">${pct}% richtig · längste Serie in dieser Runde: ${S.best}</p>
+    ${R.miss.length?`<div class="reviewlist">${R.miss.map(m=>`<div>${m}</div>`).join("")}</div>`:""}
+    <div class="btnrow" style="justify-content:center;margin-top:26px">
+      <button class="btn" onclick="run('${R.kind}',${R.n})">Nochmal spielen</button>
+      <button class="btn ghost" onclick="home()">Andere Übung</button>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   4 · PAARE FINDEN
+   ============================================================ */
+let M=null;
+function matching(){
+  const set=shuffle(STEMS).slice(0,6);
+  M={set,sel:null,left:0,t0:Date.now(),tries:0};
+  shell("Paare finden","<div id='m'></div>");
+  document.getElementById("m").innerHTML=`
+  <p class="hintline">Klicke einen Stamm und dann seine Bedeutung</p>
+  <div class="matchgrid">
+    <div class="mcol">${shuffle(set).map(s=>`<button class="mitem stemcell" data-id="${s.id}" data-side="l" onclick="mClick(this)">${s.stem}</button>`).join("")}</div>
+    <div class="mcol">${shuffle(set).map(s=>`<button class="mitem" data-id="${s.id}" data-side="r" onclick="mClick(this)">${s.mean}</button>`).join("")}</div>
+  </div>
+  <div class="feedback" id="mfb"></div>`;
+  document.getElementById("pcount").textContent="0 / 6 Paare";
+}
+function mClick(el){
+  if(!M.sel){ M.sel=el; el.classList.add("sel"); return; }
+  if(M.sel===el){ el.classList.remove("sel"); M.sel=null; return; }
+  if(M.sel.dataset.side===el.dataset.side){ M.sel.classList.remove("sel"); M.sel=el; el.classList.add("sel"); return; }
+  M.tries++;
+  if(M.sel.dataset.id===el.dataset.id){
+    M.sel.classList.add("gone"); el.classList.add("gone");
+    M.sel.classList.remove("sel"); M.sel=null; M.left++;
+    scoreRight(12); burst(30);
+    document.getElementById("pcount").textContent=M.left+" / 6 Paare";
+    if(M.left===6) mDone();
+  } else {
+    const a=M.sel,b=el; a.classList.add("shake"); b.classList.add("shake"); scoreWrong();
+    setTimeout(()=>{a.classList.remove("shake","sel");b.classList.remove("shake");},380);
+    M.sel=null;
+  }
+}
+function mDone(){
+  const secs=Math.round((Date.now()-M.t0)/1000);
+  if(secs<45) give("fast");
+  give("start"); burst(180);
+  document.getElementById("mfb").className="feedback good show";
+  document.getElementById("mfb").innerHTML=`<b>Alle sechs Paare gefunden!</b>Zeit: ${secs} Sekunden · Versuche: ${M.tries}
+  <div class="btnrow"><button class="btn" onclick="matching()">Neue Runde</button>
+  <button class="btn ghost" onclick="home()">Andere Übung</button></div>`;
+}
+
+/* ============================================================
+   5 · WÖRTER SORTIEREN (Drag & Drop + Tippen)
+   ============================================================ */
+let D=null;
+function sorting(){
+  const set=shuffle(STEMS).slice(0,4);
+  const chips=shuffle(set.flatMap(s=>shuffle(s.words).slice(0,2).map(w=>({...w,id:s.id}))));
+  D={set,chips,done:0,total:chips.length,picked:null,drag:null};
+  shell("Wörter sortieren","<div id='d'></div>");
+  document.getElementById("d").innerHTML=`
+  <div class="buckets" id="buckets">
+    ${set.map(s=>`<div class="bucket ${s.g}" data-id="${s.id}">
+      <div class="bstem">${s.stem}</div><div class="bmean">${s.mean}</div><div class="drops"></div></div>`).join("")}
+  </div>
+  <p class="hintline">Wort antippen und in den Kasten tippen – oder mit der Maus hineinziehen</p>
+  <div class="pool" id="pool">
+    ${chips.map((c,i)=>`<div class="chip" data-i="${i}">${c.w}</div>`).join("")}
+  </div>
+  <div class="feedback" id="dfb"></div>`;
+  document.getElementById("pcount").textContent=`0 / ${D.total} einsortiert`;
+  bindDrag();
+}
+function bindDrag(){
+  document.querySelectorAll("#pool .chip").forEach(chip=>{
+    chip.addEventListener("pointerdown",e=>{
+      const startX=e.clientX,startY=e.clientY; let moved=false,ghost=null;
+      const move=ev=>{
+        if(!moved && Math.hypot(ev.clientX-startX,ev.clientY-startY)>7){
+          moved=true;
+          ghost=chip.cloneNode(true); ghost.classList.add("ghost");
+          ghost.style.width=chip.offsetWidth+"px"; document.body.appendChild(ghost);
+          chip.style.opacity=".3";
+        }
+        if(moved){
+          ghost.style.left=(ev.clientX-ghost.offsetWidth/2)+"px";
+          ghost.style.top=(ev.clientY-ghost.offsetHeight/2)+"px";
+          const b=bucketAt(ev.clientX,ev.clientY);
+          document.querySelectorAll(".bucket").forEach(x=>x.classList.toggle("over",x===b));
+        }
+      };
+      const up=ev=>{
+        document.removeEventListener("pointermove",move);
+        document.removeEventListener("pointerup",up);
+        document.querySelectorAll(".bucket").forEach(x=>x.classList.remove("over"));
+        if(moved){
+          ghost.remove(); chip.style.opacity="";
+          const b=bucketAt(ev.clientX,ev.clientY);
+          if(b) drop(chip,b);
+        } else {
+          if(D.picked===chip){ chip.classList.remove("picked"); D.picked=null; }
+          else { document.querySelectorAll(".chip").forEach(c=>c.classList.remove("picked"));
+                 chip.classList.add("picked"); D.picked=chip; }
+        }
+      };
+      document.addEventListener("pointermove",move);
+      document.addEventListener("pointerup",up);
+    });
+  });
+  document.querySelectorAll(".bucket").forEach(b=>{
+    b.addEventListener("click",()=>{ if(D.picked) drop(D.picked,b); });
+  });
+}
+function bucketAt(x,y){
+  const el=document.elementFromPoint(x,y);
+  return el?el.closest(".bucket"):null;
+}
+function drop(chip,bucket){
+  const c=D.chips[+chip.dataset.i];
+  if(c.id===bucket.dataset.id){
+    bucket.querySelector(".drops").insertAdjacentHTML("beforeend",`<span>${c.w}</span>`);
+    chip.remove(); D.picked=null; D.done++; scoreRight(12); burst(26);
+    document.getElementById("pcount").textContent=`${D.done} / ${D.total} einsortiert`;
+    if(D.done===D.total) sortDone();
+  } else {
+    chip.classList.add("nope"); chip.classList.remove("picked"); D.picked=null; scoreWrong();
+    setTimeout(()=>chip.classList.remove("nope"),400);
+    const fb=document.getElementById("dfb");
+    fb.className="feedback bad show";
+    fb.innerHTML=`<b>Falsche Wurzel.</b><b style="display:inline">${c.w}</b> gehört nicht zu ${bucket.querySelector(".bstem").textContent} – lies die Bedeutungen nochmal.`;
+  }
+}
+function sortDone(){
+  give("start"); burst(180);
+  const fb=document.getElementById("dfb");
+  fb.className="feedback good show";
+  fb.innerHTML=`<b>Alles richtig einsortiert!</b>Vier Wurzeln, acht Wörter – erledigt.
+  <div class="btnrow"><button class="btn" onclick="sorting()">Neue Runde</button>
+  <button class="btn ghost" onclick="home()">Andere Übung</button></div>`;
+}
+
+/* ============================================================ */
+refresh(); home();
+</script>
+</body>
+</html>
