@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marginalien — Wirkungstrainer IGCSE Deutsch 0505</title>
+<style>
+:root{
+  --paper:#eef1f4;
+  --panel:#ffffff;
+  --ink:#14181d;
+  --ink-2:#4a5560;
+  --ink-3:#78848f;
+  --rule:#ccd5dd;
+  --rule-2:#e3e9ee;
+  --wort:#c98a04;
+  --bild:#b8336a;
+  --klang:#12716c;
+  --satz:#3a4ea8;
+  --ok:#1c7a4f;
+  --no:#c0392f;
+  --focus:#3a4ea8;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Charter,Georgia,"Times New Roman",serif;
+  --sans:"Avenir Next",Avenir,"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;
+  --r:5px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16.5px;
+  line-height:1.5;
+  -webkit-text-size-adjust:100%;
+  overscroll-behavior-y:none;
+}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;margin:0}
+h1{font-size:1.6rem}
+h2{font-size:1.35rem;line-height:1.25}
+h3{font-size:1.08rem}
+p{margin:0 0 .8em}
+button{font:inherit;color:inherit}
+input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:216px 1fr;min-height:100vh;min-height:100dvh}
+.rail{
+  border-right:1px solid var(--rule);
+  background:#e6ebf0;
+  padding:18px 0 40px;
+  position:sticky;top:0;height:100vh;height:100dvh;
+  display:flex;flex-direction:column;gap:2px;
+}
+.brand{padding:0 18px 16px;border-bottom:1px solid var(--rule);margin-bottom:12px}
+.brand b{font-family:var(--serif);font-size:1.22rem;display:block;line-height:1.1}
+.brand span{font-size:.72rem;color:var(--ink-2);letter-spacing:.02em}
+.navbtn{
+  display:flex;align-items:center;gap:10px;width:100%;
+  background:none;border:0;border-left:3px solid transparent;
+  padding:11px 18px;text-align:left;cursor:pointer;color:var(--ink-2);
+  font-size:.94rem;
+}
+.navbtn:hover{color:var(--ink)}
+.navbtn[aria-current="true"]{background:var(--panel);border-left-color:var(--satz);color:var(--ink);font-weight:600}
+.navbtn .g{width:1.3em;text-align:center;font-family:var(--serif);font-size:1.05em}
+.rail .spacer{flex:1}
+.railfoot{padding:10px 18px 0;font-size:.72rem;color:var(--ink-3);line-height:1.35}
+
+.main{min-width:0;padding:26px 30px 90px;max-width:1080px}
+.topline{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;margin-bottom:22px}
+.topline .lede{max-width:58ch;color:var(--ink-2);font-size:.94rem}
+
+/* rank pill */
+.rank{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);padding:9px 13px}
+.rank .lvl{font-family:var(--serif);font-size:1.05rem;line-height:1}
+.rank .xp{font-size:.74rem;color:var(--ink-3)}
+.rank .flame{font-size:.8rem;color:var(--wort);border-left:1px solid var(--rule-2);padding-left:12px}
+.xpbar{height:4px;background:var(--rule-2);border-radius:2px;overflow:hidden;margin-top:5px;width:120px}
+.xpbar i{display:block;height:100%;background:var(--satz);transition:width .5s ease}
+
+/* ---------- panels ---------- */
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);padding:20px 22px;margin-bottom:18px}
+.panel.tight{padding:15px 17px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+hr.rule{border:0;border-top:1px solid var(--rule-2);margin:16px 0}
+
+/* mode cards */
+.mode{
+  background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);
+  padding:16px 17px 15px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:7px;
+  border-top:3px solid var(--c,var(--satz));transition:transform .12s ease,border-color .12s ease;
+}
+.mode:hover{transform:translateY(-2px)}
+.mode:active{transform:translateY(0)}
+.mode h3{font-size:1.06rem}
+.mode p{margin:0;font-size:.85rem;color:var(--ink-2);line-height:1.4}
+.mode .meta{font-size:.72rem;color:var(--ink-3);margin-top:auto;padding-top:6px}
+
+/* ---------- specimen: the signature element ---------- */
+.specimen{
+  font-family:var(--serif);font-size:1.34rem;line-height:1.75;
+  padding:20px 22px;border-left:3px solid var(--ink);background:#fbfcfd;
+  border-radius:0 var(--r) var(--r) 0;margin:4px 0 18px;
+}
+.specimen.small{font-size:1.12rem;line-height:1.7}
+.specimen .src{display:block;font-family:var(--sans);font-size:.74rem;color:var(--ink-3);margin-top:10px;font-style:normal}
+.hl{
+  position:relative;padding:1px 3px;margin:0 -1px;border-radius:2px;
+  background:linear-gradient(100deg,transparent 1px,var(--c) 1px,var(--c) 96%,transparent 96%);
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+}
+.hl.wort{--c:rgba(201,138,4,.32)}
+.hl.bild{--c:rgba(184,51,106,.24)}
+.hl.klang{--c:rgba(18,113,108,.24)}
+.hl.satz{--c:rgba(58,78,168,.22)}
+.word{cursor:pointer;padding:2px 1px;border-radius:2px;transition:background .1s}
+.word:hover{background:rgba(58,78,168,.1)}
+.word.picked{background:rgba(201,138,4,.34);box-shadow:0 1px 0 var(--wort)}
+.word.right{background:rgba(28,122,79,.2);box-shadow:0 1px 0 var(--ok)}
+.word.wrong{background:rgba(192,57,47,.16);text-decoration:line-through;text-decoration-color:var(--no)}
+
+/* margin note */
+.margin{
+  font-family:var(--sans);font-size:.86rem;color:var(--ink-2);line-height:1.5;
+  border-left:2px solid var(--c,var(--rule));padding:2px 0 2px 12px;margin:12px 0;
+}
+
+/* ---------- buttons ---------- */
+.btn{
+  background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);
+  padding:10px 16px;cursor:pointer;font-size:.92rem;min-height:44px;
+}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.primary:hover{background:#2b333c}
+.btn.ghost{background:none;border-color:transparent;color:var(--ink-2);padding:10px 10px}
+.btn.ghost:hover{color:var(--ink);text-decoration:underline}
+.btn:disabled{opacity:.42;cursor:default}
+.btn.sm{padding:7px 12px;min-height:38px;font-size:.85rem}
+.btn.filt[aria-current="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:16px}
+
+/* answer options */
+.opts{display:grid;gap:9px}
+.opt{
+  display:flex;gap:11px;align-items:flex-start;text-align:left;width:100%;
+  background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);
+  padding:13px 15px;cursor:pointer;min-height:48px;font-size:.95rem;line-height:1.4;
+}
+.opt:hover{border-color:var(--ink-3)}
+.opt .k{font-family:var(--serif);color:var(--ink-3);min-width:1.1em}
+.opt.sel{border-color:var(--satz);box-shadow:inset 0 0 0 1px var(--satz)}
+.opt.right{border-color:var(--ok);background:rgba(28,122,79,.07)}
+.opt.right .k{color:var(--ok)}
+.opt.wrong{border-color:var(--no);background:rgba(192,57,47,.06)}
+.opt.wrong .k{color:var(--no)}
+.opt[disabled]{cursor:default}
+
+/* ---------- drag kit ---------- */
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);
+  padding:10px 13px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
+  font-size:.9rem;line-height:1.35;max-width:100%;min-height:44px;
+  border-left:3px solid var(--c,var(--ink-3));
+}
+.chip:active{cursor:grabbing}
+.chip.sel{box-shadow:0 0 0 2px var(--satz);border-color:var(--satz)}
+.chip.ghost{
+  position:fixed;z-index:999;pointer-events:none;opacity:.95;
+  box-shadow:0 12px 26px rgba(20,24,29,.22);transform:rotate(-1.4deg);
+}
+.chip.lifted{opacity:.28}
+.chip.right{border-color:var(--ok);background:rgba(28,122,79,.08)}
+.chip.wrong{border-color:var(--no);background:rgba(192,57,47,.07)}
+.chip .num{font-family:var(--serif);color:var(--ink-3);font-size:.95em}
+.pool{
+  display:flex;flex-wrap:wrap;gap:9px;padding:13px;
+  border:1px dashed var(--rule);border-radius:var(--r);background:#f7f9fa;min-height:70px;align-content:flex-start;
+}
+.zone{
+  border:1px dashed var(--rule);border-radius:var(--r);background:#f7f9fa;
+  padding:11px;min-height:66px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;align-content:flex-start;
+  transition:background .12s,border-color .12s;
+}
+.zone.over{background:rgba(58,78,168,.09);border-color:var(--satz);border-style:solid}
+.zone .ph{color:var(--ink-3);font-size:.82rem;pointer-events:none}
+.zone:has(.chip) .ph{display:none}
+.pairrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch;margin-bottom:11px}
+.pairrow .cue{
+  font-family:var(--serif);font-size:1.06rem;line-height:1.5;background:#fbfcfd;
+  border-left:3px solid var(--c,var(--ink));padding:12px 14px;border-radius:0 var(--r) var(--r) 0;
+}
+.sortable{display:flex;flex-direction:column;gap:9px}
+.sortable .chip{width:100%;justify-content:flex-start}
+.slotrow{display:grid;grid-template-columns:88px 1fr;gap:11px;align-items:stretch;margin-bottom:10px}
+.slotlab{
+  font-family:var(--serif);font-size:1rem;padding:12px 0 0;color:var(--ink-2);
+}
+.slotlab b{display:block;font-size:1.5rem;line-height:1;color:var(--ink)}
+.slotlab i{font-style:normal;font-size:.72rem;font-family:var(--sans);color:var(--ink-3)}
+
+/* ---------- feedback ---------- */
+.fb{border-radius:var(--r);padding:14px 16px;margin-top:16px;font-size:.92rem;line-height:1.55;border:1px solid}
+.fb.ok{border-color:rgba(28,122,79,.4);background:rgba(28,122,79,.07)}
+.fb.no{border-color:rgba(192,57,47,.4);background:rgba(192,57,47,.05)}
+.fb b{font-family:var(--serif);font-size:1.02rem}
+.fb .q{font-family:var(--serif);font-size:1.03rem}
+
+/* ---------- exercise chrome ---------- */
+.exhead{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:16px}
+.exhead .t{display:flex;align-items:baseline;gap:12px}
+.exhead .cnt{font-size:.78rem;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.prog{height:3px;background:var(--rule-2);border-radius:2px;overflow:hidden;margin-bottom:20px}
+.prog i{display:block;height:100%;background:var(--c,var(--satz));transition:width .35s ease}
+.task{font-size:.95rem;color:var(--ink-2);margin-bottom:14px;max-width:70ch}
+.task strong{color:var(--ink)}
+
+/* ---------- tags / mastery ---------- */
+.tag{display:inline-block;font-size:.7rem;padding:2px 7px;border-radius:20px;border:1px solid var(--c);color:var(--c);white-space:nowrap}
+.cat-wort{--c:var(--wort)} .cat-bild{--c:var(--bild)} .cat-klang{--c:var(--klang)} .cat-satz{--c:var(--satz)}
+.stars{letter-spacing:2px;font-size:.95rem;color:var(--rule);white-space:nowrap}
+.stars b{color:var(--wort);font-weight:400}
+.mrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule-2)}
+.mrow:last-child{border-bottom:0}
+.mrow .nm{flex:1;min-width:0;font-size:.93rem}
+.mrow .nm small{display:block;color:var(--ink-3);font-size:.74rem}
+.mbar{width:96px;height:5px;background:var(--rule-2);border-radius:3px;overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--c,var(--satz));transition:width .5s}
+
+/* ---------- library ---------- */
+.libitem{border:1px solid var(--rule);border-radius:var(--r);margin-bottom:10px;overflow:hidden;background:var(--panel)}
+.libitem>summary{padding:13px 16px;cursor:pointer;list-style:none;display:flex;gap:10px;align-items:center;font-weight:600;border-left:3px solid var(--c,var(--satz))}
+.libitem>summary::-webkit-details-marker{display:none}
+.libitem>summary::after{content:"+";margin-left:auto;color:var(--ink-3);font-size:1.2rem}
+.libitem[open]>summary::after{content:"–"}
+.libbody{padding:2px 18px 18px;border-top:1px solid var(--rule-2)}
+.libbody dt{font-size:.74rem;color:var(--ink-3);margin-top:13px}
+.libbody dd{margin:2px 0 0;font-size:.93rem;line-height:1.55}
+.libbody dd.ex{font-family:var(--serif);font-size:1.1rem}
+
+/* ---------- exam ---------- */
+.examta{
+  width:100%;min-height:250px;padding:16px 18px;border:1px solid var(--rule);border-radius:var(--r);
+  font-family:var(--serif);font-size:1.06rem;line-height:1.7;resize:vertical;background:#fbfcfd;
+}
+.wc{font-size:.76rem;color:var(--ink-3);text-align:right;margin-top:5px;font-variant-numeric:tabular-nums}
+.timer{font-family:var(--serif);font-size:1.35rem;font-variant-numeric:tabular-nums}
+.check{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--rule-2);font-size:.9rem;line-height:1.45}
+.check:last-child{border-bottom:0}
+.check input{width:21px;height:21px;margin:1px 0 0;flex:none;accent-color:var(--satz)}
+.band{display:grid;grid-template-columns:56px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid var(--rule-2);font-size:.88rem;line-height:1.45}
+.band:last-child{border-bottom:0}
+.band b{font-family:var(--serif);font-size:1rem}
+
+/* ---------- misc ---------- */
+.inline{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.field{display:flex;flex-direction:column;gap:5px;font-size:.78rem;color:var(--ink-3)}
+.field input,.field select{padding:10px 12px;border:1px solid var(--rule);border-radius:var(--r);background:var(--panel);min-height:44px;font-size:.93rem}
+.badge{display:flex;gap:10px;align-items:center;padding:11px 13px;border:1px solid var(--rule);border-radius:var(--r);background:var(--panel);font-size:.85rem}
+.badge.off{opacity:.4}
+.badge .ic{font-family:var(--serif);font-size:1.5rem;line-height:1}
+.badge small{display:block;color:var(--ink-3);font-size:.73rem}
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1000;
+  background:var(--ink);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:.9rem;
+  box-shadow:0 10px 30px rgba(20,24,29,.3);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  max-width:88vw;text-align:center;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(-6px)}
+.hint{font-size:.83rem;color:var(--ink-3);line-height:1.5}
+.kbd{font-family:var(--serif);border:1px solid var(--rule);border-radius:3px;padding:0 5px;font-size:.85em}
+.savedrow{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--rule-2);font-size:.89rem}
+.savedrow:last-child{border-bottom:0}
+.savedrow .g{flex:1;min-width:0}
+.savedrow .g b{display:block;font-weight:600}
+.savedrow .g small{color:var(--ink-3);font-size:.75rem}
+.big{font-family:var(--serif);font-size:2.2rem;line-height:1}
+.stat{background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);padding:15px 17px}
+.stat small{display:block;color:var(--ink-3);font-size:.75rem;margin-top:4px}
+
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .rail{
+    position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;
+    flex-direction:row;border-right:0;border-top:1px solid var(--rule);padding:0;
+    z-index:50;overflow-x:auto;padding-bottom:env(safe-area-inset-bottom);
+  }
+  .brand{display:none}
+  .rail .spacer,.railfoot{display:none}
+  .navbtn{flex-direction:column;gap:3px;padding:9px 14px;font-size:.68rem;border-left:0;border-top:3px solid transparent;min-width:74px;text-align:center;align-items:center}
+  .navbtn[aria-current="true"]{border-left:0;border-top-color:var(--satz)}
+  .navbtn .g{font-size:1.25em}
+  .main{padding:20px 18px 120px}
+  .pairrow{grid-template-columns:1fr;gap:7px}
+  .specimen{font-size:1.2rem;padding:16px 17px}
+  .slotrow{grid-template-columns:64px 1fr}
+}
+@media print{
+  .rail,.btnrow,.navbtn{display:none!important}
+  body{background:#fff}
+  .app{display:block}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail" aria-label="Bereiche">
+    <div class="brand">
+      <b>Marginalien</b>
+      <span>Wirkungstrainer · Deutsch 0505</span>
+    </div>
+    <button class="navbtn" data-view="start"><span class="g">✦</span> Start</button>
+    <button class="navbtn" data-view="uebung"><span class="g">◆</span> Übungen</button>
+    <button class="navbtn" data-view="lexikon"><span class="g">§</span> Stilmittel</button>
+    <button class="navbtn" data-view="pruefung"><span class="g">✎</span> Prüfung</button>
+    <button class="navbtn" data-view="auftrag"><span class="g">▣</span> Auftrag</button>
+    <button class="navbtn" data-view="fortschritt"><span class="g">★</span> Fortschritt</button>
+    <button class="navbtn" data-view="daten"><span class="g">⇅</span> Daten</button>
+    <div class="spacer"></div>
+    <div class="railfoot">Alles bleibt auf diesem Gerät gespeichert. Exportiere deinen Fortschritt, bevor du das Tablet wechselst.</div>
+  </nav>
+
+  <main class="main">
+    <!-- ============ START ============ -->
+    <section id="v-start" hidden>
+      <div class="topline">
+        <div>
+          <h1>Nicht nur erkennen — erklären.</h1>
+          <p class="lede">In der Prüfung reicht es nicht, ein Stilmittel zu benennen. Du musst zeigen, <strong>was</strong> die Sprache mit dem Leser macht — und <strong>warum</strong> genau dieses Wort es tut.</p>
+        </div>
+        <div class="rank">
+          <div>
+            <div class="lvl" id="rankName">—</div>
+            <div class="xp" id="rankXp">0 Punkte</div>
+            <div class="xpbar"><i id="rankBar" style="width:0"></i></div>
+          </div>
+          <div class="flame" id="streakBox">0er-Serie</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="specimen" id="heroQuote"></div>
+        <div class="margin" style="--c:var(--bild)" id="heroNote"></div>
+        <div class="btnrow">
+          <button class="btn primary" data-go="uebung">Üben</button>
+          <button class="btn" data-go="pruefung">Prüfungsaufgabe schreiben</button>
+          <button class="btn" data-go="auftrag">Auftrag ansehen</button>
+          <button class="btn ghost" id="newHero">Anderes Beispiel</button>
+        </div>
+      </div>
+
+      <div class="grid g3">
+        <div class="stat"><div class="big" id="sAnswered">0</div><small>beantwortete Aufgaben</small></div>
+        <div class="stat"><div class="big" id="sAcc">–</div><small>Trefferquote</small></div>
+        <div class="stat"><div class="big" id="sMastered">0<span style="font-size:.5em;color:var(--ink-3)">/18</span></div><small>Stilmittel auf Stufe 4+</small></div>
+      </div>
+
+      <div class="panel">
+        <h2>Die drei Schritte: F · E · E</h2>
+        <div class="slotrow" style="margin-top:14px">
+          <div class="slotlab"><b>F</b><i>Feature</i></div>
+          <div class="panel tight" style="margin:0">Welche <strong>sprachliche Entscheidung</strong> hat der Autor getroffen? (Wortwahl, Bild, Satzbau, Klang …)</div>
+        </div>
+        <div class="slotrow">
+          <div class="slotlab"><b>E</b><i>Evidence</i></div>
+          <div class="panel tight" style="margin:0">Welches <strong>Wort</strong> belegt das? Kurz zitieren — ein bis drei Wörter genügen.</div>
+        </div>
+        <div class="slotrow">
+          <div class="slotlab"><b>E</b><i>Effect</i></div>
+          <div class="panel tight" style="margin:0">Welche <strong>Wirkung</strong> entsteht — <strong>und warum</strong>? Das „weil“ ist der Teil, der Punkte bringt.</div>
+        </div>
+        <div class="margin" style="--c:var(--satz)">F und E dürfen im selben Satz stehen. Deine Aufmerksamkeit gehört dem dritten Schritt.</div>
+      </div>
+    </section>
+
+    <!-- ============ ÜBUNGEN ============ -->
+    <section id="v-uebung" hidden>
+      <div class="topline">
+        <div>
+          <h1>Übungen</h1>
+          <p class="lede">Sieben Trainingsarten. Jede zahlt auf deine Stilmittel-Stufen ein.</p>
+        </div>
+      </div>
+      <div class="panel tight" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <h3>Schwachstellen-Training</h3>
+          <p class="hint" style="margin:2px 0 0" id="weakList">Wird berechnet …</p>
+        </div>
+        <button class="btn primary" id="weakStart">Schwachstellen üben</button>
+      </div>
+      <div class="grid g2" id="modeGrid"></div>
+    </section>
+
+    <!-- ============ LEXIKON ============ -->
+    <section id="v-lexikon" hidden>
+      <div class="topline">
+        <div>
+          <h1>Stilmittel und ihre Wirkung</h1>
+          <p class="lede">Nachschlagen ist erlaubt — auch mitten in einer Übung. Die Wirkungsspalte ist wichtiger als die Definition.</p>
+        </div>
+      </div>
+      <div class="inline" style="margin-bottom:16px">
+        <button class="btn sm filt" data-cat="alle" aria-current="true">Alle</button>
+        <button class="btn sm filt" data-cat="wort">Wortebene</button>
+        <button class="btn sm filt" data-cat="bild">Bildebene</button>
+        <button class="btn sm filt" data-cat="klang">Klangebene</button>
+        <button class="btn sm filt" data-cat="satz">Satz- und Textebene</button>
+      </div>
+      <div id="libList"></div>
+      <div class="panel">
+        <h2>Wirkungswortschatz</h2>
+        <p class="hint">Wenn dir nur „spannend“ und „interessant“ einfallen, verlierst du Punkte. Diese Wörter sind präziser.</p>
+        <div id="lexVocab"></div>
+      </div>
+    </section>
+
+    <!-- ============ PRÜFUNG ============ -->
+    <section id="v-pruefung" hidden></section>
+
+    <!-- ============ AUFTRAG ============ -->
+    <section id="v-auftrag" hidden></section>
+
+    <!-- ============ FORTSCHRITT ============ -->
+    <section id="v-fortschritt" hidden></section>
+
+    <!-- ============ DATEN ============ -->
+    <section id="v-daten" hidden></section>
+
+    <!-- ============ ÜBUNGS-BÜHNE ============ -->
+    <section id="v-stage" hidden></section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+<script>
+/* =========================================================
+   MARGINALIEN — Wirkungstrainer, Cambridge IGCSE Deutsch 0505
+   Stand-alone. Keine externen Ressourcen. Speichert lokal.
+   ========================================================= */
+
+const DEVICES = [
+ {id:"wortwahl",name:"Wortwahl (Diktion)",cat:"wort",
+  def:"Die bewusste Entscheidung für ein bestimmtes Wort anstelle eines neutraleren Synonyms.",
+  eff:"Frage dich immer: Welches unauffällige Wort hätte hier auch stehen können? Der Abstand zwischen dem neutralen und dem gewählten Wort ist die Wirkung.",
+  ex:"Der Mann <b>schlich</b> durch den Flur.",
+  why:"„schlich“ statt „ging“ unterstellt Heimlichkeit und Angst vor Entdeckung; der Leser beginnt, die Figur zu verdächtigen, noch bevor etwas geschieht.",
+  trap:"„Der Autor benutzt eine gute Wortwahl.“ — Das sagt nichts. Nenne das Wort und seine Nebenbedeutung."},
+
+ {id:"konnotation",name:"Konnotation",cat:"wort",
+  def:"Die Nebenbedeutungen und Gefühlswerte, die ein Wort über seine reine Sachbedeutung hinaus mitschleppt.",
+  eff:"Konnotation ist das Werkzeug hinter fast jeder guten Wirkungsanalyse. Woran erinnert das Wort? In welchem Zusammenhang hört man es sonst?",
+  ex:"Ihre Stimme war <b>schneidend</b>.",
+  why:"„schneidend“ stammt aus dem Wortfeld der Klinge; die Stimme wird dadurch zur Waffe, und der Leser empfindet die Sprecherin als verletzend statt nur als laut.",
+  trap:"Konnotation heißt nicht „was das Wort bedeutet“, sondern „woran es mich denken lässt“."},
+
+ {id:"metapher",name:"Metapher",cat:"bild",
+  def:"Eine Übertragung: Etwas wird sprachlich als etwas anderes bezeichnet, ohne Vergleichswort.",
+  eff:"Bestimme den Bildspender. Welche Eigenschaften bringt er mit — und welche davon werden auf die Sache übertragen?",
+  ex:"Die Stadt war ein <b>Käfig aus Beton</b>.",
+  why:"Der Bildspender „Käfig“ überträgt Gefangenschaft und Tierhaltung auf die Stadt; der Leser sieht die Bewohner als eingesperrt und ihrer Freiheit beraubt.",
+  trap:"Nicht bei „Das ist eine Metapher für Einsamkeit“ stehenbleiben. Erkläre, welche Eigenschaft übertragen wird."},
+
+ {id:"vergleich",name:"Vergleich",cat:"bild",
+  def:"Zwei Dinge werden mit „wie“ oder „als ob“ ausdrücklich nebeneinandergestellt.",
+  eff:"Der Vergleich zeigt, in welche Richtung der Autor deine Vorstellung lenkt. Prüfe, ob der Vergleich vertraut oder überraschend ist — Überraschung erzeugt Aufmerksamkeit.",
+  ex:"Er stand da, <b>wie ein vergessener Regenschirm</b> im Flur.",
+  why:"Der Vergleich mit einem vergessenen Gegenstand macht die Figur zum Ding, das niemand vermisst; das wirkt komisch und zugleich traurig, weil ihr jede Bedeutung abgesprochen wird.",
+  trap:"„Der Vergleich macht es anschaulicher.“ — Zu allgemein. Was genau siehst du dadurch?"},
+
+ {id:"personifikation",name:"Personifikation",cat:"bild",
+  def:"Nichtmenschlichem werden menschliche Eigenschaften, Absichten oder Handlungen zugeschrieben.",
+  eff:"Personifikation gibt der Umgebung einen Willen. Meist wird dadurch die Landschaft zum handelnden Gegner oder Verbündeten der Figur.",
+  ex:"Der Wald <b>verschluckte</b> die letzten Sonnenstrahlen.",
+  why:"„verschluckte“ macht den Wald zu einem Wesen mit Rachen und Appetit; die Umgebung wird zur Bedrohung, und der Leser fürchtet um die Figur, obwohl noch nichts passiert ist.",
+  trap:"Personifikation ist nicht dasselbe wie Metapher — hier wird ausdrücklich <em>menschliches</em> Verhalten zugeschrieben."},
+
+ {id:"sinne",name:"Sinneseindrücke",cat:"bild",
+  def:"Sprache, die gezielt Sehen, Hören, Riechen, Schmecken oder Tasten anspricht.",
+  eff:"Frage: Welcher Sinn wird angesprochen — und warum gerade dieser? Geruch und Tastsinn wirken körperlicher und unmittelbarer als das Sehen.",
+  ex:"Es roch nach <b>nassem Rost und kaltem Rauch</b>.",
+  why:"Der Geruchssinn lässt sich nicht abschalten wie der Blick; „Rost“ und „kalter Rauch“ setzen Verfall und Erloschenes zusammen, sodass der Leser den Ort als verlassen und ungesund wahrnimmt.",
+  trap:"Nicht nur „bildhafte Sprache“ schreiben. Benenne den Sinn."},
+
+ {id:"hyperbel",name:"Hyperbel",cat:"bild",
+  def:"Bewusste, offensichtliche Übertreibung.",
+  eff:"Übertreibung zeigt meist nicht die Wirklichkeit, sondern das Empfinden einer Figur. Sie kann ernst (Verzweiflung) oder komisch wirken.",
+  ex:"Sie hatte ihm das <b>tausendmal</b> gesagt.",
+  why:"Die unmögliche Zahl misst nicht die Wiederholungen, sondern die Erschöpfung der Sprecherin; der Leser spürt ihre Entnervung stärker, als eine genaue Angabe es könnte.",
+  trap:"Immer klären, wessen Übertreibung es ist: die des Erzählers oder die der Figur?"},
+
+ {id:"symbol",name:"Symbol",cat:"bild",
+  def:"Ein konkreter Gegenstand steht wiederholt für eine abstrakte Idee.",
+  eff:"Symbole erkennt man an Wiederholung an bedeutsamen Stellen. Beziehe die Deutung immer auf den Textzusammenhang, nicht auf Allgemeinwissen.",
+  ex:"Auf dem Tisch lag noch immer <b>der zweite Teller</b>.",
+  why:"Der ungenutzte Teller steht für die Abwesenheit eines Menschen; weil er nicht weggeräumt wird, wirkt die Trauer der Figur als etwas, das sie nicht beenden will.",
+  trap:"„Rot symbolisiert Liebe“ — nur, wenn der Text das trägt. Sonst ist es aufgesetzt."},
+
+ {id:"alliteration",name:"Alliteration",cat:"klang",
+  def:"Wiederholung des gleichen Anlauts bei benachbarten betonten Wörtern.",
+  eff:"Klang allein ist keine Wirkung. Frage: Bindet die Alliteration Wörter zusammen, die inhaltlich zusammengehören? Klingt sie hart oder weich?",
+  ex:"<b>Kalt, klamm und kahl</b> lag das Feld.",
+  why:"Die drei harten K-Laute lassen die Beschreibung abgehackt klingen und verketten drei Formen von Unwirtlichkeit zu einem einzigen Eindruck von Lebensfeindlichkeit.",
+  trap:"„Das klingt schöner“ bringt keine Punkte. Verbinde Klang mit Inhalt."},
+
+ {id:"lautmalerei",name:"Onomatopoesie (Lautmalerei)",cat:"klang",
+  def:"Wörter, die den Klang nachahmen, den sie bezeichnen.",
+  eff:"Lautmalerei holt den Leser in die Szene: Er hört sie, statt von ihr zu lesen. Prüfe, ob der Laut plötzlich oder anhaltend ist.",
+  ex:"Hinter den Bäumen <b>knackte</b> ein Ast.",
+  why:"„knackte“ lässt den Leser das kurze, trockene Geräusch selbst hören; weil das Geräusch abrupt ist und die Ursache unsichtbar bleibt, entsteht Alarmbereitschaft.",
+  trap:"Nicht jedes Geräuschwort ist Lautmalerei — es muss klanglich nachahmen."},
+
+ {id:"rhythmus",name:"Klang und Rhythmus",cat:"klang",
+  def:"Die Bewegung der Sprache: Länge der Wörter, Häufung von Vokalen oder Konsonanten, Tempo der Sätze.",
+  eff:"Lies die Stelle leise mit. Wird sie schneller oder langsamer? Der Rhythmus ahmt oft nach, wovon der Text handelt.",
+  ex:"Er lief, stolperte, fiel, <b>stand auf, lief weiter</b>.",
+  why:"Die kurzen, gleich gebauten Glieder ohne Verbindungswörter treiben den Satz vorwärts; das Lesetempo entspricht dem Tempo der Flucht, sodass der Leser die Hetze mitvollzieht.",
+  trap:"Rhythmus behaupten und nicht belegen ist wertlos. Zeige, welche Wortlängen oder Pausen ihn erzeugen."},
+
+ {id:"satzbau",name:"Satzbau (Syntax)",cat:"satz",
+  def:"Länge und Bau der Sätze: kurz oder lang, gereiht oder verschachtelt.",
+  eff:"Ein auffällig kurzer Satz nach langen Sätzen wirkt wie ein Schlag. Lange, verschachtelte Sätze können Verwirrung oder Endlosigkeit spiegeln.",
+  ex:"Dann noch einer. <b>Stille.</b>",
+  why:"Der Ein-Wort-Satz bricht den Rhythmus ab und zwingt den Leser zu einer Pause; die Leere auf der Zeile entspricht der Leere im Wald und verlängert die Spannung.",
+  trap:"„Kurze Sätze machen es spannend“ ist die häufigste leere Antwort. Sage, <em>warum</em> hier."},
+
+ {id:"ellipse",name:"Ellipse",cat:"satz",
+  def:"Auslassung von Satzteilen, die der Leser selbst ergänzt.",
+  eff:"Die Lücke ist die Wirkung: Der Leser muss ergänzen und wird dadurch beteiligt. Oft ahmt die Ellipse Atemlosigkeit oder Erschütterung nach.",
+  ex:"Kein Licht. <b>Keine Stimme.</b> Nichts.",
+  why:"Ohne Verben fehlt jede Bewegung im Satz; die Sprache selbst wird so leer wie der Ort, den sie beschreibt.",
+  trap:"Ellipse ist nicht einfach „ein kurzer Satz“, sondern ein unvollständiger."},
+
+ {id:"wiederholung",name:"Wiederholung / Anapher",cat:"satz",
+  def:"Ein Wort oder Satzanfang kehrt wieder.",
+  eff:"Wiederholung erzeugt Nachdruck, Zwanghaftigkeit oder Monotonie. Prüfe, ob sie beschwörend (steigernd) oder ermüdend (stillstehend) wirkt.",
+  ex:"<b>Immer noch</b> Regen. <b>Immer noch</b> kein Brief.",
+  why:"Der wiederkehrende Anfang lässt die Zeit stillstehen; das Warten der Figur wird für den Leser spürbar, weil auch der Satz nicht vorankommt.",
+  trap:"Wiederholung „betont etwas“ — das ist zu vage. Betont sie Dauer, Verzweiflung oder Trotz?"},
+
+ {id:"aufzaehlung",name:"Aufzählung / Klimax",cat:"satz",
+  def:"Reihung mehrerer Glieder, oft mit Steigerung bis zum stärksten Element.",
+  eff:"Achte auf die Reihenfolge. Steht das Schlimmste am Ende, führt die Aufzählung den Leser gezielt zum Höhepunkt.",
+  ex:"Er verlor die Arbeit, <b>die Wohnung, den letzten Freund</b>.",
+  why:"Die Reihung steigert vom Materiellen zum Menschlichen; weil der Verlust des Freundes am Ende steht, erscheint er als der eigentliche Absturz.",
+  trap:"Nur zählen reicht nicht („drei Dinge“). Deute die <em>Reihenfolge</em>."},
+
+ {id:"kontrast",name:"Kontrast / Antithese",cat:"satz",
+  def:"Zwei Gegensätze werden unmittelbar nebeneinandergestellt.",
+  eff:"Kontraste schärfen beide Seiten. Frage: Welche Seite gewinnt durch den Gegensatz an Bedeutung — und wie steht die Figur dazwischen?",
+  ex:"Drinnen Kerzenlicht, <b>draußen der Schnee</b>.",
+  why:"Wärme und Kälte werden nur durch ein Fenster getrennt; die Nähe der Gegensätze lässt die Geborgenheit zerbrechlich erscheinen, weil die Kälte unmittelbar daneben wartet.",
+  trap:"Nicht nur die Gegensätze nennen — erkläre, was ihre Nachbarschaft bewirkt."},
+
+ {id:"perspektive",name:"Erzählperspektive und Fokus",cat:"satz",
+  def:"Aus wessen Blick wird berichtet, und was wird ausgespart?",
+  eff:"Wenn der Text nur zeigt, was eine Figur wahrnimmt, teilt der Leser ihr Nichtwissen — eine der stärksten Spannungsquellen überhaupt.",
+  ex:"Sie sah nur den Schatten, <b>nicht das Gesicht</b>.",
+  why:"Die Wahrnehmung bleibt auf die Figur beschränkt; weil der Leser genauso wenig weiß wie sie, entsteht Unsicherheit statt Überblick.",
+  trap:"Perspektive nur benennen („Ich-Erzähler“) ist Wissen, keine Analyse."},
+
+ {id:"rhetfrage",name:"Rhetorische Frage",cat:"satz",
+  def:"Eine Frage, die keine Antwort erwartet, sondern eine Aussage enthält.",
+  eff:"Sie zieht den Leser in die Gedanken der Figur oder drängt ihn zu einer Zustimmung, die er nicht ausgesprochen hat.",
+  ex:"<b>Wer hätte an diesem Morgen schon geahnt, was kommen würde?</b>",
+  why:"Die Frage unterstellt, dass niemand es ahnen konnte, und kündigt zugleich das Unheil an; der Leser wird zum Mitwisser des Erzählers und liest gespannter weiter.",
+  trap:"„Der Leser wird zum Nachdenken angeregt“ — zu welchem Gedanken denn genau?"}
+];
+const DMAP = Object.fromEntries(DEVICES.map(d=>[d.id,d]));
+const CATNAME = {wort:"Wortebene",bild:"Bildebene",klang:"Klangebene",satz:"Satz- und Textebene"};
+
+/* Wirkungswortschatz — gegen "spannend / interessant" */
+const VOCAB = [
+ {g:"Bedrohung",w:["beklemmend","bedrohlich","unheilvoll","lauernd","erdrückend","unberechenbar"]},
+ {g:"Tempo",w:["gehetzt","atemlos","stockend","schleppend","abrupt","treibend"]},
+ {g:"Trauer und Verlust",w:["resigniert","erstarrt","leer","abgestumpft","wehmütig","endgültig"]},
+ {g:"Macht und Ohnmacht",w:["ausgeliefert","überwältigend","gleichgültig","übermächtig","hilflos","gefangen"]},
+ {g:"Nähe und Distanz",w:["kühl","abweisend","vertraulich","intim","sachlich","entlarvend"]},
+ {g:"Leserreaktion",w:["misstrauisch","alarmiert","beteiligt","mitfühlend","verunsichert","ernüchtert"]}
+];
+
+/* Verben für die Effektsätze */
+const RANKS = [
+ {min:0,name:"Leser:in"},{min:120,name:"Beobachter:in"},{min:320,name:"Spurensucher:in"},
+ {min:620,name:"Analytiker:in"},{min:1000,name:"Kritiker:in"},{min:1500,name:"Meister:in der Wirkung"}
+];
+</script>
+<script>
+/* ============ 1. STILMITTEL-JAGD ============ */
+/* Beleg antippen, dann Stilmittel wählen. */
+const JAGD = [
+ {t:"Der Wald verschluckte die letzten Sonnenstrahlen.",e:["verschluckte"],d:"personifikation",
+  w:"„verschluckte“ gibt dem Wald einen Rachen und einen Appetit. Die Umgebung wird zum Wesen, das Licht vernichtet — der Leser empfindet den Ort als aktiv feindlich, bevor überhaupt etwas geschieht."},
+ {t:"Der Regen peitschte gegen die schwarzen Fensterscheiben.",e:["peitschte"],d:"wortwahl",
+  w:"„peitschte“ statt „schlug“ ruft Schmerz, Strafe und Gewalt auf. Der Regen wird zum Angreifer, und das Fenster wirkt wie die letzte dünne Grenze zwischen Figur und Bedrohung."},
+ {t:"Hinter den schwarzen Bäumen knackte ein Ast. Dann noch einer.",e:["knackte"],d:"lautmalerei",
+  w:"„knackte“ lässt den Leser das trockene, kurze Geräusch selbst hören. Weil die Ursache unsichtbar bleibt, wird aus einem harmlosen Laut ein Warnsignal."},
+ {t:"Die Stadt war ein Käfig aus Beton.",e:["Käfig"],d:"metapher",
+  w:"Der Bildspender „Käfig“ überträgt Gefangenschaft und Tierhaltung auf die Stadt. Ihre Bewohner erscheinen nicht als Bürger, sondern als eingesperrte Tiere ohne Ausweg."},
+ {t:"Er stand am Bahnsteig wie ein vergessener Regenschirm.",e:["wie","vergessener","Regenschirm"],d:"vergleich",
+  w:"Der Vergleich macht den Mann zum liegengelassenen Gegenstand. Das wirkt zunächst komisch, dann traurig, weil ihm damit jede Bedeutung für andere Menschen abgesprochen wird."},
+ {t:"Kalt, klamm und kahl lag das Feld vor ihnen.",e:["Kalt","klamm","kahl"],d:"alliteration",
+  w:"Die drei harten K-Laute verketten drei Arten von Unwirtlichkeit zu einem einzigen Eindruck. Der Klang selbst wirkt abweisend und lässt die Landschaft lebensfeindlich erscheinen."},
+ {t:"Er verlor die Arbeit, die Wohnung, den letzten Freund.",e:["Freund"],d:"aufzaehlung",
+  w:"Die Reihung steigert vom Materiellen zum Menschlichen. Weil der Freund am Ende steht, erscheint dieser Verlust als der eigentliche Absturz — alles davor war nur Vorbereitung."},
+ {t:"Drinnen brannten die Kerzen, draußen fiel der Schnee.",e:["Drinnen","draußen"],d:"kontrast",
+  w:"Wärme und Kälte trennt nur eine Fensterscheibe. Die Nähe der Gegensätze macht die Geborgenheit zerbrechlich, weil die Kälte unmittelbar daneben wartet."},
+ {t:"Immer noch Regen. Immer noch kein Brief.",e:["Immer noch","Immer noch"],d:"wiederholung",
+  w:"Der wiederkehrende Satzanfang lässt die Zeit stillstehen. Weil auch die Sprache nicht vorankommt, spürt der Leser das Warten der Figur als Zustand ohne Aussicht."},
+ {t:"Sie hatte ihm das tausendmal gesagt.",e:["tausendmal"],d:"hyperbel",
+  w:"Die unmögliche Zahl misst nicht die Wiederholungen, sondern die Erschöpfung der Sprecherin. Der Leser hört ihre Entnervung deutlicher, als eine genaue Angabe sie zeigen könnte."},
+ {t:"Es roch nach nassem Rost und kaltem Rauch.",e:["roch"],d:"sinne",
+  w:"Der Geruchssinn lässt sich nicht abschalten wie der Blick. „Rost“ und „kalter Rauch“ verbinden Verfall mit Erloschenem, sodass der Ort verlassen und ungesund wirkt."},
+ {t:"Er lief, stolperte, fiel, stand auf, lief weiter.",e:["stolperte","fiel"],d:"rhythmus",
+  w:"Die kurzen, gleich gebauten Glieder ohne Bindewörter treiben den Satz vorwärts. Das Lesetempo entspricht dem Tempo der Flucht — der Leser hetzt mit."},
+ {t:"Dann noch einer. Stille.",e:["Stille"],d:"satzbau",
+  w:"Der Ein-Wort-Satz bricht den Rhythmus ab und zwingt zu einer Pause. Die Leere auf der Zeile entspricht der Leere im Wald und dehnt die Spannung."},
+ {t:"Kein Licht. Keine Stimme. Nichts.",e:["Nichts"],d:"ellipse",
+  w:"Ohne Verben fehlt jede Bewegung. Die Sprache wird so leer wie der beschriebene Ort, und die Verknappung zum Schluss lässt die Leere endgültig wirken."},
+ {t:"Wer hätte an diesem Morgen geahnt, was noch kommen würde?",e:["Wer","geahnt"],d:"rhetfrage",
+  w:"Die Frage erwartet keine Antwort, sondern behauptet: Niemand konnte es ahnen. Zugleich kündigt sie das Unheil an und macht den Leser zum Mitwisser des Erzählers."},
+ {t:"Auf dem Tisch lag noch immer der zweite Teller.",e:["zweite","Teller"],d:"symbol",
+  w:"Der ungenutzte Teller steht für die Abwesenheit eines Menschen. Weil er nicht weggeräumt wird, erscheint die Trauer als etwas, das die Figur nicht beenden will."},
+ {t:"Ihre Stimme war schneidend.",e:["schneidend"],d:"konnotation",
+  w:"„schneidend“ kommt aus dem Wortfeld der Klinge. Die Stimme wird zur Waffe, und der Leser empfindet die Sprecherin als verletzend, nicht bloß als laut."},
+ {t:"Sie sah nur den Schatten, nicht das Gesicht.",e:["nur","nicht"],d:"perspektive",
+  w:"Die Wahrnehmung bleibt streng auf die Figur begrenzt. Weil der Leser genauso wenig weiß wie sie, entsteht Unsicherheit statt Überblick — Spannung durch Nichtwissen."},
+ {t:"Der Himmel hing tief und grau über den Dächern.",e:["hing"],d:"personifikation",
+  w:"„hing“ gibt dem Himmel ein Gewicht, das nach unten drückt. Der Raum über den Figuren wird zur Last, sodass die Szene beklemmend statt nur trüb wirkt."},
+ {t:"Er hob die Hand. Der Saal wurde still. Sekunden.",e:["Sekunden"],d:"satzbau",
+  w:"Die drei immer kürzeren Sätze ziehen das Tempo zusammen; der letzte besteht nur noch aus einer Zeitangabe. Der Leser wartet dadurch genauso angespannt wie der Saal."},
+ {t:"Die Tür fiel ins Schloss, und das Echo lief den Gang hinunter.",e:["lief"],d:"personifikation",
+  w:"Das Echo bekommt Beine und einen eigenen Weg. Dadurch wirkt der leere Gang belebt und beobachtet — der Klang bleibt im Raum, obwohl niemand mehr da ist."},
+ {t:"Sein Gesicht war eine geschlossene Tür.",e:["geschlossene","Tür"],d:"metapher",
+  w:"Die Tür überträgt Verschlossenheit und Ausschluss auf das Gesicht. Der Leser erfährt zugleich, dass jemand hineinsehen möchte und daran gehindert wird."}
+];
+
+/* ============ 2. WIRKUNG ZUORDNEN (Drag & Drop) ============ */
+const MATCH = [
+ {title:"Bewegung und Tempo",pairs:[
+  {q:"Er schlenderte über den Platz.",d:"wortwahl",a:"Zeitüberfluss und Sorglosigkeit — die Figur hat es zu nichts eilig."},
+  {q:"Er hastete über den Platz.",d:"wortwahl",a:"Zeitdruck und innere Unruhe — etwas oder jemand treibt die Figur."},
+  {q:"Er schlich über den Platz.",d:"wortwahl",a:"Heimlichkeit und Angst vor Entdeckung — der Leser wird misstrauisch."},
+  {q:"Er wankte über den Platz.",d:"wortwahl",a:"Kontrollverlust über den eigenen Körper — der Leser sorgt sich um die Figur."}]},
+ {title:"Die Landschaft handelt",pairs:[
+  {q:"Der Nebel legte sich um das Dorf.",d:"personifikation",a:"Etwas umschließt den Ort sanft, aber vollständig — Abgeschnittenheit von der Welt."},
+  {q:"Die Sonne biss in seine Augen.",d:"personifikation",a:"Die Umwelt greift körperlich an — Schmerz macht die Figur wehrlos."},
+  {q:"Die Berge sahen schweigend zu.",d:"personifikation",a:"Gleichgültige Übermacht — die Natur hilft nicht, obwohl sie alles sieht."},
+  {q:"Der Wind zerrte an ihrem Mantel.",d:"personifikation",a:"Ein aufdringlicher Widerstand — jeder Schritt kostet Kraft."}]},
+ {title:"Satzbau lesen",pairs:[
+  {q:"Er wartete. Er wartete. Er wartete.",d:"wiederholung",a:"Zeitlicher Stillstand — die Sprache kommt so wenig voran wie die Figur."},
+  {q:"Ein Schuss.",d:"ellipse",a:"Abrupter Einbruch ohne Erklärung — der Leser erschrickt gleichzeitig mit den Figuren."},
+  {q:"Sie ging weiter, obwohl sie wusste, dass hinter ihr, halb verdeckt vom Regen, jemand stand.",d:"satzbau",a:"Die Verschachtelung schiebt die Enthüllung ans Ende und dehnt die Anspannung."},
+  {q:"Nichts. Niemand. Nirgends.",d:"aufzaehlung",a:"Dreifache Verneinung als Steigerung — die Leere wird umfassend und endgültig."}]},
+ {title:"Bilder auflösen",pairs:[
+  {q:"Die Angst war ein Stein in seinem Magen.",d:"metapher",a:"Gefühl wird zu spürbarem Gewicht — der Leser empfindet es körperlich statt abstrakt."},
+  {q:"Ihre Worte fielen wie Hagel.",d:"vergleich",a:"Hart, schnell und unaufhaltsam — die Zuhörenden können sich nicht wehren."},
+  {q:"Die Erinnerung war ein vergilbtes Foto.",d:"metapher",a:"Verblasst und beschädigt — der Vergangenheit ist nicht mehr zu trauen."},
+  {q:"Er saß da wie ein Richter.",d:"vergleich",a:"Überlegenheit und Urteil — schon die Haltung verteilt Schuld."}]},
+ {title:"Klang und Sinne",pairs:[
+  {q:"Das Wasser gluckste im Rohr.",d:"lautmalerei",a:"Ein harmloses, beinahe gemütliches Geräusch macht die Stille darum herum hörbar."},
+  {q:"Sirrend zerschnitt die Klinge die Luft.",d:"lautmalerei",a:"Der scharfe Zischlaut lässt die Bewegung schnell und gefährlich wirken."},
+  {q:"Es schmeckte nach Blech und altem Wasser.",d:"sinne",a:"Der Geschmackssinn erzeugt Ekel, den der Leser körperlich nachvollzieht."},
+  {q:"Der Stoff kratzte auf ihrer Haut.",d:"sinne",a:"Tastempfinden hält die Figur wach — kein Moment der Ruhe ist möglich."}]},
+ {title:"Wortwahl im Bericht",pairs:[
+  {q:"Die Menge strömte auf den Platz.",d:"konnotation",a:"Wasserbild: eine Naturgewalt, die niemand steuert."},
+  {q:"Die Menge quoll aus den Gassen.",d:"konnotation",a:"Etwas Zähes, Unaufhaltsames drängt hervor — leicht bedrohlich."},
+  {q:"Die Menge sammelte sich auf dem Platz.",d:"konnotation",a:"Nüchtern und geordnet — der Bericht bleibt distanziert."},
+  {q:"Die Menge ergoss sich über den Platz.",d:"konnotation",a:"Ein Überlaufen ohne Halt — der Ort wird überschwemmt und verliert seine Form."}]}
+];
+
+/* ============ 3. WORTWAHL-WERKSTATT ============ */
+const WERK = [
+ {frame:"Der Mann ___ durch den Flur.",d:"wortwahl",
+  opts:[{w:"schlich",a:"Heimlichkeit; die Figur will nicht bemerkt werden — der Leser verdächtigt sie."},
+        {w:"raste",a:"Panik oder Eile; etwas duldet keinen Aufschub."},
+        {w:"schlenderte",a:"Gelassenheit; die Figur hat nichts zu befürchten."},
+        {w:"stolperte",a:"Kontrollverlust; die Figur ist erschöpft, verletzt oder erschrocken."}]},
+ {frame:"„Komm her“, ___ sie.",d:"konnotation",
+  opts:[{w:"zischte",a:"Unterdrückte Wut; die Sprecherin darf nicht laut werden, ist aber gefährlich."},
+        {w:"flüsterte",a:"Vertraulichkeit oder Geheimnis; die Nähe zum Zuhörer wächst."},
+        {w:"befahl",a:"Klares Machtgefälle; Widerspruch ist nicht vorgesehen."},
+        {w:"bat",a:"Schwäche oder Höflichkeit; die Sprecherin ist auf den anderen angewiesen."}]},
+ {frame:"Das Haus ___ am Ende der Straße.",d:"personifikation",
+  opts:[{w:"kauerte",a:"Etwas duckt sich ängstlich oder lauert — das Gebäude bekommt einen Körper."},
+        {w:"thronte",a:"Überlegenheit und Anspruch; das Haus blickt auf die Straße herab."},
+        {w:"stand",a:"Neutral und sachlich; der Leser erhält Information ohne Wertung."},
+        {w:"verfiel",a:"Prozess des Verschwindens; Vergänglichkeit statt Zustand."}]},
+ {frame:"Die Nachricht ___ sich durch die Klasse.",d:"metapher",
+  opts:[{w:"fraß",a:"Zerstörung von innen; die Nachricht vernichtet, was sie erreicht."},
+        {w:"schlängelte",a:"Verdeckte, gewundene Wege; etwas Schlangenhaftes, Unehrliches."},
+        {w:"verbreitete",a:"Neutral; nur die Tatsache der Weitergabe zählt."},
+        {w:"brannte",a:"Unkontrollierbares Tempo; niemand kann sie mehr aufhalten."}]},
+ {frame:"Sie ___ ihn an, als er hereinkam.",d:"wortwahl",
+  opts:[{w:"funkelte",a:"Wut, die im Blick blitzt — Feindseligkeit ohne ein Wort."},
+        {w:"strahlte",a:"Offene Freude; der Eintritt wird zum Ereignis."},
+        {w:"musterte",a:"Prüfende Distanz; die Figur wird bewertet, nicht begrüßt."},
+        {w:"starrte",a:"Erstarrung; Überraschung oder Schrecken hält den Blick fest."}]},
+ {frame:"Der Lehrer ___ die Blätter auf den Tisch.",d:"wortwahl",
+  opts:[{w:"knallte",a:"Aggression und Lautstärke; die Klasse zuckt zusammen."},
+        {w:"legte",a:"Sachliche Ruhe; der Vorgang bleibt bedeutungslos."},
+        {w:"warf",a:"Geringschätzung; die Arbeiten sind ihm nichts wert."},
+        {w:"breitete",a:"Sorgfalt und Aufwand; jedes Blatt bekommt seinen Platz."}]}
+];
+
+/* ============ 4. KONNOTATIONSLEITER (Sortieren) ============ */
+const LEITER = [
+ {q:"Wie laut und wie feindselig?",from:"leise, harmlos",to:"laut, aggressiv",d:"konnotation",
+  order:["murmelte","sagte","erwiderte","fauchte","brüllte"],
+  w:"Zwischen „sagte“ und „brüllte“ liegt keine Lautstärkeskala allein, sondern eine Skala der Beherrschung. „fauchte“ ist leiser als „brüllte“, aber tierischer — deshalb steht es dahinter, was Feindseligkeit angeht."},
+ {q:"Wie schnell bewegt sich die Figur?",from:"langsam",to:"überstürzt",d:"wortwahl",
+  order:["schlurfte","ging","eilte","rannte","stürmte"],
+  w:"Jede Stufe verrät mehr über den inneren Zustand: „schlurfte“ zeigt Antriebslosigkeit, „stürmte“ zeigt, dass die Figur die Kontrolle über ihr Tempo abgegeben hat."},
+ {q:"Wie stark ist die Bedrohung im Licht?",from:"freundlich",to:"unheimlich",d:"konnotation",
+  order:["golden","hell","fahl","bleich","grau-schwarz"],
+  w:"„fahl“ und „bleich“ stammen aus dem Wortfeld des kranken Körpers. Ein Licht so zu nennen, überträgt Krankheit auf die ganze Szene."},
+ {q:"Wie viel Nähe zeigt der Blick?",from:"distanziert",to:"eindringlich",d:"wortwahl",
+  order:["bemerkte","sah","betrachtete","musterte","starrte"],
+  w:"Die Reihe wird nicht nur intensiver, sondern auch unangenehmer: Ab „musterte“ wird der Angesehene zum Objekt einer Prüfung."},
+ {q:"Wie zerstörerisch ist das Wasser?",from:"harmlos",to:"vernichtend",d:"metapher",
+  order:["tropfte","rann","strömte","brach herein","verschlang"],
+  w:"Am Ende der Reihe steht kein Wasserwort mehr, sondern ein Fressverb. Genau dort kippt die Beschreibung in Personifikation und wird bedrohlich."},
+ {q:"Wie endgültig ist der Abschied?",from:"vorläufig",to:"unwiderruflich",d:"konnotation",
+  order:["ging","verließ","verschwand","löste sich auf","war ausgelöscht"],
+  w:"Die Reihe entfernt Schritt für Schritt den handelnden Menschen: Am Ende steht ein Passiv, in dem die Figur nichts mehr tut, sondern nur noch erlitten wird."}
+];
+
+/* ============ 5. FEE-BAUKASTEN ============ */
+const FEE = [
+ {q:"Der Regen peitschte gegen die schwarzen Fensterscheiben.",d:"wortwahl",
+  F:"Der Autor wählt ein Verb aus dem Wortfeld der Gewalt.",
+  E:"Dies zeigt sich am Verb „peitschte“.",
+  W:"Dadurch wirkt der Regen wie ein Angreifer, weil „peitschen“ Schmerz und Bestrafung aufruft.",
+  bad:[{t:"Der Autor beschreibt schlechtes Wetter.",r:"Das ist Nacherzählung, keine sprachliche Entscheidung."},
+       {t:"Dies zeigt sich am ganzen Satz.",r:"Kein präziser Beleg — zitiere ein einzelnes Wort."},
+       {t:"Dadurch wird der Satz spannender.",r:"„Spannender“ ist keine Wirkung, sondern eine Behauptung ohne „weil“."},
+       {t:"Der Autor verwendet viele Stilmittel.",r:"Aufzählen ohne Auswahl bringt keine Punkte."}]},
+ {q:"Der Wald verschluckte die letzten Sonnenstrahlen.",d:"personifikation",
+  F:"Der Autor lässt den Wald wie ein Lebewesen handeln.",
+  E:"Beleg dafür ist das Verb „verschluckte“.",
+  W:"Dadurch erscheint die Umgebung selbst als Bedrohung, weil ein Wesen mit Rachen das Licht vernichtet.",
+  bad:[{t:"Es wird dunkel im Wald.",r:"Inhaltsangabe statt Analyse."},
+       {t:"Beleg dafür ist das Wort „Sonnenstrahlen“.",r:"Falsche Belegstelle: Die Wirkung steckt im Verb, nicht im Objekt."},
+       {t:"Dadurch entsteht eine schöne Atmosphäre.",r:"Wertend statt beschreibend — und inhaltlich gegenläufig."},
+       {t:"Dies ist eine Metapher.",r:"Bloße Benennung, dazu die ungenaue Kategorie."}]},
+ {q:"Er verlor die Arbeit, die Wohnung, den letzten Freund.",d:"aufzaehlung",
+  F:"Der Autor ordnet die Verluste als Steigerung an.",
+  E:"Der Höhepunkt liegt auf „den letzten Freund“.",
+  W:"Dadurch wirkt der menschliche Verlust als der eigentliche Absturz, weil er ans Ende gestellt und dem Materiellen übergeordnet wird.",
+  bad:[{t:"Der Autor zählt drei Dinge auf.",r:"Zählen ist keine Analyse — deute die Reihenfolge."},
+       {t:"Man erkennt es am Wort „verlor“.",r:"Der Beleg müsste die Reihung sichtbar machen, nicht das Verb."},
+       {t:"Dadurch tut einem der Mann leid.",r:"Richtige Richtung, aber ohne „weil“ und ohne sprachliche Begründung."},
+       {t:"Der Satz enthält ein Komma.",r:"Beobachtung ohne Bedeutung."}]},
+ {q:"Sein Gesicht war eine geschlossene Tür.",d:"metapher",
+  F:"Der Autor überträgt ein Bild aus dem Bereich des Hauses auf einen Menschen.",
+  E:"Dies erkennt man an „eine geschlossene Tür“.",
+  W:"Dadurch wirkt die Figur unzugänglich, weil eine Tür jemanden voraussetzt, der vergeblich hineinwill.",
+  bad:[{t:"Der Autor spricht über ein Gesicht.",r:"Kein Feature, nur Thema."},
+       {t:"Man sieht es am Wort „war“.",r:"Das Hilfsverb trägt die Wirkung nicht."},
+       {t:"Dadurch versteht man die Figur besser.",r:"Zu allgemein: Was genau versteht man, und warum?"},
+       {t:"Das ist ein Vergleich mit einer Tür.",r:"Falsche Kategorie: Ohne „wie“ ist es eine Metapher."}]},
+ {q:"Immer noch Regen. Immer noch kein Brief.",d:"wiederholung",
+  F:"Der Autor beginnt zwei Sätze gleich.",
+  E:"Beide setzen mit „Immer noch“ ein.",
+  W:"Dadurch wirkt die Zeit stillstehend, weil die Sprache selbst nicht vorankommt und das Warten so lang erscheint wie für die Figur.",
+  bad:[{t:"Der Autor schreibt über das Wetter und die Post.",r:"Nacherzählung."},
+       {t:"Man erkennt es an den kurzen Sätzen.",r:"Feature verfehlt: Auffällig ist die Wiederholung, nicht die Länge."},
+       {t:"Dadurch wird die Aussage betont.",r:"„Betont“ ohne Angabe, was betont wird — die häufigste leere Formel."},
+       {t:"Der Text ist traurig.",r:"Stimmung ohne Beleg und ohne Begründung."}]},
+ {q:"Es roch nach nassem Rost und kaltem Rauch.",d:"sinne",
+  F:"Der Autor spricht gezielt den Geruchssinn an.",
+  E:"Das Verb „roch“ führt „Rost“ und „kalten Rauch“ ein.",
+  W:"Dadurch wirkt der Ort verlassen und ungesund, weil Rost Verfall und kalter Rauch ein längst erloschenes Feuer bedeutet.",
+  bad:[{t:"Der Autor beschreibt einen Ort genau.",r:"Zu unbestimmt: Welche Art von Beschreibung?"},
+       {t:"Man erkennt es an der Wortwahl im Satz.",r:"Kein Zitat, kein Beleg."},
+       {t:"Dadurch kann man sich alles besser vorstellen.",r:"Standardsatz ohne Inhalt — was genau stellt man sich vor?"},
+       {t:"Der Autor benutzt eine Alliteration.",r:"Falsches Feature: Es gibt hier keine auffällige Anlautwiederholung."}]},
+ {q:"Dann noch einer. Stille.",d:"satzbau",
+  F:"Der Autor verkürzt den Satz bis auf ein einziges Wort.",
+  E:"Der Satz „Stille.“ besteht nur aus einem Substantiv.",
+  W:"Dadurch entsteht auch beim Lesen eine Pause, weil der Satz endet, bevor der Leser eine Erklärung bekommt — die Anspannung bleibt offen.",
+  bad:[{t:"Es ist still im Wald.",r:"Inhalt statt Machart."},
+       {t:"Der Beleg ist „Dann noch einer“.",r:"Der auffällige Satz ist der zweite."},
+       {t:"Dadurch wird es spannend.",r:"Ohne „weil“ nicht bewertbar."},
+       {t:"Der Autor verwendet Personifikation.",r:"Kein menschliches Handeln wird zugeschrieben."}]},
+ {q:"Sie sah nur den Schatten, nicht das Gesicht.",d:"perspektive",
+  F:"Der Autor begrenzt die Wahrnehmung streng auf die Figur.",
+  E:"Die Gegenüberstellung „nur den Schatten, nicht das Gesicht“ hält Information zurück.",
+  W:"Dadurch weiß der Leser genauso wenig wie die Figur, weil ihm dieselbe Information fehlt — Spannung entsteht aus dem gemeinsamen Nichtwissen.",
+  bad:[{t:"Die Figur sieht jemanden.",r:"Nacherzählung."},
+       {t:"Der Beleg ist das Wort „sah“.",r:"Zu schwach: Entscheidend ist das Gegensatzpaar."},
+       {t:"Dadurch wird der Leser neugierig.",r:"Beinahe — aber es fehlt, warum die Sprache das bewirkt."},
+       {t:"Der Autor benutzt eine rhetorische Frage.",r:"Im Satz steht keine Frage."}]}
+];
+
+/* ============ 6. WELCHE ANALYSE IST BESSER? ============ */
+const RANKQ = [
+ {q:"Der Wald verschluckte die letzten Sonnenstrahlen.",
+  a:[{t:"Der Autor verwendet eine Personifikation.",r:2,n:"Nur benannt. Kein Beleg, keine Wirkung — das ist Wissen, keine Analyse."},
+     {t:"Der Autor verwendet eine Personifikation („verschluckte“), wodurch die Szene spannender wird.",r:1,n:"Beleg vorhanden, aber „spannender“ ist eine Behauptung ohne Begründung."},
+     {t:"Das Verb „verschluckte“ gibt dem Wald einen Rachen; dadurch wirkt die Umgebung wie ein Wesen, das die Figur verschlingen könnte, und der Leser fürchtet um sie, bevor überhaupt etwas geschieht.",r:0,n:"Beste Antwort: Beleg, übertragene Eigenschaft, konkrete Leserwirkung, Begründung."}]},
+ {q:"Der Regen peitschte gegen die schwarzen Fensterscheiben.",
+  a:[{t:"Es regnet sehr stark gegen das Fenster, und die Scheiben sind schwarz.",r:2,n:"Reine Nacherzählung — die häufigste Ursache für niedrige Punktzahlen."},
+     {t:"„peitschte“ ist ein starkes Verb und zeigt, dass der Regen heftig ist.",r:1,n:"Beleg ja, aber die Erklärung bleibt beim Wetter statt bei der Wirkung."},
+     {t:"„peitschte“ stammt aus dem Wortfeld der Bestrafung; der Regen wird so zum Angreifer, und die Fensterscheibe erscheint als dünne Grenze, hinter der sich die Figur kaum noch sicher fühlen kann.",r:0,n:"Beste Antwort: Konnotation ausgelotet, Wirkung auf die Figur und den Leser benannt."}]},
+ {q:"Er verlor die Arbeit, die Wohnung, den letzten Freund.",
+  a:[{t:"Der Autor benutzt eine Aufzählung mit drei Elementen und ein Asyndeton.",r:1,n:"Korrekt und fachlich, aber es fehlt jede Wirkung. Terminologie allein trägt nicht."},
+     {t:"Der Mann hat alles verloren, was er hatte, und ist jetzt allein.",r:2,n:"Inhaltlich richtig, sprachlich blind — der Text wird nur zusammengefasst."},
+     {t:"Die Reihung steigert vom Materiellen zum Menschlichen; weil „den letzten Freund“ am Ende steht, liest man diesen Verlust als den entscheidenden, und das Fehlen des Bindeworts lässt die Verluste ungebremst aufeinanderfolgen.",r:0,n:"Beste Antwort: Reihenfolge gedeutet, Auslassung erklärt, Wirkung begründet."}]},
+ {q:"Ihre Stimme war schneidend.",
+  a:[{t:"„schneidend“ gehört zum Wortfeld der Klinge; die Stimme wird damit zur Waffe, sodass die Sprecherin nicht bloß laut, sondern verletzend erscheint.",r:0,n:"Beste Antwort: Wortfeld benannt, Übertragung erklärt, Wirkung präzise."},
+     {t:"Der Autor benutzt eine sehr gute Wortwahl, um die Stimme zu beschreiben.",r:2,n:"Leerformel. „Gute Wortwahl“ sagt weder, welches Wort, noch was es bewirkt."},
+     {t:"Das Adjektiv „schneidend“ zeigt, dass ihre Stimme unangenehm ist.",r:1,n:"Beleg ja, Wirkung schwach — „unangenehm“ schöpft die Konnotation nicht aus."}]},
+ {q:"Kein Licht. Keine Stimme. Nichts.",
+  a:[{t:"Die drei immer kürzer werdenden Sätze ohne Verben lassen die Sprache selbst verstummen; mit „Nichts.“ bleibt am Ende nicht einmal mehr ein benennbarer Mangel übrig, sodass die Leere endgültig wirkt.",r:0,n:"Beste Antwort: Struktur, Verknappung und Wirkung greifen ineinander."},
+     {t:"Der Autor verwendet drei Ellipsen und eine Klimax.",r:1,n:"Fachlich korrekt, aber eine reine Etikettensammlung."},
+     {t:"An diesem Ort gibt es nichts, es ist leer und dunkel.",r:2,n:"Nacherzählung mit anderen Worten."}]}
+];
+
+/* ============ 7. FEHLERDETEKTIV ============ */
+const FLAWS = [
+ {id:"nach",n:"Nacherzählung",h:"Die Antwort sagt, was passiert, statt wie es gesagt wird."},
+ {id:"benannt",n:"Nur benannt",h:"Das Stilmittel wird etikettiert, aber nicht gedeutet."},
+ {id:"vage",n:"Vage Wirkung",h:"„spannend“, „interessant“, „betont“ — ohne „weil“."},
+ {id:"beleg",n:"Kein Beleg",h:"Es fehlt das Zitat, an dem man es festmachen kann."},
+ {id:"falsch",n:"Falsche Zuordnung",h:"Das genannte Stilmittel steht so nicht im Satz."}
+];
+const DETEKTIV = [
+ {q:"Der Nebel legte sich um das Dorf.",a:"Der Autor beschreibt, dass Nebel aufkommt und das Dorf bedeckt.",f:"nach"},
+ {q:"Der Nebel legte sich um das Dorf.",a:"Hier liegt eine Personifikation vor.",f:"benannt"},
+ {q:"Der Nebel legte sich um das Dorf.",a:"Das Bild wirkt sehr stimmungsvoll und macht den Text interessanter.",f:"vage"},
+ {q:"Die Angst war ein Stein in seinem Magen.",a:"Der Autor benutzt einen Vergleich, um die Angst zu zeigen.",f:"falsch"},
+ {q:"Die Angst war ein Stein in seinem Magen.",a:"Die Metapher macht deutlich, dass die Figur sich schlecht fühlt, weil das Bild sehr stark ist.",f:"vage"},
+ {q:"Er lief, stolperte, fiel, stand auf, lief weiter.",a:"Der Satzbau ist auffällig und erzeugt Tempo.",f:"beleg"},
+ {q:"Er lief, stolperte, fiel, stand auf, lief weiter.",a:"Die Figur rennt weg und fällt dabei hin.",f:"nach"},
+ {q:"Wer hätte an diesem Morgen geahnt, was noch kommen würde?",a:"Der Autor verwendet eine Ellipse.",f:"falsch"},
+ {q:"Wer hätte an diesem Morgen geahnt, was noch kommen würde?",a:"Die rhetorische Frage regt den Leser zum Nachdenken an.",f:"vage"},
+ {q:"Kalt, klamm und kahl lag das Feld.",a:"Es gibt eine Alliteration in diesem Satz.",f:"benannt"},
+ {q:"Kalt, klamm und kahl lag das Feld.",a:"Der Klang unterstreicht die Kälte der Landschaft eindrucksvoll.",f:"beleg"},
+ {q:"Sein Gesicht war eine geschlossene Tür.",a:"Der Mann zeigt keine Gefühle und will nicht reden.",f:"nach"}
+];
+
+/* ============ 8. EFFEKT-KETTE ============ */
+const KETTE = [
+ {q:"Die Sonne biss in seine Augen.",
+  s1:{f:"Welche Wirkung entsteht?",o:["Die Umwelt greift die Figur körperlich an.","Der Tag beginnt freundlich und hell.","Die Figur ist müde vom Schlafen."],c:0},
+  s2:{f:"Welches Wort erzeugt sie?",o:["Sonne","biss","Augen"],c:1},
+  s3:{f:"Warum wirkt gerade dieses Wort so?",o:["Weil „biss“ aus dem Wortfeld des Tieres stammt und Schmerz durch Zähne bedeutet.","Weil die Sonne im Sommer sehr hell ist.","Weil das Wort nur einen Buchstaben mehr hat als „sah“."],c:0},
+  d:"personifikation",
+  w:"Der Weg ist immer derselbe: Wirkung spüren → Beleg finden → Konnotation benennen. Genau das erwartet die Prüfung."},
+ {q:"Die Erinnerung war ein vergilbtes Foto.",
+  s1:{f:"Welche Wirkung entsteht?",o:["Die Vergangenheit erscheint verblasst und unzuverlässig.","Die Figur besitzt viele alte Fotos.","Die Erinnerung ist besonders farbenfroh."],c:0},
+  s2:{f:"Welches Wort erzeugt sie?",o:["Erinnerung","vergilbtes","Foto"],c:1},
+  s3:{f:"Warum wirkt gerade dieses Wort so?",o:["Weil Vergilben ein langsamer Verfall durch Zeit ist und die Farben verfälscht.","Weil Fotos immer alt sind.","Weil Gelb eine warme Farbe ist."],c:0},
+  d:"metapher",
+  w:"Das Adjektiv trägt hier die ganze Wirkung, nicht das Substantiv. Prüfe bei Bildern immer, welches Wort das Bild färbt."},
+ {q:"Er wartete. Er wartete. Er wartete.",
+  s1:{f:"Welche Wirkung entsteht?",o:["Die Zeit scheint stillzustehen.","Die Figur ist besonders fleißig.","Es geschieht etwas Überraschendes."],c:0},
+  s2:{f:"Was erzeugt sie?",o:["Der dreifach gleiche Satz","Das Wort „er“","Der Punkt am Ende"],c:0},
+  s3:{f:"Warum wirkt das so?",o:["Weil der Satz keine neue Information bringt und der Text so wenig vorankommt wie die Figur.","Weil drei eine wichtige Zahl in der Literatur ist.","Weil kurze Sätze immer spannend sind."],c:0},
+  d:"wiederholung",
+  w:"Die letzte Option in Schritt 3 ist die typische Falle: eine allgemeine Regel statt einer Begründung aus diesem Text."},
+ {q:"Die Menge ergoss sich über den Platz.",
+  s1:{f:"Welche Wirkung entsteht?",o:["Die Menschenmenge wirkt wie eine unaufhaltsame Flut.","Auf dem Platz wird Wasser verschüttet.","Die Menge verhält sich diszipliniert."],c:0},
+  s2:{f:"Welches Wort erzeugt sie?",o:["Menge","ergoss","Platz"],c:1},
+  s3:{f:"Warum wirkt gerade dieses Wort so?",o:["Weil es aus dem Wortfeld des Wassers stammt und Menschen damit die Steuerbarkeit abspricht.","Weil „ergoss“ ein sehr langes Wort ist.","Weil auf Plätzen oft viele Leute sind."],c:0},
+  d:"konnotation",
+  w:"Wortfeldwechsel ist ein Schlüsselwerkzeug: Wenn Menschen mit Wasserwörtern beschrieben werden, verlieren sie ihren eigenen Willen."},
+ {q:"Auf dem Tisch lag noch immer der zweite Teller.",
+  s1:{f:"Welche Wirkung entsteht?",o:["Die Abwesenheit eines Menschen bleibt gegenwärtig.","Die Figur isst gerne viel.","Der Tisch ist unordentlich."],c:0},
+  s2:{f:"Welche Formulierung erzeugt sie?",o:["„noch immer“","„auf dem Tisch“","„lag“"],c:0},
+  s3:{f:"Warum wirkt gerade sie so?",o:["Weil „noch immer“ eine Dauer betont: Die Figur räumt ihn bewusst nicht weg.","Weil Teller aus Porzellan zerbrechlich sind.","Weil zwei mehr ist als eins."],c:0},
+  d:"symbol",
+  w:"Ein Symbol wirkt oft durch ein winziges Zeitwort. Suche in solchen Sätzen nach dem Wort, das Dauer oder Wiederholung anzeigt."}
+];
+</script>
+<script>
+/* ============ 9. PRÜFUNGSAUFGABEN ============ */
+const EXAMS = [
+ {id:"ex1",title:"Das leere Haus",min:20,marks:15,
+  p1:`Das Haus kauerte am Ende der Straße, halb verdeckt von einer Hecke, die seit Jahren niemand mehr geschnitten hatte. Die Fensterläden hingen schief in ihren Angeln und schlugen bei jedem Windstoß gegen die Mauer, als klopfte jemand von innen. Farbe blätterte in langen, gelben Streifen von der Fassade. Über der Tür hing noch ein Namensschild, doch die Buchstaben waren so verwittert, dass sie nur noch Andeutungen von Namen waren.`,
+  p2:`Drinnen roch es nach kaltem Staub und nassem Papier. Jeder Schritt knarrte, und das Knarren lief die Treppe hinauf, als ginge dort oben jemand mit. In der Küche stand der Tisch noch gedeckt: zwei Teller, zwei Gläser, eine Kanne, in der etwas Braunes eingetrocknet war. Nichts war umgestoßen. Nichts war zerbrochen. Es sah nicht aus, als wäre hier jemand geflohen, sondern als wäre er nur kurz hinausgegangen — vor sehr, sehr langer Zeit.`,
+  q:`Untersuche, wie der Autor Sprache verwendet, um das Haus als beunruhigenden Ort darzustellen. Wähle <strong>drei</strong> Formulierungen aus Abschnitt 1 und <strong>drei</strong> aus Abschnitt 2 und erkläre ihre Wirkung.`,
+  focus:["kauerte","klopfte jemand von innen","Andeutungen von Namen","als ginge dort oben jemand mit","Nichts war umgestoßen","sehr, sehr langer Zeit"],
+  model:`Das Verb „kauerte“ gibt dem Haus einen Körper und eine Haltung: Wer kauert, versteckt sich oder lauert. Schon im ersten Satz ist das Gebäude damit kein Ding mehr, sondern etwas, das ein Verhalten zeigt. Der Vergleich „als klopfte jemand von innen“ verlegt eine mögliche Person ins Innere des leeren Hauses; weil der Autor die Erklärung durch den Wind gleich mitliefert, muss der Leser beide Deutungen nebeneinander halten und wird dadurch misstrauisch statt beruhigt. In „Andeutungen von Namen“ verschwindet die Identität der Bewohner sprachlich: Übrig bleibt nicht ein unleserlicher Name, sondern nur noch der Umriss eines Namens, sodass die Menschen bereits ausgelöscht wirken.\n\nIm zweiten Abschnitt setzt der Autor auf Geruch und Geräusch statt auf Bilder. „kalter Staub“ verbindet Erloschenes mit Vernachlässigung und macht klar, dass hier lange niemand geatmet hat. Der Vergleich „als ginge dort oben jemand mit“ überträgt das eigene Geräusch der Figur auf eine unsichtbare zweite Person; die Bedrohung entsteht dadurch nicht von außen, sondern aus dem Verhalten der Figur selbst — eine besonders beunruhigende Form von Angst. Die beiden knappen Sätze „Nichts war umgestoßen. Nichts war zerbrochen.“ schließen mit ihrer Verneinung gerade die harmlose Erklärung eines Überfalls aus und lassen nur die unheimlichere übrig. Die Dehnung „sehr, sehr langer Zeit“ verlangsamt den Schluss und lässt die Zeitspanne unbestimmt wachsen, sodass der Leser das Haus als etwas empfindet, das aus der Zeit gefallen ist.`},
+
+ {id:"ex2",title:"Der letzte Zug",min:20,marks:15,
+  p1:`Der Bahnsteig war eine lange, nasse Zunge aus Beton, an deren Ende sich das Licht verlor. Zwei Lampen brannten noch, die dritte flackerte und gab auf. Anna stellte den Koffer ab und stellte ihn wieder um, ohne Grund. Auf der Anzeigetafel sprangen die Ziffern, dann standen sie still. Verspätung. Der Wind kam den Gleisen entlang, roch nach Öl und kaltem Metall und fuhr ihr in den Kragen wie eine fremde Hand.`,
+  p2:`Als der Zug endlich kam, kam er zu schnell. Er donnerte heran, spuckte Licht über den Bahnsteig, riss die Zeitung eines Wartenden hoch und schlug sie ihm ins Gesicht. Türen zischten. Menschen schoben, drängten, stiegen. Anna stand. Sie hatte hundertmal gedacht, sie würde einsteigen. Nun stand sie da, den Koffer am Bein, und sah zu, wie sich die Türen schlossen, wie das Licht an ihr vorbeizog, wie es kleiner wurde, kleiner, fort.`,
+  q:`Untersuche, wie der Autor Sprache verwendet, um Annas Zustand und die Atmosphäre am Bahnhof darzustellen. Wähle <strong>drei</strong> Formulierungen aus jedem Abschnitt und erkläre ihre Wirkung.`,
+  focus:["nasse Zunge aus Beton","gab auf","wie eine fremde Hand","spuckte Licht","Anna stand","kleiner, fort"],
+  model:`Die Metapher „eine lange, nasse Zunge aus Beton“ verwandelt den Bahnsteig in ein Körperteil eines Tieres. Wer darauf steht, steht im Rachen von etwas, und der Zusatz „nass“ macht das Bild unangenehm körperlich; der Ort wirkt dadurch nicht bloß ungemütlich, sondern verschlingend. Dass die dritte Lampe „aufgab“, überträgt menschliche Erschöpfung auf ein Gerät und stimmt den Leser darauf ein, dass hier etwas nachlässt, bevor Anna selbst versagt. Der Vergleich „wie eine fremde Hand“ verwandelt den Wind in einen unerwünschten Übergriff; weil die Hand „fremd“ ist, ist Anna am Ende des ersten Abschnitts bereits jemandem ausgeliefert, ohne dass eine Person anwesend wäre.\n\nIm zweiten Abschnitt kippt das Tempo. „spuckte Licht“ macht den Zug zu einem Wesen mit Mund und Verachtung, und die Reihung „schoben, drängten, stiegen“ ohne Bindewörter drückt das Gedränge in ein einziges Atemholen zusammen. Genau davon hebt sich der Zweiwortsatz „Anna stand.“ ab: Sein abrupter Stillstand mitten in der Bewegung zeigt ihre Lähmung deutlicher als jede Erklärung ihres Gefühls. Der Schluss „wie es kleiner wurde, kleiner, fort“ verkürzt sich Wort für Wort, bis nur noch eine Silbe bleibt; die Sprache schrumpft mit dem Licht, sodass der Leser das Verschwinden nicht nur liest, sondern im Satzbau nachvollzieht.`},
+
+ {id:"ex3",title:"Prüfungsmorgen",min:20,marks:15,
+  p1:`Der Flur füllte sich lange vor acht. Sie standen in kleinen Inseln beieinander, Karteikarten in der Hand wie Fahrscheine, und redeten alle gleichzeitig über dasselbe. Jonas hörte nichts davon. In seinem Kopf lief ein einziger Satz im Kreis, ein Satz, den er sich seit Wochen gemerkt hatte und der jetzt, ausgerechnet jetzt, nach nichts klang. Seine Handflächen waren feucht. Der Riemen der Tasche schnitt ihm in die Schulter, und er merkte es erst, als er den Abdruck sah.`,
+  p2:`Dann ging die Tür auf. Kein Wort, nur eine Handbewegung. Sie gingen hinein wie eine Herde, die weiß, wohin, aber nicht warum. Die Tische standen in Reihen, weit auseinander, jeder für sich, jeder eine Insel. Auf jedem lag ein Blatt, verkehrt herum. Vierzig Stück Papier, still wie Tellerminen. Die Uhr über der Tafel machte ein Geräusch, das Jonas vorher nie gehört hatte: ein trockenes, geduldiges Klicken, das nicht schneller und nicht langsamer wurde, egal, wie sehr er es sich wünschte.`,
+  q:`Untersuche, wie der Autor Sprache verwendet, um Jonas' Anspannung und die Atmosphäre im Prüfungsraum darzustellen. Wähle <strong>drei</strong> Formulierungen aus jedem Abschnitt und erkläre ihre Wirkung.`,
+  focus:["wie Fahrscheine","nach nichts klang","schnitt ihm in die Schulter","wie eine Herde","still wie Tellerminen","trockenes, geduldiges Klicken"],
+  model:`Der Vergleich der Karteikarten „wie Fahrscheine“ macht das Wissen zu etwas, das man vorzeigen muss, um irgendwohin zu dürfen; Bildung erscheint damit als Kontrolle statt als Können. Dass der auswendig gelernte Satz „nach nichts klang“, verlegt Jonas' Panik in die Sprache selbst: Nicht das Gedächtnis versagt, sondern die Bedeutung, und der Leser erkennt, dass Vorbereitung ihn nicht schützt. Dass der Riemen „schnitt“ und er es „erst merkte, als er den Abdruck sah“, zeigt körperlich, wie weit seine Wahrnehmung bereits von seinem Körper abgekoppelt ist.\n\nIm zweiten Abschnitt macht der Vergleich „wie eine Herde, die weiß, wohin, aber nicht warum“ die Schüler zu Tieren ohne eigenen Willen und nimmt der Prüfung jeden Sinn. Die Wiederholung „jeder für sich, jeder eine Insel“ verwandelt die räumliche Anordnung in Einsamkeit, sodass die Trennung nicht organisatorisch, sondern seelisch wirkt. Der Vergleich „still wie Tellerminen“ ist der härteste Eingriff des Autors: Das harmlose Papier wird zu einer Waffe, die genau dann explodiert, wenn man auf sie tritt — die Bedrohung geht damit vom Prüfling selbst aus. Zuletzt macht das „trockene, geduldige Klicken“ die Uhr zu einem gleichgültigen Gegenüber; „geduldig“ unterstellt ihr eine Haltung und stellt ihre Ruhe Jonas' Panik gegenüber.`},
+
+ {id:"ex4",title:"Hochwasser",min:20,marks:15,
+  p1:`Am Montag war der Fluss noch eine braune Linie am Ende der Wiese. Am Mittwoch stand er in den Gärten. Er kam nicht schnell; das war das Schlimmste. Er nahm sich Zeit, Zentimeter für Zentimeter, so ruhig, als hätte er alles Recht der Welt. Die Leute trugen Kisten in den ersten Stock, dann in den zweiten, und zwischen den Gängen blieben sie am Fenster stehen und sahen zu, wie ihr Garten verschwand: erst die Beete, dann der Zaun, dann die Bank, auf der im Sommer immer jemand gesessen hatte.`,
+  p2:`In der Nacht hörte man das Wasser arbeiten. Es gluckste in den Kellerfenstern, es schmatzte an den Türen, es fand jede Ritze, die das Haus in fünfzig Jahren bekommen hatte. Am Morgen lag über allem eine dünne, glänzende Haut, unter der die Straße lag wie eine Erinnerung. Ein Kinderschuh trieb vorbei, drehte sich langsam und trieb weiter. Niemand rief etwas. Alle standen an den Fenstern, hoch oben und trocken, und sahen einem Dorf zu, das ihnen nicht mehr gehörte.`,
+  q:`Untersuche, wie der Autor Sprache verwendet, um das Hochwasser und die Hilflosigkeit der Bewohner darzustellen. Wähle <strong>drei</strong> Formulierungen aus jedem Abschnitt und erkläre ihre Wirkung.`,
+  focus:["als hätte er alles Recht der Welt","erst die Beete, dann der Zaun","das Wasser arbeiten","schmatzte","wie eine Erinnerung","das ihnen nicht mehr gehörte"],
+  model:`Die Personifikation „als hätte er alles Recht der Welt“ gibt dem Fluss einen Anspruch, gegen den man nicht argumentieren kann; gerade weil er langsam kommt, wirkt er nicht wütend, sondern unbeirrbar, und Unbeirrbarkeit lässt sich schlechter bekämpfen als Wut. Die Aufzählung „erst die Beete, dann der Zaun, dann die Bank“ ordnet den Verlust nach steigendem Wert und endet beim Erinnerungsstück; dadurch verliert das Dorf am Ende nicht Besitz, sondern Vergangenheit. Dass die Menschen dabei „am Fenster stehen und zusehen“, macht sie zu Zuschauern ihres eigenen Lebens.\n\nIm zweiten Abschnitt verstärkt der Autor die Personifikation: Das Wasser „arbeitet“, es „gluckst“ und „schmatzt“. Vor allem „schmatzte“ ist unangenehm, weil es Essgeräusche aufruft und das Haus damit zur Nahrung macht. Die dreifache Reihung mit „es“ am Satzanfang lässt die Bewegung methodisch und unaufhaltsam erscheinen. Der Vergleich der überfluteten Straße „wie eine Erinnerung“ verlegt das Dorf aus der Gegenwart in die Vergangenheit, obwohl es physisch noch da ist. Der Kinderschuh, der sich dreht und weitertreibt, bleibt unkommentiert; gerade das Fehlen jeder Erklärung zwingt den Leser, die Bedeutung selbst zu ergänzen — und der Schlusssatz bestätigt die Enteignung, indem er den Besitz sprachlich aufhebt.`},
+
+ {id:"ex5",title:"Der Trainer",min:20,marks:15,
+  p1:`Herr Basler stand am Rand des Platzes, die Arme verschränkt, und sagte lange nichts. Das war schlimmer als Schreien. Wenn er schrie, wusste man, woran man war; wenn er schwieg, wuchs das Schweigen über den Platz, bis alle langsamer liefen. Er trug immer dieselbe Jacke, in der Tasche immer dieselbe Pfeife, die er nie an den Mund nahm, sondern nur zwischen den Fingern drehte, drehte, drehte, während er zusah.`,
+  p2:`In der Halbzeit sagte er genau einen Satz. Er sah dabei niemanden an, sondern irgendwohin über die Köpfe hinweg, als wäre die Antwort dort hinten aufgeschrieben. „Ihr spielt, als hättet ihr euch schon entschuldigt.“ Dann ging er. Keiner sprach. Marek zog seine Stutzen hoch, obwohl sie nicht heruntergerutscht waren. Draußen begann es zu regnen, und der Regen war ihnen zum ersten Mal an diesem Nachmittag willkommen, weil er wenigstens ein Geräusch machte.`,
+  q:`Untersuche, wie der Autor Sprache verwendet, um Herrn Baslers Autorität und die Stimmung der Mannschaft darzustellen. Wähle <strong>drei</strong> Formulierungen aus jedem Abschnitt und erkläre ihre Wirkung.`,
+  focus:["wuchs das Schweigen","drehte, drehte, drehte","schlimmer als Schreien","als hättet ihr euch schon entschuldigt","obwohl sie nicht heruntergerutscht waren","wenigstens ein Geräusch"],
+  model:`Die Personifikation „wuchs das Schweigen über den Platz“ macht die Abwesenheit von Sprache zu etwas Wachsendem, das Raum einnimmt; Baslers Macht braucht dadurch kein Wort, sie breitet sich von selbst aus. Der Kontrast „schlimmer als Schreien“ dreht die Erwartung des Lesers um und erklärt zugleich, warum die Spieler „langsamer liefen“: Nicht Lautstärke, sondern Unberechenbarkeit lähmt sie. Die dreifache Wiederholung „drehte, drehte, drehte“ ahmt eine mechanische Bewegung nach und lässt die Zeit zäh werden; weil er die Pfeife „nie an den Mund nahm“, wird das Symbol seiner Autorität gerade dadurch bedrohlich, dass er es nicht benutzt.\n\nIm zweiten Abschnitt liegt die Wirkung in der Sparsamkeit. Dass er „genau einen Satz“ sagt und dabei „über die Köpfe hinweg“ sieht, verweigert den Spielern jede persönliche Anrede und behandelt sie als Gruppe ohne Gesichter. Sein Vergleich „als hättet ihr euch schon entschuldigt“ unterstellt ihnen, aufgegeben zu haben, bevor das Spiel entschieden ist — ein Vorwurf, der ihre Haltung angreift statt ihrer Leistung. Marek, der die Stutzen hochzieht, „obwohl sie nicht heruntergerutscht waren“, zeigt Nervosität durch eine sinnlose Handlung, ohne dass ein Gefühl benannt werden muss. Der Schluss macht die Stille messbar: Wenn Regen willkommen ist, „weil er wenigstens ein Geräusch machte“, ist das Schweigen unerträglicher als jedes Wetter.`}
+];
+
+/* Selbsteinschätzung nach dem Schreiben */
+const CHECK = [
+ "Ich habe genau so viele Belege benutzt, wie die Aufgabe verlangt.",
+ "Jedes Zitat ist kurz — höchstens ein paar Wörter.",
+ "Zu jedem Zitat steht eine Wirkung, nicht nur ein Fachbegriff.",
+ "In jeder Wirkung steht ein „weil“ oder eine gleichwertige Begründung.",
+ "Ich habe mindestens einmal die Nebenbedeutung eines Wortes ausgelotet (Wortfeld, Assoziation).",
+ "Ich habe nirgends nur nacherzählt, was passiert.",
+ "Ich habe die Wörter „spannend“ und „interessant“ vermieden oder ersetzt.",
+ "Ich habe auch die Wirkung auf den Leser benannt, nicht nur auf die Figur.",
+ "Ich habe mindestens eine Beobachtung zum Satzbau oder Klang gemacht.",
+ "Meine Belege sind über beide Abschnitte verteilt."
+];
+
+/* Orientierungsbänder (angelehnt an die Beurteilungskriterien für Wirkung, R4) */
+const BANDS = [
+ {p:"13–15",n:"Sehr differenziert",t:"Präzise Auswahl starker Formulierungen; Konnotationen werden ausgelotet; Wirkungen sind konkret und begründet; die Gesamtwirkung des Abschnitts wird mitgedacht."},
+ {p:"10–12",n:"Klar und sicher",t:"Gute Auswahl; die meisten Belege werden erklärt; Wirkungen sind benannt und meist begründet, gelegentlich noch allgemein."},
+ {p:"7–9",n:"Teilweise",t:"Belege vorhanden, Wirkungen teils erklärt, teils nur behauptet; einzelne Stellen bleiben unkommentiert oder werden nacherzählt."},
+ {p:"4–6",n:"Ansatzweise",t:"Stilmittel werden überwiegend nur benannt; Erklärungen bleiben allgemein („macht es spannend“); wenig Bezug zum Wortlaut."},
+ {p:"1–3",n:"Begrenzt",t:"Vorwiegend Nacherzählung; Belege fehlen oder passen nicht; keine erkennbare Wirkungsanalyse."}
+];
+
+const BADGES = [
+ {id:"erste",n:"Erste Wirkung",d:"Eine Aufgabe richtig gelöst",ic:"✦"},
+ {id:"weil",n:"Weil-Sager:in",d:"25 richtige Wirkungszuordnungen",ic:"§"},
+ {id:"jaeger",n:"Belegjäger:in",d:"20 Belege exakt getroffen",ic:"❖"},
+ {id:"serie",n:"Serie von 10",d:"Zehn richtige Antworten hintereinander",ic:"❯"},
+ {id:"konnot",n:"Konnotationskenner:in",d:"Alle Leitern einmal richtig sortiert",ic:"≡"},
+ {id:"detektiv",n:"Fehlerdetektiv:in",d:"12 schwache Antworten korrekt diagnostiziert",ic:"⌕"},
+ {id:"pruef",n:"Prüfungsreif",d:"Drei Prüfungsaufgaben geschrieben",ic:"✎"},
+ {id:"abgabe",n:"Abgabe erstellt",d:"Einen Bericht für Toddle erzeugt",ic:"▣"},
+ {id:"meister",n:"Alle Stilmittel auf Stufe 3+",d:"Breites Können statt Lieblingsmittel",ic:"★"}
+];
+</script>
+<script>
+/* =========================================================
+   ZUSTAND UND SPEICHERUNG
+   ========================================================= */
+const KEY = "marginalien.0505.v1";
+const DEF = () => ({
+  v:1, created:new Date().toISOString(), name:"", klasse:"",
+  xp:0, answered:0, correct:0, streak:0, best:0,
+  mastery:{}, counts:{weil:0,beleg:0,detektiv:0,leiter:[]}, modes:{},
+  badges:[], exams:[], log:[], reflect:{a:"",b:""}, reports:[],
+  assign:{title:"Writer's Effects — Auftrag", due:"", tasks:40, acc:60, dev3:10, allModes:true, exams:2, minWords:180, needBand:true}
+});
+let S = DEF();
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const o = JSON.parse(raw); S = Object.assign(DEF(), o);
+      S.counts  = Object.assign(DEF().counts,  o.counts||{});
+      S.assign  = Object.assign(DEF().assign,  o.assign||{});
+      S.reflect = Object.assign({a:"",b:""},   o.reflect||{});
+      S.modes   = o.modes||{}; S.reports = o.reports||[]; }
+  }catch(e){ console.warn("Speicher nicht lesbar", e); }
+}
+let saveTimer=null;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try{ localStorage.setItem(KEY, JSON.stringify(S)); }
+    catch(e){ toast("Speichern nicht möglich. Exportiere deinen Fortschritt als Datei."); }
+  },160);
+}
+
+/* Mastery 0–100, Sterne 0–5 */
+function mst(id){ return S.mastery[id] || 0; }
+function bump(ids, ok){
+  (ids||[]).forEach(id=>{
+    if(!DMAP[id]) return;
+    const cur = mst(id);
+    S.mastery[id] = Math.max(0, Math.min(100, cur + (ok ? (cur>=80?4:9) : -6)));
+  });
+}
+function stars(id){ return Math.round(mst(id)/20); }
+function starHTML(n){ return '<span class="stars"><b>'+"★".repeat(n)+'</b>'+"★".repeat(5-n)+'</span>'; }
+function rank(){ let r=RANKS[0]; RANKS.forEach(x=>{ if(S.xp>=x.min) r=x; }); return r; }
+function nextRank(){ return RANKS.find(x=>x.min>S.xp) || null; }
+
+function score(ok, devs, xp){
+  S.answered++;
+  if(ok){ S.correct++; S.streak++; S.best=Math.max(S.best,S.streak); S.xp += (xp||10) + Math.min(10,Math.floor(S.streak/3)*2); }
+  else { S.streak = 0; S.xp += 2; }
+  bump(devs, ok);
+  S.log.push({t:Date.now(), d:(devs||[])[0]||"", o:ok?1:0});
+  if(S.log.length>600) S.log = S.log.slice(-600);
+  checkBadges();
+  save();
+  paintRank();
+}
+
+function checkBadges(){
+  const has = id => S.badges.includes(id);
+  const give = (id)=>{ if(!has(id)){ S.badges.push(id); const b=BADGES.find(x=>x.id===id); toast("Abzeichen freigeschaltet: "+b.n); } };
+  if(S.correct>=1) give("erste");
+  if(S.counts.weil>=25) give("weil");
+  if(S.counts.beleg>=20) give("jaeger");
+  if(S.best>=10) give("serie");
+  if((S.counts.leiter||[]).length>=LEITER.length) give("konnot");
+  if(S.counts.detektiv>=12) give("detektiv");
+  if(S.exams.length>=3) give("pruef");
+  if((S.reports||[]).length) give("abgabe");
+  if(DEVICES.every(d=>stars(d.id)>=3)) give("meister");
+}
+
+/* =========================================================
+   HILFSMITTEL
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function pick(a,n){ return shuffle(a).slice(0,n); }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+let toastT=null;
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("on");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("on"), 2600);
+}
+function sview(n){ try{ n.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(e){} }
+function syncZones(){
+  $$(".zone").forEach(z=>{ const ph=z.querySelector(":scope > .ph"); if(ph) ph.style.display = z.querySelector(":scope > .chip") ? "none" : ""; });
+}
+document.addEventListener("dk:change", syncZones);
+function fmtDate(iso){ const d=new Date(iso); return d.toLocaleDateString("de-DE")+" "+d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}); }
+function words(s){ return (s.trim().match(/\S+/g)||[]).length; }
+
+/* =========================================================
+   DRAG-KIT — Zeigergesten, funktioniert auf iPad und mit Maus.
+   Zusätzlich: antippen zum Auswählen, antippen zum Ablegen.
+   ========================================================= */
+const DK = (()=>{
+  let d=null, sel=null;
+
+  function make(html, data, cls){
+    const c = el("div","chip"+(cls?" "+cls:""), html);
+    c.dataset.payload = JSON.stringify(data||{});
+    c.tabIndex = 0;
+    c.addEventListener("pointerdown", down);
+    c.addEventListener("keydown", ev=>{
+      if(ev.key===" "||ev.key==="Enter"){ ev.preventDefault(); select(c); }
+    });
+    return c;
+  }
+  function payload(c){ try{ return JSON.parse(c.dataset.payload); }catch(e){ return {}; } }
+
+  function select(c){
+    if(sel===c){ sel.classList.remove("sel"); sel=null; return; }
+    if(sel) sel.classList.remove("sel");
+    sel=c; c.classList.add("sel");
+  }
+
+  function down(e){
+    if(e.button && e.button!==0) return;
+    const c = e.currentTarget;
+    if(c.closest(".locked")) return;
+    e.preventDefault();
+    const r = c.getBoundingClientRect();
+    const g = c.cloneNode(true);
+    g.classList.add("ghost");
+    g.style.width = r.width+"px";
+    g.style.left = r.left+"px"; g.style.top = r.top+"px";
+    document.body.appendChild(g);
+    d = {c,g,dx:e.clientX-r.left,dy:e.clientY-r.top,moved:false,zone:null};
+    c.classList.add("lifted");
+    document.addEventListener("pointermove", move);
+    document.addEventListener("pointerup", up);
+    document.addEventListener("pointercancel", up);
+  }
+
+  function move(e){
+    if(!d) return;
+    if(!d.moved && Math.abs(e.clientX-(d.g.getBoundingClientRect().left+d.dx))<4 &&
+                   Math.abs(e.clientY-(d.g.getBoundingClientRect().top+d.dy))<4){ /* noop */ }
+    d.moved = true;
+    d.g.style.left = (e.clientX-d.dx)+"px";
+    d.g.style.top  = (e.clientY-d.dy)+"px";
+    const z = hit(e.clientX,e.clientY);
+    if(z!==d.zone){
+      if(d.zone) d.zone.classList.remove("over");
+      d.zone = z;
+      if(z) z.classList.add("over");
+    }
+    // Sortier-Vorschau
+    if(z && z.classList.contains("sortable")) preview(z, e.clientY);
+  }
+
+  function hit(x,y){
+    d.g.style.display="none";
+    const t = document.elementFromPoint(x,y);
+    d.g.style.display="";
+    if(!t) return null;
+    return t.closest(".zone, .pool, .sortable");
+  }
+
+  function preview(z, y){
+    const kids = Array.from(z.children).filter(k=>k.classList.contains("chip") && k!==d.c);
+    let before = null;
+    for(const k of kids){ const r=k.getBoundingClientRect(); if(y < r.top+r.height/2){ before=k; break; } }
+    z.insertBefore(d.c, before);
+  }
+
+  function up(e){
+    document.removeEventListener("pointermove", move);
+    document.removeEventListener("pointerup", up);
+    document.removeEventListener("pointercancel", up);
+    if(!d) return;
+    const {c,g,zone,moved} = d;
+    g.remove(); c.classList.remove("lifted");
+    if(zone) zone.classList.remove("over");
+    if(!moved){ d=null; select(c); return; }
+    if(zone && !zone.classList.contains("sortable")) place(zone, c);
+    d=null;
+    if(sel){ sel.classList.remove("sel"); sel=null; }
+    document.dispatchEvent(new CustomEvent("dk:change"));
+  }
+
+  function place(zone, c){
+    const max = parseInt(zone.dataset.max||"0",10);
+    if(max===1){
+      const cur = zone.querySelector(".chip");
+      if(cur && cur!==c){
+        const home = c.parentElement;
+        (home && home!==zone ? home : document.querySelector(".pool")).appendChild(cur);
+      }
+    }
+    zone.appendChild(c);
+  }
+
+  /* Antippen-Modus: Zone anklicken, wenn ein Chip ausgewählt ist */
+  document.addEventListener("click", ev=>{
+    const z = ev.target.closest(".zone, .pool, .sortable");
+    if(!z || !sel) return;
+    if(ev.target.closest(".chip") === sel) return;
+    if(z.classList.contains("sortable")){
+      const target = ev.target.closest(".chip");
+      z.insertBefore(sel, target && target!==sel ? target : null);
+    } else place(z, sel);
+    sel.classList.remove("sel"); sel=null;
+    document.dispatchEvent(new CustomEvent("dk:change"));
+  });
+
+  function zone(cls, ph, max){
+    const z = el("div","zone"+(cls?" "+cls:""));
+    if(max) z.dataset.max=String(max);
+    if(ph) z.appendChild(el("span","ph",ph));
+    return z;
+  }
+  function chipsIn(z){ return Array.from(z.querySelectorAll(":scope > .chip")); }
+
+  return {make, payload, zone, chipsIn};
+})();
+</script>
+<script>
+/* =========================================================
+   ÜBUNGSTYPEN
+   ========================================================= */
+const CLEAN=[];
+function cleanup(){ while(CLEAN.length){ try{ CLEAN.pop()(); }catch(e){} } }
+const norm = s => s.toLowerCase().replace(/[^\wäöüß]/g,"");
+
+/* --- gemeinsame Bausteine --- */
+function specimen(html, cls){ return '<div class="specimen'+(cls?" "+cls:"")+'">'+html+'</div>'; }
+
+function renderPairs(host, opt){
+  /* opt: {cues:[{html,cat}], chips:[{html,i}], task, check(map)->{ok,fb,devs}} */
+  host.appendChild(el("p","task",opt.task));
+  const pool = el("div","pool");
+  pool.id="pool";
+  shuffle(opt.chips).forEach(c=>pool.appendChild(DK.make(c.html,{i:c.i})));
+  host.appendChild(pool);
+  host.appendChild(el("div",null,'<div class="hint" style="margin:10px 0 14px">Ziehen — oder antippen, dann das Ziel antippen.</div>'));
+  const zones=[];
+  opt.cues.forEach((c,idx)=>{
+    const row = el("div","pairrow");
+    const cue = el("div","cue"+(c.cat?" cat-"+c.cat:""), c.html);
+    const z = DK.zone("", "hierher", 1);
+    z.dataset.idx = idx;
+    row.appendChild(cue); row.appendChild(z); zones.push(z);
+    host.appendChild(row);
+  });
+  const btn = el("button","btn primary","Prüfen");
+  btn.disabled = true;
+  const row = el("div","btnrow"); row.appendChild(btn); host.appendChild(row);
+  const upd = ()=>{ btn.disabled = zones.some(z=>!z.querySelector(".chip")); };
+  document.addEventListener("dk:change", upd); CLEAN.push(()=>document.removeEventListener("dk:change", upd));
+  btn.onclick = ()=>{
+    document.removeEventListener("dk:change", upd);
+    const map = zones.map(z=>{ const c=z.querySelector(".chip"); return c?DK.payload(c).i:-1; });
+    host.classList.add("locked");
+    zones.forEach((z,idx)=>{ const c=z.querySelector(".chip"); if(c) c.classList.add(map[idx]===idx?"right":"wrong"); });
+    btn.remove();
+    opt.check(map);
+  };
+}
+
+function renderMCQ(host, q, options, correct, onPick){
+  host.appendChild(el("p","task",q));
+  const box = el("div","opts");
+  const keys="ABCDE";
+  const order = shuffle(options.map((o,i)=>({o,i})));
+  order.forEach((x,n)=>{
+    const b = el("button","opt",'<span class="k">'+keys[n]+'</span><span>'+x.o+'</span>');
+    b.onclick = ()=>{
+      Array.from(box.children).forEach(c=>c.disabled=true);
+      const ok = x.i===correct;
+      b.classList.add(ok?"right":"wrong");
+      if(!ok){ const ci = order.findIndex(y=>y.i===correct); box.children[ci].classList.add("right"); }
+      onPick(ok);
+    };
+    box.appendChild(b);
+  });
+  host.appendChild(box);
+}
+
+function sortableList(host, items, task){
+  host.appendChild(el("p","task",task));
+  const list = el("div","sortable zone");
+  list.style.padding="4px 0"; list.style.border="0"; list.style.background="none";
+  shuffle(items).forEach(it=>list.appendChild(DK.make(it.html,{i:it.i})));
+  host.appendChild(list);
+  host.appendChild(el("div","hint","Ziehen zum Umsortieren — oder antippen und dann die Zielposition antippen."));
+  return list;
+}
+
+const MODES = {
+
+/* ---------- 1. Stilmittel-Jagd ---------- */
+jagd:{
+  name:"Stilmittel-Jagd", cat:"wort", n:8,
+  desc:"Beleg antippen, Entscheidung benennen. Trainiert den Blick für die genaue Stelle.",
+  pool(){ return JAGD; },
+  render(it, host, done){
+    let picked=[], dev=null;
+    host.appendChild(el("p","task","<strong>1.</strong> Tippe das Wort an, das die Wirkung erzeugt. <strong>2.</strong> Benenne die sprachliche Entscheidung."));
+    const sp = el("div","specimen");
+    it.t.split(/(\s+)/).forEach(tok=>{
+      if(!tok.trim()){ sp.appendChild(document.createTextNode(tok)); return; }
+      const w = el("span","word",esc(tok));
+      w.tabIndex=0; w.setAttribute("role","button");
+      w.onkeydown = ev=>{ if(ev.key===" "||ev.key==="Enter"){ ev.preventDefault(); w.click(); } };
+      w.onclick = ()=>{
+        if(host.classList.contains("locked")) return;
+        w.classList.toggle("picked");
+        picked = Array.from(sp.querySelectorAll(".word.picked")).map(x=>x.textContent);
+        upd();
+      };
+      sp.appendChild(w);
+    });
+    host.appendChild(sp);
+    const box = el("div","opts");
+    const opts = shuffle([it.d, ...pick(DEVICES.filter(d=>d.id!==it.d).map(d=>d.id),5)]);
+    opts.forEach(id=>{
+      const d = DMAP[id];
+      const b = el("button","opt",'<span class="k">◦</span><span>'+d.name+' <span class="tag cat-'+d.cat+'">'+CATNAME[d.cat]+'</span></span>');
+      b.onclick=()=>{ if(host.classList.contains("locked"))return;
+        Array.from(box.children).forEach(c=>c.classList.remove("sel")); b.classList.add("sel"); dev=id; upd(); };
+      box.appendChild(b);
+    });
+    host.appendChild(box);
+    const btn = el("button","btn primary","Prüfen"); btn.disabled=true;
+    const r = el("div","btnrow"); r.appendChild(btn); host.appendChild(r);
+    function upd(){ btn.disabled = !(picked.length && dev); }
+    btn.onclick=()=>{
+      host.classList.add("locked"); btn.remove();
+      const want = it.e.map(norm);
+      const got = picked.map(norm);
+      const belegAll = want.every(w=>got.includes(w)) && got.every(g=>want.includes(g));
+      const belegOk = got.length>0 && got.every(g=>want.includes(g));
+      sp.querySelectorAll(".word").forEach(w=>{
+        const n=norm(w.textContent);
+        if(want.includes(n)) w.classList.add("right");
+        else if(w.classList.contains("picked")) w.classList.add("wrong");
+        w.classList.remove("picked");
+      });
+      Array.from(box.children).forEach((c,i)=>{ if(opts[i]===it.d)c.classList.add("right"); else if(c.classList.contains("sel"))c.classList.add("wrong"); c.disabled=true; });
+      const ok = belegOk && dev===it.d;
+      if(belegAll) S.counts.beleg++;
+      const d=DMAP[it.d];
+      let fb = "<b>"+(ok?"Treffer.":"Noch nicht.")+"</b><br>";
+      if(dev!==it.d) fb += "Die Entscheidung ist <strong>"+d.name+"</strong>. ";
+      if(!belegOk) fb += "Der Beleg lautet „"+it.e.join(" … ")+"“. ";
+      fb += "<br><br>"+it.w;
+      done(ok, fb, [it.d], 12);
+    };
+  }
+},
+
+/* ---------- 2. Wirkung zuordnen ---------- */
+match:{
+  name:"Wirkung zuordnen", cat:"bild", n:4,
+  desc:"Zitate und ihre Wirkung zusammenbringen. Vier Runden zu je vier Paaren.",
+  pool(){ return MATCH; },
+  render(it, host, done){
+    renderPairs(host,{
+      task:"Ordne jeder Formulierung die Wirkung zu, die sie erzeugt. Runde: <strong>"+it.title+"</strong>",
+      cues: it.pairs.map(p=>({html:esc(p.q), cat:DMAP[p.d].cat})),
+      chips: it.pairs.map((p,i)=>({html:esc(p.a), i})),
+      check(map){
+        const right = map.filter((v,i)=>v===i).length;
+        const ok = right===map.length;
+        S.counts.weil += right;
+        let fb = "<b>"+right+" von "+map.length+" richtig.</b><br>";
+        if(!ok){ fb += "<br>"+it.pairs.map((p,i)=>'<span class="q">„'+esc(p.q)+'“</span> → '+esc(p.a)).join("<br>"); }
+        else fb += "Achte darauf, wie klein die Unterschiede sind: Meist entscheidet ein einziges Verb.";
+        done(ok, fb, it.pairs.map(p=>p.d), 15);
+      }
+    });
+  }
+},
+
+/* ---------- 3. Wortwahl-Werkstatt ---------- */
+werk:{
+  name:"Wortwahl-Werkstatt", cat:"wort", n:5,
+  desc:"Ein Satz, vier mögliche Wörter. Welches erzeugt welche Wirkung?",
+  pool(){ return WERK; },
+  render(it, host, done){
+    host.appendChild(el("div",null, specimen(esc(it.frame))));
+    renderPairs(host,{
+      task:"Ziehe jedes Wort zu der Wirkung, die es im Satz erzeugen würde.",
+      cues: it.opts.map(o=>({html:esc(o.a), cat:DMAP[it.d].cat})),
+      chips: it.opts.map((o,i)=>({html:"<b>"+esc(o.w)+"</b>", i})),
+      check(map){
+        const right = map.filter((v,i)=>v===i).length;
+        const ok = right===map.length;
+        S.counts.weil += right;
+        let fb = "<b>"+right+" von "+map.length+" richtig.</b><br><br>"+
+          it.opts.map(o=>"<strong>"+esc(o.w)+"</strong> — "+esc(o.a)).join("<br>")+
+          "<br><br>In der Prüfung lohnt sich genau dieser Vergleich: Nenne kurz das neutrale Wort, das dort auch hätte stehen können.";
+        done(ok, fb, [it.d,"wortwahl"], 12);
+      }
+    });
+  }
+},
+
+/* ---------- 4. Konnotationsleiter ---------- */
+leiter:{
+  name:"Konnotationsleiter", cat:"wort", n:4,
+  desc:"Wörter nach Intensität sortieren. Schult das Gehör für Nebenbedeutungen.",
+  pool(){ return LEITER; },
+  render(it, host, done){
+    const list = sortableList(host, it.order.map((w,i)=>({html:"<b>"+esc(w)+"</b>", i})),
+      "Sortiere von <strong>"+esc(it.from)+"</strong> (oben) bis <strong>"+esc(it.to)+"</strong> (unten). Frage: "+esc(it.q));
+    const btn = el("button","btn primary","Prüfen");
+    const r=el("div","btnrow"); r.appendChild(btn); host.appendChild(r);
+    btn.onclick=()=>{
+      host.classList.add("locked"); btn.remove();
+      const got = DK.chipsIn(list).map(c=>DK.payload(c).i);
+      const right = got.filter((v,i)=>v===i).length;
+      const ok = right===got.length;
+      DK.chipsIn(list).forEach((c,i)=>c.classList.add(got[i]===i?"right":"wrong"));
+      if(ok && !(S.counts.leiter||[]).includes(it.q)) (S.counts.leiter=S.counts.leiter||[]).push(it.q);
+      let fb = "<b>"+(ok?"Genau diese Reihenfolge.":"Richtige Reihenfolge:")+"</b><br>"+
+        it.order.map((w,i)=>(i+1)+". "+esc(w)).join(" · ")+"<br><br>"+it.w;
+      done(ok, fb, [it.d,"konnotation"], 15);
+    };
+  }
+},
+
+/* ---------- 5. FEE-Baukasten ---------- */
+fee:{
+  name:"FEE-Baukasten", cat:"satz", n:5,
+  desc:"Feature, Evidence, Effect an die richtige Stelle setzen — mit Ablenkern.",
+  pool(){ return FEE; },
+  render(it, host, done){
+    host.appendChild(el("div",null, specimen(esc(it.q))));
+    host.appendChild(el("p","task","Baue die Analyse. Nur drei der Bausteine gehören hinein — die anderen sind typische Fehler."));
+    const pool = el("div","pool");
+    const parts = [{t:it.F,s:0},{t:it.E,s:1},{t:it.W,s:2}, ...pick(it.bad,3).map(b=>({t:b.t,s:-1,r:b.r}))];
+    shuffle(parts).forEach(p=>pool.appendChild(DK.make(esc(p.t),{s:p.s,r:p.r||""})));
+    host.appendChild(pool);
+    const labs=[["F","Feature"],["E","Evidence"],["E","Effect"]];
+    const zones=[];
+    labs.forEach((l,i)=>{
+      const row=el("div","slotrow");
+      row.appendChild(el("div","slotlab","<b>"+l[0]+"</b><i>"+l[1]+"</i>"));
+      const z=DK.zone("", i===2?"Wirkung + weil …":(i===0?"Was macht der Autor?":"Wo siehst du das?"), 1);
+      row.appendChild(z); zones.push(z); host.appendChild(row);
+    });
+    const btn=el("button","btn primary","Prüfen"); btn.disabled=true;
+    const r=el("div","btnrow"); r.appendChild(btn); host.appendChild(r);
+    const upd=()=>{ btn.disabled = zones.some(z=>!z.querySelector(".chip")); };
+    document.addEventListener("dk:change", upd); CLEAN.push(()=>document.removeEventListener("dk:change", upd));
+    btn.onclick=()=>{
+      document.removeEventListener("dk:change", upd);
+      host.classList.add("locked"); btn.remove();
+      let right=0; const notes=[];
+      zones.forEach((z,i)=>{
+        const c=z.querySelector(".chip"); const p=DK.payload(c);
+        const good = p.s===i;
+        c.classList.add(good?"right":"wrong");
+        if(good) right++;
+        else if(p.r) notes.push("„"+c.textContent.slice(0,42)+"…“ — "+p.r);
+      });
+      const ok = right===3;
+      if(ok) S.counts.weil += 1;
+      let fb="<b>"+right+" von 3 richtig.</b><br><br>"+
+        "<strong>F:</strong> "+esc(it.F)+"<br><strong>E:</strong> "+esc(it.E)+"<br><strong>E:</strong> "+esc(it.W);
+      if(notes.length) fb += "<br><br>"+notes.map(esc).join("<br>");
+      done(ok, fb, [it.d], 15);
+    };
+  }
+},
+
+/* ---------- 6. Welche Analyse ist besser? ---------- */
+rangfolge:{
+  name:"Welche Analyse ist besser?", cat:"satz", n:4,
+  desc:"Drei Antworten zur selben Stelle in eine Rangfolge bringen.",
+  pool(){ return RANKQ; },
+  render(it, host, done){
+    host.appendChild(el("div",null, specimen(esc(it.q))));
+    const list = sortableList(host, it.a.map((a,i)=>({html:esc(a.t), i})),
+      "Sortiere: <strong>beste Antwort oben</strong>, schwächste unten.");
+    const btn=el("button","btn primary","Prüfen");
+    const r=el("div","btnrow"); r.appendChild(btn); host.appendChild(r);
+    btn.onclick=()=>{
+      host.classList.add("locked"); btn.remove();
+      const got = DK.chipsIn(list).map(c=>it.a[DK.payload(c).i]);
+      const ok = got.every((a,i)=>a.r===i);
+      DK.chipsIn(list).forEach((c,i)=>c.classList.add(got[i].r===i?"right":"wrong"));
+      const sorted = it.a.slice().sort((x,y)=>x.r-y.r);
+      const fb = "<b>"+(ok?"Richtige Rangfolge.":"So wäre es richtig:")+"</b><br><br>"+
+        sorted.map((a,i)=>"<strong>"+(i+1)+".</strong> "+esc(a.t)+"<br><span style='color:var(--ink-3)'>"+esc(a.n)+"</span>").join("<br><br>");
+      done(ok, fb, ["wortwahl"], 12);
+    };
+  }
+},
+
+/* ---------- 7. Effekt-Kette ---------- */
+kette:{
+  name:"Effekt-Kette", cat:"bild", n:4,
+  desc:"Wirkung spüren, Beleg finden, Konnotation begründen — in drei Schritten.",
+  pool(){ return KETTE; },
+  render(it, host, done){
+    host.appendChild(el("div",null, specimen(esc(it.q))));
+    const stage = el("div"); host.appendChild(stage);
+    let hits=0;
+    const steps=[it.s1,it.s2,it.s3];
+    let n=0;
+    function next(){
+      if(n>=3){
+        const ok = hits===3;
+        done(ok, "<b>"+hits+" von 3 Schritten richtig.</b><br><br>"+it.w, [it.d], 15);
+        return;
+      }
+      const s=steps[n]; const box=el("div","panel tight");
+      box.style.marginTop="12px";
+      box.appendChild(el("div","hint","Schritt "+(n+1)+" von 3"));
+      renderMCQ(box, s.f, s.o, s.c, ok=>{
+        if(ok){hits++; if(n===2) S.counts.weil++;}
+        n++;
+        const b=el("button","btn sm", n>=3?"Auswerten":"Weiter");
+        const rr=el("div","btnrow"); rr.appendChild(b); box.appendChild(rr);
+        b.onclick=()=>{ b.parentElement.remove(); next(); };
+        b.focus();
+      });
+      stage.appendChild(box);
+      sview(box);
+    }
+    next();
+  }
+},
+
+/* ---------- 8. Fehlerdetektiv ---------- */
+detektiv:{
+  name:"Fehlerdetektiv", cat:"klang", n:8,
+  desc:"Schwache Prüfungsantworten diagnostizieren. Wer den Fehler kennt, macht ihn seltener.",
+  pool(){ return DETEKTIV; },
+  render(it, host, done){
+    host.appendChild(el("div",null, specimen(esc(it.q),"small")));
+    host.appendChild(el("div","panel tight",'<div class="hint">Antwort eines Prüflings</div><div style="font-family:var(--serif);font-size:1.1rem;margin-top:6px">'+esc(it.a)+"</div>"));
+    const idx = FLAWS.findIndex(f=>f.id===it.f);
+    renderMCQ(host, "Was ist der Hauptfehler dieser Antwort?", FLAWS.map(f=>f.n+" — <span style='color:var(--ink-3)'>"+f.h+"</span>"), idx, ok=>{
+      if(ok) S.counts.detektiv++;
+      const f=FLAWS[idx];
+      const fb="<b>"+(ok?"Richtig diagnostiziert.":"Der Hauptfehler ist: "+f.n)+"</b><br>"+f.h+
+        "<br><br>Besser wäre: Beleg zitieren, Nebenbedeutung des Wortes benennen, Wirkung mit „weil“ begründen.";
+      done(ok, fb, ["wortwahl"], 10);
+    });
+  }
+}
+
+};
+
+/* =========================================================
+   SITZUNGSSTEUERUNG
+   ========================================================= */
+let SES = null;
+
+function buildSession(keys, n, weakDevs){
+  let all=[];
+  keys.forEach(k=>{
+    const M=MODES[k];
+    let p=M.pool();
+    if(weakDevs && weakDevs.length){
+      const f = p.filter(it=>{
+        const d = it.d || (it.pairs? it.pairs[0].d : null);
+        return d && weakDevs.includes(d);
+      });
+      if(f.length>=2) p=f;
+    }
+    all = all.concat(pick(p, Math.min(n, p.length)).map(it=>({m:k,it})));
+  });
+  return shuffle(all);
+}
+
+function startMode(key){
+  const M=MODES[key];
+  SES={title:M.name, items:buildSession([key], M.n), i:0, ok:0};
+  go("stage");
+}
+function startWeak(){
+  const weak = DEVICES.map(d=>d.id).sort((a,b)=>mst(a)-mst(b)).slice(0,5);
+  SES={title:"Schwachstellen-Training", items:buildSession(["jagd","match","werk","leiter","fee","kette","detektiv"],2,weak).slice(0,10), i:0, ok:0};
+  go("stage");
+}
+
+function renderStage(){
+  cleanup();
+  const host=$("#v-stage"); host.innerHTML="";
+  if(!SES){ go("uebung"); return; }
+  if(SES.i>=SES.items.length) return stageEnd(host);
+  const {m,it}=SES.items[SES.i];
+  const M=MODES[m];
+  const head=el("div","exhead");
+  head.innerHTML='<div class="t"><h2>'+esc(SES.title)+'</h2><span class="cnt">Aufgabe '+(SES.i+1)+" von "+SES.items.length+" · "+esc(M.name)+'</span></div>';
+  const quit=el("button","btn ghost","Beenden"); quit.onclick=()=>{cleanup();SES=null;go("uebung");};
+  head.appendChild(quit);
+  host.appendChild(head);
+  const p=el("div","prog"); p.style.setProperty("--c","var(--"+M.cat+")");
+  p.innerHTML='<i style="width:'+Math.round(SES.i/SES.items.length*100)+'%"></i>';
+  host.appendChild(p);
+  const body=el("div","panel");
+  host.appendChild(body);
+  M.render(it, body, (ok, fb, devs, xp)=>{
+    if(ok) SES.ok++;
+    S.modes[m] = (S.modes[m]||0)+1;
+    score(ok, devs, xp);
+    const f=el("div","fb "+(ok?"ok":"no"), fb);
+    body.appendChild(f);
+    const nb=el("button","btn primary", SES.i+1>=SES.items.length?"Auswertung":"Weiter");
+    const lex=el("button","btn ghost","Stilmittel nachschlagen");
+    lex.onclick=()=>{ const d=(devs||[])[0]; go("lexikon"); if(d){ const n=$("#lib-"+d); if(n){n.open=true;n.scrollIntoView({block:"center"});} } };
+    const rr=el("div","btnrow"); rr.appendChild(nb); rr.appendChild(lex);
+    body.appendChild(rr);
+    nb.onclick=()=>{ SES.i++; renderStage(); window.scrollTo(0,0); };
+    nb.focus();
+    sview(f);
+  });
+}
+
+function stageEnd(host){
+  const pct = Math.round(SES.ok/SES.items.length*100);
+  const msg = pct>=90?"Das ist Prüfungsniveau." : pct>=70?"Solide. Die Lücken sind benennbar." : pct>=40?"Der Grundgedanke sitzt, die Begründungen noch nicht." : "Nimm dir das Stilmittel-Lexikon vor und wiederhole diese Runde.";
+  host.innerHTML='<div class="topline"><h1>Runde beendet</h1></div>';
+  const p=el("div","panel");
+  p.innerHTML='<div class="big">'+SES.ok+" von "+SES.items.length+'</div><p style="margin-top:10px">'+msg+"</p>";
+  const rr=el("div","btnrow");
+  const again=el("button","btn primary","Noch eine Runde");
+  again.onclick=()=>{ const keys=[...new Set(SES.items.map(x=>x.m))]; SES={title:SES.title,items:buildSession(keys, keys.length===1?MODES[keys[0]].n:2),i:0,ok:0}; renderStage(); };
+  const back=el("button","btn","Zur Übungsauswahl"); back.onclick=()=>{SES=null;go("uebung");};
+  rr.appendChild(again); rr.appendChild(back);
+  p.appendChild(rr);
+  const R=reqs(), met=R.filter(x=>x.ok).length;
+  const au=el("div","margin");
+  au.style.setProperty("--c", met===R.length?"var(--ok)":"var(--satz)");
+  au.innerHTML = met===R.length
+    ? "<strong>Auftrag vollständig.</strong> Du kannst jetzt den Bericht für Toddle erzeugen."
+    : "<strong>Auftrag: "+met+" von "+R.length+" Anforderungen erfüllt.</strong> Offen: "+R.filter(x=>!x.ok).map(x=>esc(x.l)).join(", ")+".";
+  const go2=el("button","btn sm"); go2.textContent = met===R.length?"Bericht erzeugen":"Auftrag ansehen";
+  go2.style.marginTop="10px"; go2.onclick=()=>{SES=null;go("auftrag");};
+  au.appendChild(go2);
+  p.appendChild(au);
+  host.appendChild(p);
+  host.appendChild(masteryPanel("Deine Stufen nach dieser Runde"));
+}
+</script>
+<script>
+/* =========================================================
+   AUFTRAG — Anforderungen, Reflexion, Bericht für Toddle
+   ========================================================= */
+const REFLECT_Q = [
+ {k:"a", t:"Welcher Fehler aus dem Fehlerdetektiv kommt bei dir am häufigsten vor — Nacherzählung, nur benannt, vage Wirkung, kein Beleg oder falsche Zuordnung? Belege es an einem Satz, den du selbst geschrieben hast.", min:25},
+ {k:"b", t:"Nimm eine Stelle aus einer deiner Prüfungsantworten, die noch keine Begründung hat, und schreibe sie hier so um, dass die Wirkung mit „weil“ begründet wird. Schreibe beide Fassungen auf.", min:25}
+];
+
+function reqs(){
+  const A=S.assign;
+  const acc = S.answered ? Math.round(S.correct/S.answered*100) : 0;
+  const dev3 = DEVICES.filter(d=>stars(d.id)>=3).length;
+  const total = Object.keys(MODES).length;
+  const modesDone = Object.keys(MODES).filter(k=>(S.modes[k]||0)>0).length;
+  const long = S.exams.filter(x=>x.words>=A.minWords);
+  const banded = long.filter(x=>x.band);
+  const refOk = REFLECT_Q.every(q=>words(S.reflect[q.k]||"")>=q.min);
+  const list=[
+    {l:"Übungsaufgaben gelöst", now:S.answered, tgt:A.tasks},
+    {l:"Trefferquote", now:acc, tgt:A.acc, unit:"%"},
+    {l:"Stilmittel auf Stufe 3 oder höher", now:dev3, tgt:A.dev3, of:DEVICES.length},
+    {l:"Übungsarten mindestens einmal bearbeitet", now:modesDone, tgt:A.allModes?total:1, of:total},
+    {l:"Prüfungsantworten mit mindestens "+A.minWords+" Wörtern", now:long.length, tgt:A.exams},
+    {l:"davon mit Selbsteinschätzung (Band gewählt)", now:banded.length, tgt:A.needBand?A.exams:0},
+    {l:"Reflexion beantwortet", now:refOk?1:0, tgt:1}
+  ].filter(r=>r.tgt>0);
+  return list.map(r=>Object.assign(r,{ok:r.now>=r.tgt}));
+}
+const auftragOk = ()=>reqs().every(r=>r.ok);
+
+function pruefsumme(){
+  const src=[S.name,S.klasse,S.answered,S.correct,S.xp,
+    S.exams.map(x=>x.id+":"+x.words).join(","),
+    Object.entries(S.mastery).sort().map(a=>a.join(":")).join(",")].join("|");
+  let h=2166136261>>>0;
+  for(let i=0;i<src.length;i++){ h^=src.charCodeAt(i); h=Math.imul(h,16777619)>>>0; }
+  const t=h.toString(36).toUpperCase().padStart(8,"0").slice(-8);
+  return t.slice(0,4)+"-"+t.slice(4);
+}
+
+function renderAuftrag(){
+  const h=$("#v-auftrag"); h.innerHTML="";
+  const A=S.assign, R=reqs(), done=R.filter(r=>r.ok).length;
+  const top=el("div","topline");
+  top.innerHTML='<div><h1>'+esc(A.title)+'</h1><p class="lede">Wenn alle Anforderungen erfüllt sind, erzeugst du hier einen Bericht und lädst ihn in Toddle hoch. Herr Kress sieht darin, was du geübt hast, wie sicher du in den einzelnen Stilmitteln bist und was du geschrieben hast.</p></div>'+
+    '<div class="rank"><div><div class="lvl">'+done+" von "+R.length+'</div><div class="xp">Anforderungen erfüllt'+(A.due?" · Abgabe "+esc(A.due):"")+'</div><div class="xpbar"><i style="width:'+Math.round(done/R.length*100)+'%"></i></div></div></div>';
+  h.appendChild(top);
+
+  /* Anforderungen */
+  const p=el("div","panel");
+  p.innerHTML="<h2>Anforderungen</h2>";
+  R.forEach(r=>{
+    const row=el("div","mrow");
+    row.style.setProperty("--c", r.ok?"var(--ok)":"var(--rule)");
+    const pct=Math.min(100, Math.round(r.now/r.tgt*100));
+    row.innerHTML='<div class="nm">'+(r.ok?"✓ ":"○ ")+esc(r.l)+"<small>"+r.now+(r.unit||"")+" von "+r.tgt+(r.unit||"")+(r.of?" (möglich: "+r.of+")":"")+'</small></div><div class="mbar"><i style="width:'+pct+'%;background:'+(r.ok?"var(--ok)":"var(--satz)")+'"></i></div>';
+    p.appendChild(row);
+  });
+  if(!auftragOk()){
+    const rr=el("div","btnrow");
+    const b1=el("button","btn primary","Weiterüben"); b1.onclick=()=>go("uebung");
+    const b2=el("button","btn","Prüfungsaufgabe schreiben"); b2.onclick=()=>go("pruefung");
+    rr.appendChild(b1); rr.appendChild(b2); p.appendChild(rr);
+  }
+  h.appendChild(p);
+
+  /* Reflexion */
+  const rf=el("div","panel");
+  rf.innerHTML="<h2>Reflexion</h2><p class='hint'>Diese beiden Antworten stehen im Bericht. Sie sind der Teil, den nur du schreiben kannst.</p>";
+  REFLECT_Q.forEach(q=>{
+    const w=el("div"); w.style.marginTop="16px";
+    w.appendChild(el("p","task",esc(q.t)));
+    const ta=el("textarea","examta"); ta.style.minHeight="130px"; ta.value=S.reflect[q.k]||"";
+    const wc=el("div","wc");
+    const upd=()=>{ const n=words(ta.value); wc.textContent=n+" Wörter"+(n<q.min?" · mindestens "+q.min:" ✓"); wc.style.color=n<q.min?"":"var(--ok)"; };
+    ta.addEventListener("input",()=>{ S.reflect[q.k]=ta.value; upd(); save(); });
+    w.appendChild(ta); w.appendChild(wc); upd(); rf.appendChild(w);
+  });
+  h.appendChild(rf);
+
+  /* Abgabe */
+  const ab=el("div","panel");
+  ab.innerHTML="<h2>Abgabe für Toddle</h2>";
+  if(!S.name) ab.appendChild(el("div","fb no","<b>Kein Name eingetragen.</b> Trage unter „Daten“ deinen Namen und deine Klasse ein — sonst lässt sich der Bericht niemandem zuordnen."));
+  ab.appendChild(el("p","hint","Lade in Toddle beides hoch: den <strong>Bericht</strong> (zum Lesen) und die <strong>Fortschrittsdatei</strong> (damit dein Stand auf einem anderen Gerät weiterläuft). Wer lieber in das Textfeld von Toddle schreibt, nimmt die Textfassung."));
+  const rr=el("div","btnrow");
+  const mk=el("button","btn primary","Bericht erstellen (.html)");
+  const tx=el("button","btn","Textfassung kopieren");
+  const pr=el("button","btn","Drucken / als PDF");
+  const js=el("button","btn","Fortschrittsdatei (.json)");
+  [mk,tx,pr].forEach(b=>{ if(!auftragOk()) b.disabled=true; });
+  mk.onclick=()=>{ const r=report(); download("bericht_"+slug(S.name)+"_"+new Date().toISOString().slice(0,10)+".html", r.html, "text/html;charset=utf-8"); logReport(r.code); };
+  tx.onclick=()=>{ const r=report();
+    navigator.clipboard?.writeText(r.text).then(()=>{toast("Textfassung kopiert — in Toddle einfügen."); logReport(r.code);})
+      .catch(()=>{ download("bericht_"+slug(S.name)+".txt", r.text, "text/plain;charset=utf-8"); logReport(r.code); }); };
+  pr.onclick=()=>{ const r=report(); const w=window.open("","_blank");
+    if(!w) return toast("Der Browser hat das Fenster blockiert.");
+    w.document.write(r.html); w.document.close(); setTimeout(()=>w.print(),350); logReport(r.code); };
+  js.onclick=()=>download("fortschritt_"+slug(S.name)+".json", JSON.stringify(S,null,1));
+  [mk,tx,pr,js].forEach(b=>rr.appendChild(b));
+  ab.appendChild(rr);
+  if(!auftragOk()){
+    const note=el("div","hint"); note.style.marginTop="10px";
+    note.innerHTML="Der Bericht lässt sich erst erzeugen, wenn alle Anforderungen erfüllt sind. Fehlt dir nur wenig, siehst du oben genau, was.";
+    ab.appendChild(note);
+    const ov=el("button","btn ghost sm","Trotzdem als unvollständigen Entwurf erzeugen");
+    ov.onclick=()=>{ const r=report(true); download("entwurf_"+slug(S.name)+".html", r.html, "text/html;charset=utf-8"); };
+    ab.appendChild(ov);
+  }
+  if((S.reports||[]).length){
+    ab.appendChild(el("hr","rule"));
+    ab.appendChild(el("div","hint","Bereits erzeugt: "+S.reports.map(r=>fmtDate(r.at)+" ("+r.code+")").join(" · ")));
+  }
+  h.appendChild(ab);
+
+  /* Lehrkraft */
+  const t=el("details","libitem"); t.style.setProperty("--c","var(--wort)");
+  t.innerHTML="<summary>Für die Lehrkraft: Auftrag anpassen</summary>";
+  const tb=el("div","libbody");
+  tb.appendChild(el("p","hint","Änderungen gelten nur auf diesem Gerät. Gib den Auftragscode an die Klasse weiter, damit alle dieselben Anforderungen haben."));
+  const grid=el("div","inline"); grid.style.marginTop="12px";
+  const fields=[["title","Titel","text"],["due","Abgabe bis","text"],["tasks","Übungsaufgaben","number"],["acc","Trefferquote %","number"],
+                ["dev3","Stilmittel Stufe 3+","number"],["exams","Prüfungsantworten","number"],["minWords","Wörter je Antwort","number"]];
+  fields.forEach(([k,lab,ty])=>{
+    const f=el("label","field","<span>"+lab+"</span>");
+    const i=el("input"); i.type=ty; i.value=S.assign[k]; if(ty==="number"){i.min="0";i.style.width="110px";}
+    i.oninput=()=>{ S.assign[k]= ty==="number" ? (parseInt(i.value,10)||0) : i.value; save(); };
+    f.appendChild(i); grid.appendChild(f);
+  });
+  tb.appendChild(grid);
+  const cw=el("label","check"); const cb=el("input"); cb.type="checkbox"; cb.checked=!!S.assign.allModes;
+  cb.onchange=()=>{S.assign.allModes=cb.checked;save();};
+  cw.appendChild(cb); cw.appendChild(el("span",null,"Alle acht Übungsarten müssen bearbeitet worden sein"));
+  tb.appendChild(cw);
+  const cw2=el("label","check"); const cb2=el("input"); cb2.type="checkbox"; cb2.checked=!!S.assign.needBand;
+  cb2.onchange=()=>{S.assign.needBand=cb2.checked;save();};
+  cw2.appendChild(cb2); cw2.appendChild(el("span",null,"Selbsteinschätzung (Band) ist für jede Prüfungsantwort Pflicht"));
+  tb.appendChild(cw2);
+  const rr2=el("div","btnrow");
+  const cc=el("button","btn sm","Auftragscode kopieren");
+  cc.onclick=()=>{ const code=btoa(unescape(encodeURIComponent(JSON.stringify(S.assign))));
+    navigator.clipboard?.writeText(code).then(()=>toast("Code kopiert.")).catch(()=>prompt("Code:",code)); };
+  const cl=el("button","btn sm","Auftragscode einsetzen");
+  cl.onclick=()=>{ const v=prompt("Auftragscode einfügen:"); if(!v) return;
+    try{ const o=JSON.parse(decodeURIComponent(escape(atob(v.trim()))));
+      S.assign=Object.assign(DEF().assign,o); save(); renderAuftrag(); toast("Auftrag übernommen."); }
+    catch(e){ toast("Der Code ließ sich nicht lesen."); } };
+  const cr=el("button","btn sm ghost","Auf Standard zurücksetzen");
+  cr.onclick=()=>{ S.assign=DEF().assign; save(); renderAuftrag(); };
+  rr2.appendChild(cc); rr2.appendChild(cl); rr2.appendChild(cr);
+  tb.appendChild(rr2);
+  t.appendChild(tb); h.appendChild(t);
+}
+
+function logReport(code){
+  S.reports=S.reports||[];
+  S.reports.push({at:new Date().toISOString(), code, complete:auftragOk()});
+  if(S.reports.length>12) S.reports=S.reports.slice(-12);
+  checkBadges(); save(); paintRank();
+  toast("Bericht erzeugt. Jetzt in Toddle hochladen — zusammen mit der Fortschrittsdatei.");
+  renderAuftrag();
+}
+
+function report(draft){
+  const A=S.assign, R=reqs(), acc=S.answered?Math.round(S.correct/S.answered*100):0;
+  const code=pruefsumme(), now=new Date();
+  const who=(S.name||"ohne Namen")+(S.klasse?", "+S.klasse:"");
+  const modeRows=Object.entries(MODES).map(([k,M])=>[M.name,(S.modes[k]||0)]);
+
+  const css="body{font-family:Georgia,'Times New Roman',serif;max-width:46em;margin:38px auto;padding:0 18px;line-height:1.6;color:#14181d}"+
+    "h1{font-size:1.5em;margin:0 0 2px}h2{font-size:1.1em;margin:2em 0 .5em;border-bottom:1px solid #ccd5dd;padding-bottom:5px}"+
+    ".meta{font-family:system-ui,sans-serif;font-size:.82em;color:#4a5560;margin-bottom:1.4em}"+
+    "table{border-collapse:collapse;width:100%;font-size:.9em;font-family:system-ui,sans-serif}"+
+    "td,th{text-align:left;padding:5px 8px;border-bottom:1px solid #e3e9ee;vertical-align:top}th{color:#4a5560;font-weight:600}"+
+    ".ok{color:#1c7a4f}.no{color:#c0392f}pre{white-space:pre-wrap;font-family:Georgia,serif;font-size:1em;background:#fbfcfd;border-left:3px solid #14181d;padding:12px 16px;margin:8px 0}"+
+    ".s{letter-spacing:1px}.foot{font-family:system-ui,sans-serif;font-size:.76em;color:#78848f;margin-top:2.6em;border-top:1px solid #ccd5dd;padding-top:10px}"+
+    "@media print{body{margin:0}h2{page-break-after:avoid}pre{page-break-inside:avoid}}";
+
+  let H="<!DOCTYPE html><html lang='de'><meta charset='utf-8'><title>"+esc(A.title)+" — "+esc(who)+"</title><style>"+css+"</style>";
+  H+="<h1>"+esc(A.title)+(draft?" (unvollständiger Entwurf)":"")+"</h1>";
+  H+="<div class='meta'>"+esc(who)+" · erstellt am "+now.toLocaleDateString("de-DE")+" um "+now.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})+" · Prüfsumme "+code+"</div>";
+
+  H+="<h2>Anforderungen</h2><table><tr><th>Anforderung</th><th>Stand</th><th>Ziel</th><th></th></tr>";
+  R.forEach(r=>{ H+="<tr><td>"+esc(r.l)+"</td><td>"+r.now+(r.unit||"")+"</td><td>"+r.tgt+(r.unit||"")+"</td><td class='"+(r.ok?"ok":"no")+"'>"+(r.ok?"erfüllt":"offen")+"</td></tr>"; });
+  H+="</table>";
+
+  H+="<h2>Übung insgesamt</h2><table>"+
+     "<tr><td>Aufgaben bearbeitet</td><td>"+S.answered+"</td></tr>"+
+     "<tr><td>davon richtig</td><td>"+S.correct+" ("+acc+" %)</td></tr>"+
+     "<tr><td>Längste Serie</td><td>"+S.best+"</td></tr>"+
+     "<tr><td>Punkte / Rang</td><td>"+S.xp+" · "+rank().name+"</td></tr>"+
+     "<tr><td>Abzeichen</td><td>"+(S.badges.length? S.badges.map(b=>esc((BADGES.find(x=>x.id===b)||{}).n||b)).join(", ") : "—")+"</td></tr></table>";
+
+  H+="<h2>Bearbeitete Übungsarten</h2><table><tr><th>Übungsart</th><th>Aufgaben</th></tr>";
+  modeRows.forEach(([n,c])=>{ H+="<tr><td>"+esc(n)+"</td><td class='"+(c?"ok":"no")+"'>"+(c||"nicht bearbeitet")+"</td></tr>"; });
+  H+="</table>";
+
+  H+="<h2>Sicherheit in den Stilmitteln</h2><table><tr><th>Stilmittel</th><th>Ebene</th><th>Stufe</th></tr>";
+  DEVICES.slice().sort((a,b)=>mst(b.id)-mst(a.id)).forEach(d=>{
+    H+="<tr><td>"+esc(d.name)+"</td><td>"+CATNAME[d.cat]+"</td><td><span class='s'>"+"★".repeat(stars(d.id))+"☆".repeat(5-stars(d.id))+"</span> "+mst(d.id)+"/100</td></tr>";
+  });
+  H+="</table>";
+
+  H+="<h2>Reflexion</h2>";
+  REFLECT_Q.forEach(q=>{ H+="<p><strong>"+esc(q.t)+"</strong></p><pre>"+esc(S.reflect[q.k]||"(nicht beantwortet)")+"</pre>"; });
+
+  H+="<h2>Prüfungsantworten</h2>";
+  if(!S.exams.length) H+="<p>Keine Antworten gespeichert.</p>";
+  S.exams.forEach(x=>{
+    H+="<p><strong>"+esc(x.title)+"</strong><br><span class='meta'>"+fmtDate(x.at)+" · "+x.words+" Wörter · Selbsteinschätzung: "+(x.band||"keine")+
+       " · Selbstprüfung: "+(x.checks||[]).filter(Boolean).length+" von "+CHECK.length+" Haken</span></p><pre>"+esc(x.text)+"</pre>";
+    const miss=CHECK.filter((c,i)=>!(x.checks||[])[i]);
+    if(miss.length) H+="<p class='meta'>Selbst als noch offen markiert: "+miss.map(esc).join(" · ")+"</p>";
+  });
+
+  H+="<div class='foot'>Erstellt mit „Marginalien — Wirkungstrainer, Cambridge IGCSE Deutsch 0505“. Die Prüfsumme "+code+
+     " ergibt sich aus Name, Aufgabenzahl, Stufen und Antworten und stimmt mit der beigelegten Fortschrittsdatei (.json) überein.</div></html>";
+
+  /* Textfassung für das Toddle-Textfeld */
+  let T=A.title+(draft?" (unvollständiger Entwurf)":"")+"\n"+who+" · "+now.toLocaleDateString("de-DE")+" · Prüfsumme "+code+"\n\n";
+  T+="ANFORDERUNGEN\n"+R.map(r=>(r.ok?"[x] ":"[ ] ")+r.l+": "+r.now+(r.unit||"")+" von "+r.tgt+(r.unit||"")).join("\n");
+  T+="\n\nÜBUNG\nAufgaben: "+S.answered+" · richtig: "+S.correct+" ("+acc+" %) · längste Serie: "+S.best+" · Rang: "+rank().name;
+  T+="\nÜbungsarten: "+modeRows.map(([n,c])=>n+" "+(c||0)).join(" · ");
+  T+="\n\nSTUFEN\n"+DEVICES.slice().sort((a,b)=>mst(b.id)-mst(a.id)).map(d=>d.name+": "+stars(d.id)+"/5").join("\n");
+  T+="\n\nREFLEXION\n"+REFLECT_Q.map(q=>q.t+"\n"+(S.reflect[q.k]||"(nicht beantwortet)")).join("\n\n");
+  T+="\n\nPRÜFUNGSANTWORTEN\n"+(S.exams.length? S.exams.map(x=>x.title+" ("+x.words+" Wörter, Selbsteinschätzung "+(x.band||"keine")+")\n"+x.text).join("\n\n") : "keine");
+  return {html:H, text:T, code};
+}
+</script>
+
+<script>
+/* =========================================================
+   ANSICHTEN
+   ========================================================= */
+function paintRank(){
+  const r=rank(), nx=nextRank();
+  const rn=$("#rankName"); if(!rn) return;
+  rn.textContent=r.name;
+  $("#rankXp").textContent = S.xp+" Punkte"+(nx?" · "+(nx.min-S.xp)+" bis "+nx.name:"");
+  const lo=r.min, hi=nx?nx.min:r.min+1;
+  $("#rankBar").style.width = Math.min(100, Math.round((S.xp-lo)/(hi-lo)*100))+"%";
+  $("#streakBox").textContent = S.streak+"er-Serie";
+  $("#sAnswered").textContent = S.answered;
+  $("#sAcc").textContent = S.answered? Math.round(S.correct/S.answered*100)+"%" : "–";
+  $("#sMastered").innerHTML = DEVICES.filter(d=>stars(d.id)>=4).length+'<span style="font-size:.5em;color:var(--ink-3)">/'+DEVICES.length+"</span>";
+}
+
+function newHero(){
+  const it = JAGD[Math.floor(Math.random()*JAGD.length)];
+  let html = esc(it.t);
+  [...new Set(it.e)].forEach(w=>{ html = html.replace(new RegExp("\\b"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b"),
+    '<span class="hl '+DMAP[it.d].cat+'">'+w+"</span>"); });
+  $("#heroQuote").innerHTML = html;
+  $("#heroNote").innerHTML = "<strong>"+DMAP[it.d].name+".</strong> "+it.w;
+}
+
+function renderUebung(){
+  const g=$("#modeGrid"); g.innerHTML="";
+  Object.entries(MODES).forEach(([k,M])=>{
+    const b=el("button","mode");
+    b.style.setProperty("--c","var(--"+M.cat+")");
+    b.innerHTML="<h3>"+M.name+"</h3><p>"+M.desc+'</p><div class="meta">'+M.n+" Aufgaben · "+CATNAME[M.cat]+"</div>";
+    b.onclick=()=>startMode(k);
+    g.appendChild(b);
+  });
+  const weak = DEVICES.slice().sort((a,b)=>mst(a.id)-mst(b.id)).slice(0,3);
+  $("#weakList").innerHTML = S.answered<5
+    ? "Löse ein paar Aufgaben — dann wählt das Training gezielt deine schwächsten Stilmittel aus."
+    : "Zurzeit am schwächsten: "+weak.map(d=>"<strong>"+d.name+"</strong>").join(", ")+".";
+}
+
+function renderLexikon(){
+  const list=$("#libList");
+  const cat = list.dataset.cat || "alle";
+  list.innerHTML="";
+  DEVICES.filter(d=>cat==="alle"||d.cat===cat).forEach(d=>{
+    const dt=el("details","libitem"); dt.id="lib-"+d.id;
+    dt.style.setProperty("--c","var(--"+d.cat+")");
+    dt.innerHTML='<summary>'+d.name+' <span class="tag cat-'+d.cat+'">'+CATNAME[d.cat]+"</span> "+starHTML(stars(d.id))+"</summary>"+
+      '<div class="libbody"><dl>'+
+      "<dt>Definition</dt><dd>"+d.def+"</dd>"+
+      "<dt>Beispiel</dt><dd class='ex'>"+d.ex+"</dd>"+
+      "<dt>Wirkung — so wird daraus eine Antwort</dt><dd>"+d.why+"</dd>"+
+      "<dt>Worauf du achten musst</dt><dd>"+d.eff+"</dd>"+
+      "<dt>Typische Falle</dt><dd>"+d.trap+"</dd>"+
+      "</dl></div>";
+    list.appendChild(dt);
+  });
+  const v=$("#lexVocab");
+  v.innerHTML = VOCAB.map(g=>'<div class="mrow"><div class="nm"><b>'+g.g+"</b><small>"+g.w.join(" · ")+"</small></div></div>").join("");
+}
+
+function masteryPanel(title){
+  const p=el("div","panel");
+  p.innerHTML="<h2>"+title+"</h2>";
+  DEVICES.slice().sort((a,b)=>mst(b.id)-mst(a.id)).forEach(d=>{
+    const row=el("div","mrow");
+    row.style.setProperty("--c","var(--"+d.cat+")");
+    row.innerHTML='<div class="nm">'+d.name+"<small>"+CATNAME[d.cat]+'</small></div><div class="mbar"><i style="width:'+mst(d.id)+'%"></i></div>'+starHTML(stars(d.id));
+    p.appendChild(row);
+  });
+  return p;
+}
+
+/* ---------- Prüfung ---------- */
+let EX = null, exTimer=null;
+
+function renderPruefung(){
+  const h=$("#v-pruefung");
+  if(EX) return renderExamWrite(h);
+  h.innerHTML='<div class="topline"><div><h1>Prüfungsaufgaben</h1><p class="lede">Fünf Aufgaben im Format der schriftlichen Prüfung: zwei Abschnitte, je drei Belege, '+EXAMS[0].marks+' Punkte, '+EXAMS[0].min+' Minuten.</p></div></div>';
+  const g=el("div","grid g2");
+  EXAMS.forEach(e=>{
+    const done = S.exams.filter(x=>x.examId===e.id).length;
+    const b=el("button","mode"); b.style.setProperty("--c","var(--satz)");
+    b.innerHTML="<h3>"+e.title+'</h3><p>'+e.p1.slice(0,110)+'…</p><div class="meta">'+e.min+" Min · "+e.marks+" Punkte"+(done?" · "+done+"× geschrieben":"")+"</div>";
+    b.onclick=()=>{ EX={e, text:(S.draft&&S.draft.examId===e.id?S.draft.text:""), left:e.min*60, phase:"write"}; renderPruefung(); };
+    g.appendChild(b);
+  });
+  h.appendChild(g);
+  const tips=el("div","panel");
+  tips.innerHTML="<h2>So gehst du in der Prüfung vor</h2>"+
+   '<div class="check"><span>1</span><span>Lies die Frage zuerst. Sie sagt dir, <strong>welchen Eindruck</strong> du belegen sollst — alles, was nicht dazu beiträgt, kostet Zeit.</span></div>'+
+   '<div class="check"><span>2</span><span>Markiere pro Abschnitt fünf bis sechs Kandidaten, wähle dann die drei mit der reichsten Nebenbedeutung.</span></div>'+
+   '<div class="check"><span>3</span><span>Bevorzuge Verben und Adjektive. Substantive tragen seltener die Wirkung.</span></div>'+
+   '<div class="check"><span>4</span><span>Zitiere kurz. Ein Wort reicht oft; lange Zitate fressen Zeit und bringen keine Punkte.</span></div>'+
+   '<div class="check"><span>5</span><span>Schreibe zu jedem Beleg mindestens einen „weil“-Satz. Ohne Begründung bleibt die Antwort im unteren Band.</span></div>'+
+   '<div class="check"><span>6</span><span>Verteile die Belege gleichmäßig auf beide Abschnitte, auch wenn dir der erste leichter fällt.</span></div>';
+  h.appendChild(tips);
+  if(S.exams.length){
+    const p=el("div","panel");
+    p.innerHTML="<h2>Deine geschriebenen Antworten</h2>";
+    S.exams.slice().reverse().forEach(x=>{
+      const r=el("div","savedrow");
+      r.innerHTML='<div class="g"><b>'+esc(x.title)+"</b><small>"+fmtDate(x.at)+" · "+x.words+" Wörter"+(x.band?" · Selbsteinschätzung "+x.band:"")+"</small></div>";
+      const v=el("button","btn sm","Ansehen");
+      v.onclick=()=>{ EX={e:EXAMS.find(e=>e.id===x.examId), text:x.text, phase:"review", saved:x}; renderPruefung(); };
+      r.appendChild(v);
+      p.appendChild(r);
+    });
+    h.appendChild(p);
+  }
+}
+
+function renderExamWrite(h){
+  const e=EX.e;
+  h.innerHTML="";
+  const head=el("div","exhead");
+  head.innerHTML='<div class="t"><h2>'+esc(e.title)+'</h2><span class="cnt">'+e.marks+" Punkte · empfohlen "+e.min+" Minuten</span></div>";
+  const right=el("div","inline");
+  const tm=el("div","timer"); tm.id="exTimer"; tm.textContent="—";
+  const q=el("button","btn ghost","Zurück");
+  q.onclick=()=>{ clearInterval(exTimer); EX=null; renderPruefung(); };
+  right.appendChild(tm); right.appendChild(q);
+  head.appendChild(right); h.appendChild(head);
+
+  const src=el("div","panel");
+  src.innerHTML='<div class="hint">Abschnitt 1</div><div class="specimen small">'+e.p1+'</div>'+
+                '<div class="hint">Abschnitt 2</div><div class="specimen small">'+e.p2+"</div>"+
+                '<hr class="rule"><p style="margin:0"><strong>Aufgabe.</strong> '+e.q+"</p>";
+  h.appendChild(src);
+
+  if(EX.phase==="write"){
+    const w=el("div","panel");
+    const ta=el("textarea","examta");
+    ta.placeholder="Schreibe hier. Kurz zitieren, Wirkung benennen, mit „weil“ begründen.";
+    ta.value=EX.text||"";
+    const wc=el("div","wc");
+    const upd=()=>{ wc.textContent=words(ta.value)+" Wörter"; };
+    ta.addEventListener("input",()=>{ EX.text=ta.value; upd(); S.draft={examId:e.id,text:ta.value}; save(); });
+    w.appendChild(ta); w.appendChild(wc); upd();
+    const rr=el("div","btnrow");
+    const sub=el("button","btn primary","Abgeben und selbst prüfen");
+    sub.onclick=()=>{ clearInterval(exTimer); EX.phase="check"; renderPruefung(); };
+    const hint=el("button","btn","Worauf du hättest achten können");
+    hint.onclick=()=>{ toast("Ergiebige Stellen: "+e.focus.slice(0,3).map(f=>"„"+f+"“").join(", ")+" …"); };
+    rr.appendChild(sub); rr.appendChild(hint);
+    w.appendChild(rr);
+    h.appendChild(w);
+    ta.focus();
+    clearInterval(exTimer);
+    const t0=Date.now(), total=EX.left;
+    exTimer=setInterval(()=>{
+      const left = total - Math.floor((Date.now()-t0)/1000);
+      const n=$("#exTimer"); if(!n){ clearInterval(exTimer); return; }
+      const a=Math.abs(left);
+      n.textContent=(left<0?"+":"")+Math.floor(a/60)+":"+String(a%60).padStart(2,"0");
+      n.style.color = left<0 ? "var(--no)" : left<120 ? "var(--wort)" : "";
+    },500);
+  }
+
+  if(EX.phase==="check" || EX.phase==="review"){
+    const saved = EX.saved;
+    const a=el("div","panel");
+    a.innerHTML="<h2>Deine Antwort</h2>"+'<div class="specimen small" style="white-space:pre-wrap">'+esc(EX.text||"(leer)")+'</div><div class="wc">'+words(EX.text||"")+" Wörter</div>";
+    h.appendChild(a);
+
+    const c=el("div","panel");
+    c.innerHTML="<h2>Selbstprüfung</h2><p class='hint'>Ehrlich abhaken. Jeder nicht gesetzte Haken ist eine konkrete Verbesserung für das nächste Mal.</p>";
+    const boxes=[];
+    CHECK.forEach((t,i)=>{
+      const row=el("label","check");
+      const cb=el("input"); cb.type="checkbox"; cb.checked = saved? !!(saved.checks||[])[i] : false;
+      row.appendChild(cb); row.appendChild(el("span",null,t)); boxes.push(cb); c.appendChild(row);
+    });
+    h.appendChild(c);
+
+    const b=el("div","panel");
+    b.innerHTML="<h2>Orientierungsbänder</h2><p class='hint'>Zur Selbsteinschätzung, keine offizielle Cambridge-Tabelle. Wähle, wo deine Antwort ehrlich steht.</p>";
+    let chosen = saved? saved.band||"" : "";
+    BANDS.forEach(bd=>{
+      const row=el("button","band");
+      row.style.textAlign="left"; row.style.width="100%"; row.style.background="none"; row.style.border="0"; row.style.borderBottom="1px solid var(--rule-2)"; row.style.cursor="pointer";
+      row.innerHTML="<b>"+bd.p+"</b><span><strong>"+bd.n+"</strong> — "+bd.t+"</span>";
+      if(chosen===bd.p) row.style.background="rgba(58,78,168,.07)";
+      row.onclick=()=>{ chosen=bd.p; Array.from(b.querySelectorAll("button")).forEach(x=>x.style.background="none"); row.style.background="rgba(58,78,168,.07)"; };
+      b.appendChild(row);
+    });
+    h.appendChild(b);
+
+    const m=el("details","libitem");
+    m.style.setProperty("--c","var(--bild)");
+    m.innerHTML="<summary>Musterantwort ansehen</summary><div class='libbody'><p class='hint'>Erst lesen, wenn du selbst geschrieben hast. Vergleiche nicht den Inhalt, sondern die <strong>Bauweise</strong> der Sätze.</p><div style='font-family:var(--serif);font-size:1.06rem;line-height:1.7;white-space:pre-wrap'>"+esc(e.model)+"</div><hr class='rule'><p class='hint'>Ergiebige Stellen dieser Aufgabe: "+e.focus.map(f=>"„"+esc(f)+"“").join(" · ")+"</p></div>";
+    h.appendChild(m);
+
+    const rr=el("div","btnrow");
+    if(EX.phase==="check"){
+      const sv=el("button","btn primary","Antwort speichern");
+      sv.onclick=()=>{
+        const rec={id:"e"+Date.now(), examId:e.id, title:e.title, text:EX.text||"", at:new Date().toISOString(),
+                   words:words(EX.text||""), checks:boxes.map(x=>x.checked), band:chosen};
+        S.exams.push(rec);
+        S.xp += 40; S.draft=null;
+        checkBadges(); save(); paintRank();
+        toast("Antwort gespeichert. Denk an den Export, bevor du das Gerät wechselst.");
+        clearInterval(exTimer); EX=null; renderPruefung();
+      };
+      rr.appendChild(sv);
+      const back=el("button","btn","Weiterschreiben");
+      back.onclick=()=>{ EX.phase="write"; renderPruefung(); };
+      rr.appendChild(back);
+    } else {
+      const upd=el("button","btn primary","Selbstprüfung aktualisieren");
+      upd.onclick=()=>{ saved.checks=boxes.map(x=>x.checked); saved.band=chosen; save(); toast("Aktualisiert."); };
+      const cp=el("button","btn","Text kopieren");
+      cp.onclick=()=>{ navigator.clipboard?.writeText(EX.text||"").then(()=>toast("In die Zwischenablage kopiert.")).catch(()=>toast("Kopieren nicht möglich — markiere den Text von Hand.")); };
+      const back=el("button","btn ghost","Zurück");
+      back.onclick=()=>{ EX=null; renderPruefung(); };
+      rr.appendChild(upd); rr.appendChild(cp); rr.appendChild(back);
+    }
+    h.appendChild(rr);
+  }
+}
+
+/* ---------- Fortschritt ---------- */
+function renderFortschritt(){
+  const h=$("#v-fortschritt");
+  h.innerHTML='<div class="topline"><div><h1>Fortschritt</h1><p class="lede">Stufen steigen durch richtige Antworten und sinken langsam bei Fehlern. Vier Sterne heißen: Dieses Stilmittel kannst du in der Prüfung sicher deuten.</p></div></div>';
+  const g=el("div","grid g3");
+  const acc=S.answered?Math.round(S.correct/S.answered*100):0;
+  [["Rang",rank().name],["Punkte",S.xp],["Aufgaben",S.answered],["Trefferquote",acc+"%"],["Beste Serie",S.best],["Prüfungsantworten",S.exams.length]]
+   .forEach(([k,v])=>{ const s=el("div","stat"); s.innerHTML='<div class="big" style="font-size:1.5rem">'+v+"</div><small>"+k+"</small>"; g.appendChild(s); });
+  h.appendChild(g);
+  h.appendChild(masteryPanel("Stilmittel-Stufen"));
+  const b=el("div","panel"); b.innerHTML="<h2>Abzeichen</h2>";
+  const bg=el("div","grid g3");
+  BADGES.forEach(x=>{
+    const has=S.badges.includes(x.id);
+    const d=el("div","badge"+(has?"":" off"));
+    d.innerHTML='<span class="ic">'+x.ic+"</span><span><b>"+x.n+"</b><small>"+x.d+"</small></span>";
+    bg.appendChild(d);
+  });
+  b.appendChild(bg); h.appendChild(b);
+}
+
+/* ---------- Daten ---------- */
+function download(name, text, type){
+  const blob=new Blob([text],{type:type||"application/json;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=el("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},400);
+}
+function slug(s){ return (s||"lernpartner").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+function csvCell(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }
+
+function renderDaten(){
+  const h=$("#v-daten");
+  h.innerHTML='<div class="topline"><div><h1>Daten</h1><p class="lede">Alles liegt nur in diesem Browser. Wechselst du das Gerät oder löscht der Browser seine Daten, ist der Fortschritt weg — exportiere ihn vorher.</p></div></div>';
+
+  const idp=el("div","panel");
+  idp.innerHTML="<h2>Wer übt hier?</h2><p class='hint'>Steht im Dateinamen beim Export — damit Herr Kress die Datei zuordnen kann.</p>";
+  const row=el("div","inline"); row.style.marginTop="12px";
+  const f1=el("label","field","<span>Name</span>"); const i1=el("input"); i1.value=S.name; i1.placeholder="Vor- und Nachname";
+  i1.oninput=()=>{S.name=i1.value;save();}; f1.appendChild(i1);
+  const f2=el("label","field","<span>Klasse</span>"); const i2=el("input"); i2.value=S.klasse; i2.placeholder="z. B. 10a";
+  i2.oninput=()=>{S.klasse=i2.value;save();}; f2.appendChild(i2);
+  row.appendChild(f1); row.appendChild(f2); idp.appendChild(row);
+  h.appendChild(idp);
+
+  const ex=el("div","panel");
+  ex.innerHTML="<h2>Exportieren</h2><p class='hint'>Für die Abgabe in Toddle nimmst du den <strong>Bericht</strong> unter „Auftrag“ — er fasst alles Folgende zusammen. Die Dateien hier sind für Zwischenstände und für den Gerätewechsel.</p>";
+  const r1=el("div","btnrow");
+  const b1=el("button","btn primary","Fortschritt sichern (.json)");
+  b1.onclick=()=>{ download("wirkung_"+slug(S.name)+"_"+new Date().toISOString().slice(0,10)+".json", JSON.stringify(S,null,1)); toast("Datei erstellt."); };
+  const b2=el("button","btn","Prüfungsantworten (.csv)");
+  b2.onclick=()=>{
+    if(!S.exams.length) return toast("Noch keine Antworten gespeichert.");
+    const rows=[["Name","Klasse","Aufgabe","Datum","Wörter","Selbsteinschätzung","Haken gesetzt","Antwort"]];
+    S.exams.forEach(x=>rows.push([S.name,S.klasse,x.title,fmtDate(x.at),x.words,x.band||"",(x.checks||[]).filter(Boolean).length+"/"+CHECK.length,x.text]));
+    download("antworten_"+slug(S.name)+".csv","\ufeff"+rows.map(r=>r.map(csvCell).join(";")).join("\r\n"),"text/csv;charset=utf-8");
+  };
+  const b3=el("button","btn","Stufen als Tabelle (.csv)");
+  b3.onclick=()=>{
+    const rows=[["Name","Klasse","Stilmittel","Ebene","Stufe (0-100)","Sterne"]];
+    DEVICES.forEach(d=>rows.push([S.name,S.klasse,d.name,CATNAME[d.cat],mst(d.id),stars(d.id)]));
+    download("stufen_"+slug(S.name)+".csv","\ufeff"+rows.map(r=>r.map(csvCell).join(";")).join("\r\n"),"text/csv;charset=utf-8");
+  };
+  const b4=el("button","btn","Antworten drucken / als PDF");
+  b4.onclick=()=>printAnswers();
+  r1.appendChild(b1); r1.appendChild(b2); r1.appendChild(b3); r1.appendChild(b4);
+  ex.appendChild(r1); h.appendChild(ex);
+
+  const im=el("div","panel");
+  im.innerHTML="<h2>Importieren</h2><p class='hint'>Eine zuvor gesicherte .json-Datei laden. Du kannst sie mit dem aktuellen Stand zusammenführen oder alles ersetzen.</p>";
+  const r2=el("div","btnrow");
+  const b5=el("button","btn primary","Datei wählen");
+  b5.onclick=()=>$("#importFile").click();
+  r2.appendChild(b5); im.appendChild(r2); h.appendChild(im);
+
+  const dz=el("div","panel");
+  dz.innerHTML="<h2>Zurücksetzen</h2><p class='hint'>Löscht Punkte, Stufen, Abzeichen und gespeicherte Prüfungsantworten auf diesem Gerät.</p>";
+  const r3=el("div","btnrow");
+  const b6=el("button","btn","Alles löschen");
+  b6.onclick=()=>{
+    if(!confirm("Wirklich alles löschen? Vorher exportieren!")) return;
+    S=DEF(); localStorage.removeItem(KEY); save(); paintRank(); renderDaten(); toast("Zurückgesetzt.");
+  };
+  r3.appendChild(b6); dz.appendChild(r3); h.appendChild(dz);
+}
+
+function printAnswers(){
+  if(!S.exams.length) return toast("Noch keine Antworten gespeichert.");
+  const w=window.open("","_blank");
+  if(!w) return toast("Der Browser hat das Fenster blockiert.");
+  const css="body{font-family:Georgia,serif;max-width:44em;margin:40px auto;line-height:1.6;padding:0 16px}h1{font-size:1.4em}h2{font-size:1.1em;margin-top:2em;border-bottom:1px solid #ccc;padding-bottom:4px}small{color:#666;font-family:system-ui,sans-serif}pre{white-space:pre-wrap;font-family:Georgia,serif;font-size:1em}";
+  w.document.write("<!DOCTYPE html><meta charset='utf-8'><title>Prüfungsantworten</title><style>"+css+"</style>"+
+    "<h1>Writer's Effects — Prüfungsantworten</h1><small>"+esc(S.name||"ohne Namen")+(S.klasse?", "+esc(S.klasse):"")+" · "+new Date().toLocaleDateString("de-DE")+"</small>"+
+    S.exams.map(x=>"<h2>"+esc(x.title)+"</h2><small>"+fmtDate(x.at)+" · "+x.words+" Wörter"+(x.band?" · Selbsteinschätzung "+esc(x.band):"")+"</small><pre>"+esc(x.text)+"</pre>").join(""));
+  w.document.close();
+  setTimeout(()=>w.print(),350);
+}
+
+$("#importFile").addEventListener("change", ev=>{
+  const f=ev.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const o=JSON.parse(rd.result);
+      if(!o || typeof o!=="object" || !("mastery" in o)) throw new Error("Format");
+      const merge = confirm("OK = mit dem aktuellen Stand zusammenführen.\nAbbrechen = aktuellen Stand ersetzen.");
+      if(merge){
+        S.xp=Math.max(S.xp,o.xp||0); S.answered+=o.answered||0; S.correct+=o.correct||0;
+        S.best=Math.max(S.best,o.best||0);
+        Object.entries(o.mastery||{}).forEach(([k,v])=>S.mastery[k]=Math.max(mst(k),v));
+        const ids=new Set(S.exams.map(x=>x.id));
+        (o.exams||[]).forEach(x=>{ if(!ids.has(x.id)) S.exams.push(x); });
+        (o.badges||[]).forEach(b=>{ if(!S.badges.includes(b)) S.badges.push(b); });
+        S.name=S.name||o.name||""; S.klasse=S.klasse||o.klasse||"";
+      } else {
+        S=Object.assign(DEF(),o);
+      }
+      save(); paintRank(); renderDaten();
+      toast(merge?"Zusammengeführt.":"Stand ersetzt.");
+    }catch(e){ toast("Die Datei ließ sich nicht lesen. Erwartet wird eine .json aus diesem Programm."); }
+    ev.target.value="";
+  };
+  rd.readAsText(f);
+});
+
+/* =========================================================
+   NAVIGATION UND START
+   ========================================================= */
+const VIEWS={
+  start:()=>{ paintRank(); newHero(); },
+  uebung:renderUebung,
+  lexikon:renderLexikon,
+  pruefung:renderPruefung,
+  auftrag:renderAuftrag,
+  fortschritt:renderFortschritt,
+  daten:renderDaten,
+  stage:renderStage
+};
+function go(v){
+  ["start","uebung","lexikon","pruefung","auftrag","fortschritt","daten","stage"].forEach(k=>{
+    const n=$("#v-"+k); if(n) n.hidden = (k!==v);
+  });
+  $$(".navbtn").forEach(b=>b.setAttribute("aria-current", String(b.dataset.view===v)));
+  if(VIEWS[v]) VIEWS[v]();
+  window.scrollTo(0,0);
+}
+$$(".navbtn").forEach(b=>b.onclick=()=>{ if(b.dataset.view!=="stage"){ cleanup(); SES=null; } go(b.dataset.view); });
+$$("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+$("#newHero").onclick=newHero;
+$("#weakStart").onclick=startWeak;
+$$(".filt").forEach(b=>b.onclick=()=>{
+  $$(".filt").forEach(x=>x.setAttribute("aria-current","false"));
+  b.setAttribute("aria-current","true");
+  $("#libList").dataset.cat=b.dataset.cat;
+  renderLexikon();
+});
+
+load();
+paintRank();
+go("start");
+if(!S.name) setTimeout(()=>toast("Trage unter „Daten“ deinen Namen ein, damit deine Exporte zuzuordnen sind."), 1200);
+</script>
+</body>
+</html>
